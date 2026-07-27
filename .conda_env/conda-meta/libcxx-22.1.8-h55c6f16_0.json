@@ -1,0 +1,71 @@
+{
+  "name": "libcxx",
+  "version": "22.1.8",
+  "build": "h55c6f16_0",
+  "build_number": 0,
+  "channel": "https://conda.anaconda.org/conda-forge/osx-arm64",
+  "subdir": "osx-arm64",
+  "fn": "libcxx-22.1.8-h55c6f16_0.conda",
+  "md5": "89f76a2a21a3ec3ec983b5eb237c4113",
+  "url": "https://conda.anaconda.org/conda-forge/osx-arm64/libcxx-22.1.8-h55c6f16_0.conda",
+  "sha256": "a2e7abab5add9750fab064c024394de48e49f97631c605ad5db5c8ac3fc769ef",
+  "depends": [
+    "__osx >=11.0"
+  ],
+  "constrains": [],
+  "license": "Apache-2.0 WITH LLVM-exception",
+  "timestamp": 1781670209146,
+  "size": 569349,
+  "_requested_specs": [],
+  "package_tarball_full_path": "/opt/homebrew/Caskroom/miniforge/base/pkgs/libcxx-22.1.8-h55c6f16_0.conda",
+  "extracted_package_dir": "/opt/homebrew/Caskroom/miniforge/base/pkgs/libcxx-22.1.8-h55c6f16_0",
+  "files": [
+    "lib/libc++.1.0.dylib",
+    "lib/libc++.1.dylib",
+    "lib/libc++.a",
+    "lib/libc++.dylib",
+    "lib/libc++experimental.a"
+  ],
+  "paths_data": {
+    "paths_version": 1,
+    "paths": [
+      {
+        "_path": "lib/libc++.1.0.dylib",
+        "path_type": "hardlink",
+        "sha256": "c54d0f3a5b838359cbe4d359f55065140d4c418beba24860a22ee59c1e201710",
+        "size_in_bytes": 1174688,
+        "sha256_in_prefix": "c54d0f3a5b838359cbe4d359f55065140d4c418beba24860a22ee59c1e201710"
+      },
+      {
+        "_path": "lib/libc++.1.dylib",
+        "path_type": "softlink",
+        "sha256": "c54d0f3a5b838359cbe4d359f55065140d4c418beba24860a22ee59c1e201710",
+        "size_in_bytes": 1174688
+      },
+      {
+        "_path": "lib/libc++.a",
+        "path_type": "hardlink",
+        "sha256": "0e7ff9abd55086ac3cd740f968432d6b3d89a50faa099776e8af040616d8278b",
+        "size_in_bytes": 1684112,
+        "sha256_in_prefix": "0e7ff9abd55086ac3cd740f968432d6b3d89a50faa099776e8af040616d8278b"
+      },
+      {
+        "_path": "lib/libc++.dylib",
+        "path_type": "softlink",
+        "sha256": "c54d0f3a5b838359cbe4d359f55065140d4c418beba24860a22ee59c1e201710",
+        "size_in_bytes": 1174688
+      },
+      {
+        "_path": "lib/libc++experimental.a",
+        "path_type": "hardlink",
+        "sha256": "d10493e944f0191df694c29407ba19ae5d675161b5f06c03fe08acac73a3cf43",
+        "size_in_bytes": 319096,
+        "sha256_in_prefix": "d10493e944f0191df694c29407ba19ae5d675161b5f06c03fe08acac73a3cf43"
+      }
+    ]
+  },
+  "link": {
+    "source": "/opt/homebrew/Caskroom/miniforge/base/pkgs/libcxx-22.1.8-h55c6f16_0",
+    "type": 1
+  }
+}

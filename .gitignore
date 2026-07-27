@@ -1,0 +1,17 @@
+# 忽略环境与缓存
+.venv/
+__pycache__/
+*.pyc
+.DS_Store
+
+# 忽略所有产出与数据
+outputs/
+data/
+
+# 忽略赛题原始文件与二进制文档
+*.zip
+*.xls
+*.xlsx
+*.docx
+09-*/
+附件2*/

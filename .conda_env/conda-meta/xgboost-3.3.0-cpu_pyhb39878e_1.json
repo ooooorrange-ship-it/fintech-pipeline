@@ -1,0 +1,37 @@
+{
+  "name": "xgboost",
+  "version": "3.3.0",
+  "build": "cpu_pyhb39878e_1",
+  "build_number": 1,
+  "channel": "https://conda.anaconda.org/conda-forge/noarch",
+  "subdir": "noarch",
+  "fn": "xgboost-3.3.0-cpu_pyhb39878e_1.conda",
+  "md5": "91fe48849ad846cce38a0c92ceb89e6e",
+  "url": "https://conda.anaconda.org/conda-forge/noarch/xgboost-3.3.0-cpu_pyhb39878e_1.conda",
+  "sha256": "8825fc5d8141b47a1f73446d0a1d600a27419ae4b4d7a8f24849dbdfe030b104",
+  "depends": [
+    "py-xgboost 3.3.0 cpu_pyhe781eb1_1",
+    "python >=3.12"
+  ],
+  "constrains": [],
+  "noarch": "python",
+  "license": "Apache-2.0",
+  "package_type": "noarch_python",
+  "timestamp": 1784614065436,
+  "size": 15754,
+  "requested_spec": "xgboost",
+  "package_tarball_full_path": "/opt/homebrew/Caskroom/miniforge/base/pkgs/xgboost-3.3.0-cpu_pyhb39878e_1.conda",
+  "extracted_package_dir": "/opt/homebrew/Caskroom/miniforge/base/pkgs/xgboost-3.3.0-cpu_pyhb39878e_1",
+  "files": [],
+  "paths_data": {
+    "paths_version": 1,
+    "paths": []
+  },
+  "link": {
+    "source": "/opt/homebrew/Caskroom/miniforge/base/pkgs/xgboost-3.3.0-cpu_pyhb39878e_1",
+    "type": 1
+  },
+  "requested_specs": [
+    "xgboost"
+  ]
+}

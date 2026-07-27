@@ -1,0 +1,19 @@
+name: fintech09
+channels:
+  - conda-forge
+dependencies:
+  - python=3.12
+  - pip
+  - numpy=1.26
+  - pandas=2.2
+  - openpyxl=3.1
+  - scipy
+  - scikit-learn
+  - xgboost
+  - networkx
+  - gensim
+  - tqdm
+  - joblib
+  - llvm-openmp
+  - pip:
+      - node2vec==0.5.0
