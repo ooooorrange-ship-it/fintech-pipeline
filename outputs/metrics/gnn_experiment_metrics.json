@@ -1,5 +1,0 @@
-{
-  "status": "skipped",
-  "reason": "缺少 GNN 依赖: ModuleNotFoundError: No module named 'torch'",
-  "next_step": "安装 torch 与 torch_geometric 后，可在此文件继续实现 GraphSAGE/GAT。"
-}

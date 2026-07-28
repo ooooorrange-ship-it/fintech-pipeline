@@ -42,8 +42,8 @@
   - `task3_top20_associations.csv`
   - `task3_suspicious_paths.csv`
   - `task3_fund_flow_structures.csv`
-  - `task3_link_visualization_samples.md`
-  - `task3_typical_cases.md`
+  - `docs/task3_link_visualization_samples.md`
+  - `docs/task3_typical_cases.md`
 - 局限：59 个确认嫌疑人中只有 3 个在当前交易边表内有可追溯历史交易边，其他账户不能硬生成链路。
 - Top20 关联账户行数：70
 - 多跳路径行数：144
@@ -57,8 +57,8 @@
   - 存在交易边时追加关联账户或多跳路径证据。
   - 对无可追溯交易边账户明确写出局限，避免无依据结论。
 - 证据文件：
-  - `task4_judgement_report_template.md`
-  - `task4_judgement_report_samples.md`
+  - `docs/task4_judgement_report_template.md`
+  - `docs/task4_judgement_report_samples.md`
   - `task4_evidence_field_dictionary.csv`
   - `task4_consistency_audit.csv`
 - 典型案例数：5

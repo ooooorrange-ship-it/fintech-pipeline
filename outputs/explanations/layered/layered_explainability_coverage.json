@@ -20,11 +20,11 @@
   "core_note": "59个确认嫌疑账户中，缺少交易边的账户不能生成可信链路；本脚本将其纳入缺边审计，并对有边的高风险账户生成链路和研判报告。",
   "outputs": {
     "confirmed_suspect_audit_csv": "/Users/orange/Documents/study/金融科技大赛/outputs/explanations/layered/confirmed_suspect_explainability_audit.csv",
-    "confirmed_suspect_audit_md": "/Users/orange/Documents/study/金融科技大赛/outputs/explanations/layered/confirmed_suspect_explainability_audit.md",
+    "confirmed_suspect_audit_md": "/Users/orange/Documents/study/金融科技大赛/docs/confirmed_suspect_explainability_audit.md",
     "risk_review_queue": "/Users/orange/Documents/study/金融科技大赛/outputs/explanations/layered/risk_review_queue_active_accounts.csv",
     "associations": "/Users/orange/Documents/study/金融科技大赛/outputs/explanations/layered/risk_review_queue_top20_associations.csv",
     "paths": "/Users/orange/Documents/study/金融科技大赛/outputs/explanations/layered/risk_review_queue_suspicious_paths.csv",
     "structures": "/Users/orange/Documents/study/金融科技大赛/outputs/explanations/layered/risk_review_queue_fund_flow_structures.csv",
-    "judgement_reports": "/Users/orange/Documents/study/金融科技大赛/outputs/explanations/layered/layered_judgement_report_samples.md"
+    "judgement_reports": "/Users/orange/Documents/study/金融科技大赛/docs/layered_judgement_report_samples.md"
   }
 }

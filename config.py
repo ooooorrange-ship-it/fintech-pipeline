@@ -10,6 +10,7 @@ RAW_TRANSACTIONS_PATH = DATA_DIR / "交易边表.xlsx"
 RAW_LABELS_PATH = DATA_DIR / "风险标签表.xlsx"
 
 OUTPUT_DIR = PROJECT_ROOT / "outputs"
+DOCS_DIR = PROJECT_ROOT / "docs"
 CLEAN_DIR = OUTPUT_DIR / "clean"
 LABEL_DIR = OUTPUT_DIR / "labels"
 FEATURE_DIR = OUTPUT_DIR / "features"

@@ -70,7 +70,6 @@
   "files": [
     "deliverable_manifest.json",
     "final_project_audit.json",
-    "final_project_audit.md",
     "task1_dynamic_graph_window_definition.json",
     "task1_field_dictionary.csv",
     "task1_graph_samples/test_edges_sample.csv",
@@ -87,19 +86,25 @@
     "task2_model_metrics_summary.csv",
     "task2_requirement_audit.json",
     "task3_fund_flow_structures.csv",
-    "task3_link_visualization_samples.md",
     "task3_suspicious_paths.csv",
     "task3_task4_explanation_audit.json",
     "task3_top20_associations.csv",
     "task3_typical_cases.csv",
-    "task3_typical_cases.md",
     "task4_consistency_audit.csv",
     "task4_evidence_field_dictionary.csv",
+    "task_completion_checklist.csv",
+    "technical_problem_solution_audit.json"
+  ],
+  "documentation_files": [
+    "confirmed_suspect_explainability_audit.md",
+    "final_project_audit.md",
+    "layered_judgement_report_samples.md",
+    "task3_link_visualization_samples.md",
+    "task3_typical_cases.md",
     "task4_judgement_report_samples.md",
     "task4_judgement_report_template.md",
-    "task_completion_checklist.csv",
     "task_completion_checklist.md",
     "technical_problem_solution.md",
-    "technical_problem_solution_audit.json"
+    "top_accounts_dynamic_report.md"
   ]
 }

@@ -12,6 +12,7 @@ sys.path.append(str(Path(__file__).resolve().parents[1]))
 from config import (  # noqa: E402
     AMOUNT_COL,
     CLEAN_DIR,
+    DOCS_DIR,
     DST_COL,
     ID_COL,
     LABEL_DIR,
@@ -29,6 +30,7 @@ LAYERED_DIR = OUTPUT_DIR / "explanations" / "layered"
 
 def ensure_dirs() -> None:
     DYNAMIC_GRAPH_DIR.mkdir(parents=True, exist_ok=True)
+    DOCS_DIR.mkdir(parents=True, exist_ok=True)
 
 
 def json_records(path: Path) -> list[dict]:
@@ -53,7 +55,7 @@ def load_layered_data() -> dict:
     """加载 59 个审计账户、Top30 队列及其解释证据。"""
     coverage_path = LAYERED_DIR / "layered_explainability_coverage.json"
     coverage = json.loads(coverage_path.read_text(encoding="utf-8")) if coverage_path.exists() else {}
-    report_path = LAYERED_DIR / "layered_judgement_report_samples.md"
+    report_path = DOCS_DIR / "layered_judgement_report_samples.md"
     return {
         "coverage": coverage,
         "audit": json_records(LAYERED_DIR / "confirmed_suspect_explainability_audit.csv"),
@@ -912,7 +914,7 @@ def render_html_v2(data: dict) -> str:
 
 
 def write_report(data: dict, summaries: pd.DataFrame, edges: pd.DataFrame, html_path: Path) -> Path:
-    report_path = DYNAMIC_GRAPH_DIR / "top_accounts_dynamic_report.md"
+    report_path = DOCS_DIR / "top_accounts_dynamic_report.md"
     lines = [
         "# 滚动动态资金图谱展示报告",
         "",

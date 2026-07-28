@@ -11,7 +11,7 @@ from pathlib import Path
 import pandas as pd
 
 sys.path.append(str(Path(__file__).resolve().parents[1]))
-from config import CLEAN_DIR, EXPLANATION_DIR, ID_COL, LABEL_DIR, OUTPUT_DIR, PREDICTION_DIR, SPLITS, SRC_COL, DST_COL, TIME_COL  # noqa: E402
+from config import CLEAN_DIR, DOCS_DIR, EXPLANATION_DIR, ID_COL, LABEL_DIR, OUTPUT_DIR, PREDICTION_DIR, SPLITS, SRC_COL, DST_COL, TIME_COL  # noqa: E402
 
 
 DELIVERABLE_DIR = OUTPUT_DIR / "deliverables"
@@ -154,7 +154,8 @@ def main() -> None:
         ],
     }
     out_json = DELIVERABLE_DIR / "final_project_audit.json"
-    out_md = DELIVERABLE_DIR / "final_project_audit.md"
+    DOCS_DIR.mkdir(parents=True, exist_ok=True)
+    out_md = DOCS_DIR / "final_project_audit.md"
     out_json.write_text(json.dumps(result, ensure_ascii=False, indent=2), encoding="utf-8")
     out_md.write_text(render_markdown(result), encoding="utf-8")
     print(json.dumps(result, ensure_ascii=False, indent=2))

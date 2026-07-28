@@ -10,6 +10,7 @@ sys.path.append(str(Path(__file__).resolve().parents[1]))
 from config import (  # noqa: E402
     AMOUNT_COL,
     CLEAN_DIR,
+    DOCS_DIR,
     DST_COL,
     EXPLANATION_DIR,
     FEATURE_DIR,
@@ -32,6 +33,7 @@ def ensure_dirs() -> None:
     DELIVERABLE_DIR.mkdir(parents=True, exist_ok=True)
     SAMPLE_DIR.mkdir(parents=True, exist_ok=True)
     EXPLANATION_DIR.mkdir(parents=True, exist_ok=True)
+    DOCS_DIR.mkdir(parents=True, exist_ok=True)
 
 
 def json_dump(data: dict, path: Path) -> None:
@@ -885,7 +887,7 @@ def build_task3_and_task4(
         if row["limitation"]:
             case_md.append(f"- 局限说明：{row['limitation']}")
         case_md.append("")
-    (DELIVERABLE_DIR / "task3_typical_cases.md").write_text("\n".join(case_md), encoding="utf-8")
+    (DOCS_DIR / "task3_typical_cases.md").write_text("\n".join(case_md), encoding="utf-8")
 
     viz_md = ["# 链路可视化样例", "", "以下 Mermaid 图可直接复制到支持 Mermaid 的 Markdown 或 PPT 工具中渲染。", ""]
     if paths.empty:
@@ -905,7 +907,7 @@ def build_task3_and_task4(
                     "",
                 ]
             )
-    (DELIVERABLE_DIR / "task3_link_visualization_samples.md").write_text("\n".join(viz_md), encoding="utf-8")
+    (DOCS_DIR / "task3_link_visualization_samples.md").write_text("\n".join(viz_md), encoding="utf-8")
 
     report_template = """# 辅助研判报告模板
 
@@ -932,7 +934,7 @@ def build_task3_and_task4(
 
 建议进入人工复核队列，并结合开户资料、设备/IP、历史止付冻结记录和外部名单进一步核验。
 """
-    (DELIVERABLE_DIR / "task4_judgement_report_template.md").write_text(report_template, encoding="utf-8")
+    (DOCS_DIR / "task4_judgement_report_template.md").write_text(report_template, encoding="utf-8")
 
     report_md = ["# 辅助研判报告样例", ""]
     audit_rows = []
@@ -971,7 +973,7 @@ def build_task3_and_task4(
             "每个样例至少引用模型分数和账户特征两类证据；存在交易边的账户额外引用关联账户或多跳路径。报告结论均限定为辅助研判建议，不直接替代人工处置。",
         ]
     )
-    (DELIVERABLE_DIR / "task4_judgement_report_samples.md").write_text("\n".join(report_md), encoding="utf-8")
+    (DOCS_DIR / "task4_judgement_report_samples.md").write_text("\n".join(report_md), encoding="utf-8")
 
     evidence_dict = pd.DataFrame(
         [
@@ -1026,10 +1028,10 @@ def build_completion_checklist(task2_audit: dict, task3_audit: dict, leakage_rep
         ("任务3", "Top20 关联账户", "已完成", "task3_top20_associations.csv"),
         ("任务3", "多跳可疑路径", "已完成", "task3_suspicious_paths.csv"),
         ("任务3", "资金汇聚/分散结构", "已完成", "task3_fund_flow_structures.csv"),
-        ("任务3", "不少于5个典型案例", "已完成", "task3_typical_cases.md"),
+        ("任务3", "不少于5个典型案例", "已完成", "docs/task3_typical_cases.md"),
         ("任务3", "人工抽检通过率", "待业务复核", "已生成结构化证据，需队友按样例人工确认通过率"),
-        ("任务4", "研判报告模板", "已完成", "task4_judgement_report_template.md"),
-        ("任务4", "研判报告样例", "已完成", "task4_judgement_report_samples.md"),
+        ("任务4", "研判报告模板", "已完成", "docs/task4_judgement_report_template.md"),
+        ("任务4", "研判报告样例", "已完成", "docs/task4_judgement_report_samples.md"),
         ("任务4", "证据字段说明", "已完成", "task4_evidence_field_dictionary.csv"),
         ("任务4", "可读性/一致性评估说明", "已完成", "task4_consistency_audit.csv"),
     ]
@@ -1042,7 +1044,7 @@ def build_completion_checklist(task2_audit: dict, task3_audit: dict, leakage_rep
         md.append(f"| {row[0]} | {row[1]} | {row[2]} | {row[3]} |")
     md.append("")
     md.append("注意：原始标签表没有标签时间，因此不能严格验证“未来新增标签”口径；当前已保证动态特征按 split cutoff 的滚动历史窗口构建，且标签字段不进入模型特征。")
-    (DELIVERABLE_DIR / "task_completion_checklist.md").write_text("\n".join(md), encoding="utf-8")
+    (DOCS_DIR / "task_completion_checklist.md").write_text("\n".join(md), encoding="utf-8")
 
 
 def build_technical_problem_solution_audit(task2_audit: dict, task3_audit: dict, leakage_report: dict) -> None:
@@ -1102,8 +1104,8 @@ def build_technical_problem_solution_audit(task2_audit: dict, task3_audit: dict,
                 "task3_top20_associations.csv",
                 "task3_suspicious_paths.csv",
                 "task3_fund_flow_structures.csv",
-                "task3_link_visualization_samples.md",
-                "task3_typical_cases.md",
+                "docs/task3_link_visualization_samples.md",
+                "docs/task3_typical_cases.md",
             ],
         },
         "problem_4_trustworthy_judgement_evidence": {
@@ -1117,8 +1119,8 @@ def build_technical_problem_solution_audit(task2_audit: dict, task3_audit: dict,
             "case_evidence_completeness_rate": task3_audit["case_evidence_completeness_rate"],
             "manual_review_note": task3_audit["manual_review_note"],
             "evidence_files": [
-                "task4_judgement_report_template.md",
-                "task4_judgement_report_samples.md",
+                "docs/task4_judgement_report_template.md",
+                "docs/task4_judgement_report_samples.md",
                 "task4_evidence_field_dictionary.csv",
                 "task4_consistency_audit.csv",
             ],
@@ -1159,7 +1161,7 @@ def build_technical_problem_solution_audit(task2_audit: dict, task3_audit: dict,
             md.append(f"- 典型案例数：{item['typical_case_count']}")
             md.append(f"- 样例证据完整率：{item['case_evidence_completeness_rate']:.2%}")
         md.append("")
-    (DELIVERABLE_DIR / "technical_problem_solution.md").write_text("\n".join(md), encoding="utf-8")
+    (DOCS_DIR / "technical_problem_solution.md").write_text("\n".join(md), encoding="utf-8")
 
 
 def main() -> None:
@@ -1183,6 +1185,7 @@ def main() -> None:
         "task2_audit": task2_audit,
         "task3_task4_audit": task3_audit,
         "files": sorted(str(p.relative_to(DELIVERABLE_DIR)) for p in DELIVERABLE_DIR.rglob("*") if p.is_file()),
+        "documentation_files": sorted(str(p.relative_to(DOCS_DIR)) for p in DOCS_DIR.rglob("*.md") if p.is_file()),
     }
     json_dump(manifest, DELIVERABLE_DIR / "deliverable_manifest.json")
     print(json.dumps(manifest, ensure_ascii=False, indent=2, default=str))

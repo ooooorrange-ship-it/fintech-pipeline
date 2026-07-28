@@ -10,6 +10,7 @@ import pandas as pd
 sys.path.append(str(Path(__file__).resolve().parents[1]))
 from config import (  # noqa: E402
     CLEAN_DIR,
+    DOCS_DIR,
     DST_COL,
     EXPLANATION_DIR,
     FEATURE_DIR,
@@ -27,6 +28,7 @@ LAYERED_DIR = EXPLANATION_DIR / "layered"
 
 def ensure_dirs() -> None:
     LAYERED_DIR.mkdir(parents=True, exist_ok=True)
+    DOCS_DIR.mkdir(parents=True, exist_ok=True)
 
 
 def load_explain_module():
@@ -447,7 +449,7 @@ def main() -> None:
 
     audit_df = pd.DataFrame(audit_rows).sort_values(["explanation_grade", "score"], ascending=[True, False])
     audit_path = LAYERED_DIR / "confirmed_suspect_explainability_audit.csv"
-    audit_md_path = LAYERED_DIR / "confirmed_suspect_explainability_audit.md"
+    audit_md_path = DOCS_DIR / "confirmed_suspect_explainability_audit.md"
     audit_df.to_csv(audit_path, index=False)
     build_markdown_audit(audit_df, audit_md_path)
 
@@ -485,7 +487,7 @@ def main() -> None:
         structures,
         paths,
         associations,
-        LAYERED_DIR / "layered_judgement_report_samples.md",
+        DOCS_DIR / "layered_judgement_report_samples.md",
     )
 
     coverage = {
@@ -508,7 +510,7 @@ def main() -> None:
             "associations": str(LAYERED_DIR / "risk_review_queue_top20_associations.csv"),
             "paths": str(LAYERED_DIR / "risk_review_queue_suspicious_paths.csv"),
             "structures": str(LAYERED_DIR / "risk_review_queue_fund_flow_structures.csv"),
-            "judgement_reports": str(LAYERED_DIR / "layered_judgement_report_samples.md"),
+            "judgement_reports": str(DOCS_DIR / "layered_judgement_report_samples.md"),
         },
     }
     coverage_path = LAYERED_DIR / "layered_explainability_coverage.json"

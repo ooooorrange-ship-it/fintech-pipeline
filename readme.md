@@ -539,11 +539,11 @@ outputs/deliverables/
 | `task3_top20_associations.csv` | 高风险账户 Top20 关联账户 |
 | `task3_suspicious_paths.csv` | 多跳可疑路径 |
 | `task3_fund_flow_structures.csv` | 资金闭环、汇聚、分散结构 |
-| `task3_typical_cases.md` | 5 个典型案例分析 |
-| `task3_link_visualization_samples.md` | 链路可视化样例 |
-| `task4_judgement_report_template.md` | 辅助研判报告模板 |
-| `task4_judgement_report_samples.md` | 辅助研判报告样例 |
-| `final_project_audit.md` | 交付前自动一致性审计，硬错误为 0 才算通过 |
+| `docs/task3_typical_cases.md` | 5 个典型案例分析 |
+| `docs/task3_link_visualization_samples.md` | 链路可视化样例 |
+| `docs/task4_judgement_report_template.md` | 辅助研判报告模板 |
+| `docs/task4_judgement_report_samples.md` | 辅助研判报告样例 |
+| `docs/final_project_audit.md` | 交付前自动一致性审计，硬错误为 0 才算通过 |
 
 生成命令：
 
@@ -568,12 +568,14 @@ python src/09_dynamic_graph_viz.py --split test --top-n 30 --top-k-counterpartie
 outputs/dynamic_graph/
 ```
 
+说明性 Markdown 统一输出到项目同级的 `docs/`，`outputs/` 只保留可供程序读取的 CSV/JSON 和网页文件。
+
 核心入口：
 
 | 文件 | 作用 |
 |---|---|
 | `index.html` | 可直接打开的滚动动态资金图谱页面 |
-| `top_accounts_dynamic_report.md` | 可写进报告/答辩稿的图谱展示说明 |
+| `docs/top_accounts_dynamic_report.md` | 可写进报告/答辩稿的图谱展示说明 |
 | `rolling_window_stats.csv` | 每个高风险账户在每个窗口里的交易统计和风险信号 |
 | `top_accounts_dynamic_edges.csv` | 每个窗口中实际展示的聚合资金边 |
 | `top_accounts_dynamic_nodes.csv` | 每个窗口中实际展示的账户节点、标签和模型分数 |
@@ -627,23 +629,25 @@ python src/09_dynamic_graph_viz.py --split test --top-n 30 --top-k-counterpartie
 python src/12_layered_explainability.py --split test --tx-scope history --top-risk-active 30 --top-k-counterparties 20
 ```
 
-输出目录：
+结构化结果目录：
 
 ```text
 outputs/explanations/layered/
 ```
 
+说明性审计和研判 Markdown 位于同级 `docs/`，对应 CSV/JSON 仍保留在 `outputs/explanations/layered/`。
+
 核心文件：
 
 | 文件 | 作用 |
 |---|---|
-| `confirmed_suspect_explainability_audit.md` | 59 个确认嫌疑账户的解释覆盖审计 |
+| `docs/confirmed_suspect_explainability_audit.md` | 59 个确认嫌疑账户的解释覆盖审计 |
 | `confirmed_suspect_explainability_audit.csv` | 每个确认嫌疑账户的解释等级、历史交易数、缺边原因 |
 | `risk_review_queue_active_accounts.csv` | 模型发现的有交易边高风险账户巡检队列 |
 | `risk_review_queue_top20_associations.csv` | 有边高风险账户 Top20 关联账户 |
 | `risk_review_queue_suspicious_paths.csv` | 有边高风险账户可疑多跳路径 |
 | `risk_review_queue_fund_flow_structures.csv` | 资金闭环、汇聚、分散结构 |
-| `layered_judgement_report_samples.md` | 分层辅助研判报告样例 |
+| `docs/layered_judgement_report_samples.md` | 分层辅助研判报告样例 |
 | `layered_explainability_coverage.json` | 分层解释覆盖统计 |
 
 分层解释结果：
