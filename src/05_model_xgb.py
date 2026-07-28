@@ -87,16 +87,17 @@ def load_split(split: str, include_graph: bool, include_node2vec: bool) -> pd.Da
     return out.fillna(0)
 
 
-def attach_labels(df: pd.DataFrame, strategy: str) -> pd.DataFrame:
+def attach_labels(df: pd.DataFrame, strategy: str, filter_strategy_a: bool = True) -> pd.DataFrame:
     labels = pd.read_csv(LABEL_DIR / "labels_all_strategies.csv")
     label_col = {
         "A": "label_A_suspect_vs_other",
         "B": "label_B_fraud_related_vs_other",
         "C": "label_C_three_class",
     }[strategy]
-    out = df.merge(labels[[ID_COL, label_col, "label_text"]], on=ID_COL, how="inner")
+    out = df.merge(labels[[ID_COL, label_col, "label_code", "label_text"]], on=ID_COL, how="inner")
     out = out.rename(columns={label_col: "target"})
-    if strategy == "A":
+    out["target_all_accounts"] = out["label_code"].eq(1).astype("int8")
+    if strategy == "A" and filter_strategy_a:
         out = out[out["target"] >= 0].copy()
     return out
 
@@ -106,7 +107,7 @@ def output_stem(name: str, suffix: str) -> str:
 
 
 def feature_columns(df: pd.DataFrame, drop_customer_type: bool, drop_static_profile: bool) -> list[str]:
-    drop_cols = {ID_COL, "target", "label_text"}
+    drop_cols = {ID_COL, "target", "target_all_accounts", "label_code", "label_text"}
     cols = [c for c in df.columns if c not in drop_cols]
     if drop_customer_type or drop_static_profile:
         cols = [c for c in cols if not c.startswith("customer_type_")]
@@ -139,11 +140,15 @@ def run_rule_baseline(strategy: str, suffix: str) -> dict:
     metrics = {}
     predictions = []
     for split in ["valid", "test"]:
-        df = attach_labels(load_split(split, include_graph=True, include_node2vec=False), strategy)
+        df = attach_labels(load_split(split, include_graph=True, include_node2vec=False), strategy, filter_strategy_a=False)
         cols = [c for c in risky_cols if c in df.columns]
         score = minmax_score(df, cols)
-        metrics[split] = evaluate(df["target"].to_numpy(dtype=int), score)
-        predictions.append(pd.DataFrame({ID_COL: df[ID_COL], "split": split, "target": df["target"], "score": score}))
+        candidate_mask = df["target"].ge(0).to_numpy()
+        candidate_y = (df["target"].to_numpy(dtype=int) == 1).astype(int) if strategy == "C" else df["target"].to_numpy(dtype=int)
+        all_y = df["target_all_accounts"].to_numpy(dtype=int) if strategy == "A" else candidate_y
+        metrics[split] = evaluate(candidate_y[candidate_mask], score[candidate_mask])
+        metrics[f"{split}_all_accounts"] = evaluate(all_y, score)
+        predictions.append(pd.DataFrame({ID_COL: df[ID_COL], "split": split, "target": all_y, "score": score}))
     pd.concat(predictions).to_csv(
         PREDICTION_DIR / f"{output_stem('model0_rule', suffix)}_strategy_{strategy}.csv",
         index=False,
@@ -165,9 +170,12 @@ def run_xgb_model(
     except Exception as exc:
         return {"status": "skipped", "reason": f"缺少 xgboost 依赖: {type(exc).__name__}: {exc}"}
 
-    train = attach_labels(load_split("train", include_graph, include_node2vec), strategy)
-    valid = attach_labels(load_split("valid", include_graph, include_node2vec), strategy)
-    test = attach_labels(load_split("test", include_graph, include_node2vec), strategy)
+    train_all = attach_labels(load_split("train", include_graph, include_node2vec), strategy, filter_strategy_a=False)
+    valid_all = attach_labels(load_split("valid", include_graph, include_node2vec), strategy, filter_strategy_a=False)
+    test_all = attach_labels(load_split("test", include_graph, include_node2vec), strategy, filter_strategy_a=False)
+    train = train_all[train_all["target"] >= 0].copy() if strategy == "A" else train_all.copy()
+    valid = valid_all[valid_all["target"] >= 0].copy() if strategy == "A" else valid_all.copy()
+    test = test_all[test_all["target"] >= 0].copy() if strategy == "A" else test_all.copy()
 
     cols = feature_columns(train, drop_customer_type, drop_static_profile)
     x_train = train[cols].to_numpy(dtype=float)
@@ -214,18 +222,29 @@ def run_xgb_model(
         verbose_eval=False,
     )
 
-    metrics = {"status": "ok", "feature_count": len(cols), "best_iteration": int(model.best_iteration)}
+    metrics = {
+        "status": "ok",
+        "feature_count": len(cols),
+        "best_iteration": int(model.best_iteration),
+        "candidate_pool_policy": "Strategy A 训练/候选指标剔除受害人；all_accounts 指标保留全量账户排名。",
+    }
     predictions = []
-    for split, df, x_arr in [("valid", valid, x_valid), ("test", test, x_test)]:
-        raw_pred = model.predict(xgb.DMatrix(x_arr, feature_names=cols))
+    for split, candidate_df, all_df in [("train", train, train_all), ("valid", valid, valid_all), ("test", test, test_all)]:
+        all_x = all_df[cols].to_numpy(dtype=float)
+        raw_pred = model.predict(xgb.DMatrix(all_x, feature_names=cols))
         if strategy == "C":
             score = raw_pred[:, 1]
-            y_eval = (df["target"].to_numpy(dtype=int) == 1).astype(int)
+            all_y = (all_df["target"].to_numpy(dtype=int) == 1).astype(int)
+            candidate_y = (candidate_df["target"].to_numpy(dtype=int) == 1).astype(int)
         else:
             score = raw_pred
-            y_eval = df["target"].to_numpy(dtype=int)
-        metrics[split] = evaluate(y_eval, score)
-        predictions.append(pd.DataFrame({ID_COL: df[ID_COL], "split": split, "target": df["target"], "score": score}))
+            all_y = all_df["target_all_accounts"].to_numpy(dtype=int) if strategy == "A" else all_df["target"].to_numpy(dtype=int)
+            candidate_y = candidate_df["target"].to_numpy(dtype=int)
+        candidate_ids = set(candidate_df[ID_COL].astype(int))
+        candidate_mask = all_df[ID_COL].astype(int).isin(candidate_ids).to_numpy()
+        metrics[split] = evaluate(candidate_y, score[candidate_mask])
+        metrics[f"{split}_all_accounts"] = evaluate(all_y, score)
+        predictions.append(pd.DataFrame({ID_COL: all_df[ID_COL], "split": split, "target": all_y, "score": score}))
 
     model_stem = output_stem(model_name, suffix)
     model.save_model(str(PREDICTION_DIR / f"{model_stem}_strategy_{strategy}.json"))

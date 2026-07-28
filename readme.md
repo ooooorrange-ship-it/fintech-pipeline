@@ -26,7 +26,9 @@
         ↓
 交易统计特征 + 时序资金流特征 + 图结构特征
         ↓
-XGBoost 主模型
+滚动动态资金图谱特征：时间分桶 + 金额分箱 + 时序模体 + 节点记忆
+        ↓
+动态资金图谱 XGBoost 识别模型
         ↓
 轻量图传播模型和融合模型做消融验证
         ↓
@@ -37,17 +39,28 @@ XGBoost 主模型
 
 当前最终主模型是：
 
-> XGBoost + 交易统计特征 + 时序资金流特征 + 图结构特征
+> 动态资金图谱识别模型 = 滚动交易事件流图状态 + XGBoost 风险分类器
 
-它不是纯规则模型，也不是重型 GNN，而是一个更适合当前数据规模和样本分布的稳健方案。
+它不是纯规则模型，也不是生产级智能体，而是围绕“账户节点、转账边、时间分桶、金额分箱、风险标签”构建的动态图谱识别模型。模型按 split end 形成当前时点的资金图状态，使用 120 天滚动历史窗口，不使用 cutoff 之后的未来交易。
 
-原因是当前确认嫌疑人只有 59 个，正样本非常少。如果直接训练重型 GNN，容易因为样本太少而过拟合。相比之下，XGBoost 对小样本、不平衡数据更稳，也更容易解释。
+原因是当前确认嫌疑人只有 59 个，正样本非常少。如果直接训练重型端到端 GNN，容易因为样本太少而过拟合。相比之下，动态图事件流特征 + XGBoost 的解耦式方案更稳，也更容易解释。
+
+融合评估器在 v6 实验中自动选择：
+
+```text
+xgb = 0.0
+gnn = 0.1
+rule = 0.0
+dynamic = 0.9
+```
+
+也就是说，最终主模型以动态资金图谱分支为主，并用轻量图传播分支提供 0.1 的补充信息；权重是在全量账户验证集上选择的。
 
 当前项目里还额外实现了一个轻量图传播模型：
 
 > 轻量异配图传播特征 + 类均衡分类器
 
-这个模型不是用来替代 XGBoost，而是用来证明资金图谱结构在弱画像场景下有增量价值。
+这个模型不是用来替代动态资金图谱主模型，而是用来证明资金图谱结构在弱画像场景下有增量价值。
 
 ## 3. 数据和标签
 
@@ -99,14 +112,14 @@ XGBoost 主模型
 
 > 账户没有被切开，交易是按时间切开的。
 
-也就是说，每个账户在 train、valid、test 都会各生成一行特征，只是每个阶段只使用对应时间窗口内的交易行为。
+也就是说，每个账户在 train、valid、test 都会各生成一行特征。基础审计仍按时间顺序切分，动态模型实际使用的是“截至当前 split end 的 120 天滚动历史交易图”。
 
 例如账户 4379：
 
 ```text
-train 特征：只看 2025-07 到 2025-10 的交易
-valid 特征：只看 2025-11 的交易
-test 特征 ：只看 2025-12 的交易
+train 动态特征：看 2025-07-03 到 2025-10-31 的滚动历史交易
+valid 动态特征：看 2025-08-02 到 2025-11-30 的滚动历史交易
+test 动态特征 ：看 2025-09-02 到 2025-12-31 的滚动历史交易
 ```
 
 一个重要限制是：原始标签表没有标签时间。
@@ -192,25 +205,41 @@ test 特征 ：只看 2025-12 的交易
 
 图特征的意义是：欺诈账户不是孤立出现的，它们往往存在异常的资金连接关系。
 
+### 5.5 动态资金图谱特征
+
+v6 主模型新增的动态特征包括：
+
+| 特征类别 | 含义 |
+|---|---|
+| 时间分桶 | 周、日、小时、夜间/上午/下午/晚间分布 |
+| 金额分箱 | 使用 train 金额分位数生成金额箱，再应用到 valid/test |
+| 动态图快照 | 每个时间桶里的入度、出度、活跃周数、度数波动 |
+| 交易对手 churn | 前后半窗口交易对手新增、流失、稳定比例 |
+| 时序资金流模体 | dyn_motif_* 快进快出、多入一出、一入多出 |
+| 节点记忆 | dyn_mem_* 时间衰减入账、出账、金额、夜间交易记忆 |
+
+节点记忆使用 1h、6h、24h、7d 四个半衰期，作用是让模型知道账户的近期交易状态，而不是只看静态全局统计。
+
 ## 6. 模型结构
 
-当前模型分成 4 个层次：
+当前模型分成 5 个层次：
 
 | 模型 | 作用 |
 |---|---|
 | Model 0：规则模型 | 作为最低基线 |
 | Model 1：XGBoost + 交易统计特征 | 验证交易行为是否有效 |
-| Model 2：XGBoost + 交易统计 + 图结构特征 | 当前最终主模型 |
+| Model 2：XGBoost + 交易统计 + 图结构特征 | 强基线和 TopK 参考模型 |
 | Model 3：轻量异配图传播模型 | 图学习消融分支 |
 | Model 4：融合模型 | XGB、图传播、规则分支加权融合 |
+| Model 5：动态资金图谱模型 | 显式使用滚动时间窗口、金额分箱、动态边、时序模体和节点记忆 |
 
-最终主模型选择 Model 2：
+最终主模型选择动态资金图谱融合模型：
 
 ```text
-model2_xgb_stat_graph_v2_no_customer_type_strategy_A
+model4_stack_v6_rolling_memory_dynamic_no_customer_type_strategy_A
 ```
 
-主模型删除了 `customer_type`，避免模型过度依赖客户类型这个明显画像变量。
+该模型由全量账户验证集自动选择权重。最终权重为 `dynamic = 0.9、gnn = 0.1`，删除了 `customer_type`，并显式引入滚动时间窗口、金额分箱、动态交易关系、时序资金流模体和时间衰减节点记忆。
 
 ## 7. 当前结果
 
@@ -219,7 +248,7 @@ model2_xgb_stat_graph_v2_no_customer_type_strategy_A
 主模型：
 
 ```text
-XGBoost + 交易统计特征 + 图结构特征
+滚动动态资金图谱模型
 删除 customer_type
 标签策略 Strategy A
 ```
@@ -228,16 +257,18 @@ XGBoost + 交易统计特征 + 图结构特征
 
 | 指标 | 结果 |
 |---|---:|
-| AUC | 0.9895 |
-| PR-AUC | 0.3781 |
-| Top1% 命中 | 32/59 |
-| Top1% 召回率 | 54.24% |
-| Top5% 命中 | 58/59 |
-| Top5% 召回率 | 98.31% |
+| AUC | 0.9880 |
+| PR-AUC | 0.3616 |
+| Top1% 命中 | 33/59 |
+| Top1% 召回率 | 55.93% |
+| Top5% 命中 | 57/59 |
+| Top5% 召回率 | 96.61% |
+
+以上是全量 11087 个账户的正式评估口径。训练阶段使用 Strategy A 排除受害人，但比赛排名和测试指标保留全量账户；候选池指标不能替代正式全量指标。
 
 这个结果说明：
 
-> 如果银行只人工复核风险分最高的前 5% 账户，模型可以覆盖 59 个嫌疑人中的 58 个。
+> 如果银行只人工复核风险分最高的前 5% 账户，动态资金图谱模型可以覆盖 59 个嫌疑人中的 57 个。
 
 在正样本只有 59 个的极端不平衡场景下，Top5% 召回率是最重要的业务指标之一。
 
@@ -245,26 +276,26 @@ XGBoost + 交易统计特征 + 图结构特征
 
 消融实验 1：去掉 `customer_type`
 
-| 模型 | Test AUC | Test PR-AUC | Top5% 命中 |
+| 模型（全量账户口径） | Test AUC | Test PR-AUC | Top5% 命中 |
 |---|---:|---:|---:|
-| XGBoost + 交易统计 | 0.9874 | 0.3571 | 58/59 |
-| XGBoost + 交易统计 + 图结构 | 0.9895 | 0.3781 | 58/59 |
+| XGBoost + 交易统计 | 0.9833 | 0.2756 | 58/59 |
+| XGBoost + 交易统计 + 图结构（强基线） | 0.9855 | 0.2905 | 57/59 |
+| v6 滚动动态资金图谱融合模型 | 0.9880 | 0.3616 | 57/59 |
 
 结论：
 
-> 加入图结构特征后，AUC 和 PR-AUC 有提升，说明图结构对主模型有增益。
+> 全量账户口径下，动态资金图谱融合模型较强 XGBoost 基线的 PR-AUC 提升约 24.44%，达到赛题“提升不低于 20%”的要求；Top5% 召回保持 57/59。
 
 消融实验 2：去掉 `customer_type + region_code + account_age_months`
 
-| 模型 | Test AUC | Test PR-AUC | Top5% 命中 |
+| 模型（全量账户口径） | Test AUC | Test PR-AUC | Top5% 命中 |
 |---|---:|---:|---:|
-| XGBoost + 交易统计 + 图结构 | 0.7422 | 0.0296 | 1/59 |
-| 轻量图传播模型 | 0.8001 | 0.0312 | 2/59 |
-| 融合模型 | 0.6880 | 0.0485 | 14/59 |
+| XGBoost + 交易统计 + 图结构 | 0.7198 | 0.0212 | 9/59 |
+| 纯 dyn_* 滚动动态特征 | 0.7903 | 0.0186 | 9/59 |
 
 结论：
 
-> 剥离静态画像后，主模型效果明显下降，说明模型存在一定静态画像依赖；但加入轻量图传播和融合后，Top5% 命中从 1/59 提升到 14/59，证明资金图谱结构在弱画像场景下能提升高风险账户召回。
+> 剥离 customer_type、region_code、account_age_months 后，模型明显下降，说明当前数据中的静态画像仍有较强区分力。弱画像分支仍保留交易和动态图结构，但暂未达到主模型的识别能力，因此不能把它表述成已经解决静态画像依赖。
 
 ### 7.3 是否过拟合
 
@@ -272,8 +303,8 @@ XGBoost + 交易统计特征 + 图结构特征
 
 | 数据集 | AUC | PR-AUC | Top5% 命中 |
 |---|---:|---:|---:|
-| valid | 0.9762 | 0.3322 | 56/59 |
-| test | 0.9895 | 0.3781 | 58/59 |
+| valid | 0.9757 | 0.3331 | 56/59 |
+| test | 0.9880 | 0.3616 | 57/59 |
 
 验证集和测试集没有断崖式差距，因此不像典型训练集过拟合。
 
@@ -291,10 +322,10 @@ XGBoost + 交易统计特征 + 图结构特征
 2. Top20 关联账户。
 3. 多跳可疑路径。
 
-对应脚本：
+正式解释与交付物使用分层解释脚本：
 
 ```bash
-python src/07_explain_links.py --split test --top-n 5 --top-k-counterparties 20 --tx-scope history --confirmed-only
+python src/12_layered_explainability.py --split test --tx-scope history --top-risk-active 30 --top-k-counterparties 20
 ```
 
 当前测试集中 59 个确认嫌疑人里，只有 3 个在历史交易中能追到明确可解释链路。
@@ -303,7 +334,7 @@ python src/07_explain_links.py --split test --top-n 5 --top-k-counterparties 20 
 
 因此报告中应该诚实表述：
 
-> 模型识别层可以覆盖 58/59 个嫌疑人，但路径解释层只能对存在历史交易边的账户生成链路证据。
+> 动态资金图谱识别层在全量账户 Top5% 中覆盖 57/59 个嫌疑人；统计+图 XGBoost 强基线同样覆盖 57/59 个嫌疑人；路径解释层只能对存在历史交易边的账户生成真实链路证据。
 
 已经整理出的 3 个典型案例：
 
@@ -319,7 +350,7 @@ python src/07_explain_links.py --split test --top-n 5 --top-k-counterparties 20 
 
 可以这样讲：
 
-> 我这边搭了一条完整的资金图谱风控建模管线。先清洗账户、交易和标签三张表，然后按交易时间窗口切分训练、验证和测试集，再提取交易统计、时序资金流和图结构特征。最终主模型使用 XGBoost，在测试集 AUC 达到 0.9895，Top5% 可以命中 59 个嫌疑人里的 58 个。同时我做了弱画像消融实验，证明图传播特征在去掉静态画像后能提升高风险账户召回。
+> 我这边搭了一条完整的动态图谱风控建模管线。先清洗账户、交易和标签三张表，然后按时间 cutoff 构建 120 天滚动历史资金图，再提取交易统计、时序资金流、图结构、时间分桶、金额分箱、时序模体和节点记忆特征。最终主模型在全量账户测试口径下 AUC 为 0.9880、PR-AUC 为 0.3616，Top5% 命中 59 个嫌疑人中的 57 个；相对强 XGBoost 基线的 PR-AUC 提升为 24.44%，达到赛题的 20% 提升要求。
 
 ### 9.2 会议展示版本
 
@@ -341,8 +372,8 @@ python src/07_explain_links.py --split test --top-n 5 --top-k-counterparties 20 
 → 时间窗口切分
 → 交易特征
 → 图结构特征
-→ XGBoost 主模型
-→ 图传播消融
+→ 120天滚动动态资金图谱特征
+→ 动态资金图谱识别模型
 → 链路解释
 ```
 
@@ -352,15 +383,16 @@ python src/07_explain_links.py --split test --top-n 5 --top-k-counterparties 20 
 交易统计：交易次数、金额、入出账比例
 时序模体：快进快出、多入一出、一入多出、突发交易
 图结构：入度、出度、二跳邻居、PageRank、邻居行为聚合
+动态边特征：周级交易突发、金额分箱分布、时间段分布、交易对手变化、节点记忆
 ```
 
 第 4 页：模型结果
 
 ```text
-Test AUC：0.9895
-Test PR-AUC：0.3781
-Top1% 命中：32/59
-Top5% 命中：58/59
+Test AUC：0.9880
+Test PR-AUC：0.3616
+Top1% 命中：33/59
+Top5% 命中：57/59
 ```
 
 第 5 页：消融和解释
@@ -372,8 +404,8 @@ Top5% 命中：58/59
 去掉 customer_type + region_code + account_age_months 后下降：
 说明静态画像仍有贡献。
 
-加入图传播后弱画像 Top5% 从 1/59 提升到 14/59：
-说明图结构对高风险召回有增量价值。
+弱画像分支的全量账户 Top5% 为 9/59：
+说明仅依赖交易和图结构时仍存在明显困难，需要补充更完整的历史流水或非交易关系。
 ```
 
 ## 10. 推荐汇报口径
@@ -389,8 +421,8 @@ Top5% 命中：58/59
 应该这样说：
 
 ```text
-在当前正样本极少的真实金融反诈数据中，XGBoost 与高质量交易图谱特征结合后表现最稳，是最终主模型。
-同时，轻量异配图传播模型在剥离静态画像的弱特征场景下显著提升 TopK 召回，说明资金图谱结构具有增量识别价值。
+在当前正样本极少的真实金融反诈数据中，重型端到端 GNN 容易过拟合；为了严格贴合赛题要求，最终采用滚动动态资金图谱识别模型。
+该模型显式使用账户节点、转账边、时间分桶、金额分箱、时序资金流模体和时间衰减节点记忆；验证集融合器选择 dynamic=0.9、gnn=0.1，说明动态资金图谱是主分支，轻量图传播提供补充。
 ```
 
 这个表述更严谨，也更适合答辩。
@@ -424,8 +456,24 @@ python src/06_model_gnn.py --drop-static-profile --experiment-suffix v3_txn_grap
 python src/08_model_stack.py --experiment-suffix v3_no_customer_type
 python src/08_model_stack.py --experiment-suffix v3_txn_graph_only --xgb-pred outputs/predictions/model2_xgb_stat_graph_v2_txn_graph_only_strategy_A.csv --gnn-pred outputs/predictions/model3_hetero_prop_v3_txn_graph_only_strategy_A.csv --rule-pred outputs/predictions/model0_rule_v2_txn_graph_only_strategy_A.csv
 
-# 9. 可疑链路解释
+# 9. 动态资金图谱特征和模型
+python src/10_features_dynamic_graph.py
+python src/11_model_dynamic_graph_xgb.py --drop-customer-type --experiment-suffix v6_rolling_memory_dynamic_no_customer_type
+python src/11_model_dynamic_graph_xgb.py --dynamic-only --drop-static-profile --experiment-suffix v6_rolling_memory_dynamic_only
+python src/08_model_stack.py --experiment-suffix v6_rolling_memory_dynamic_no_customer_type --xgb-pred outputs/predictions/model2_xgb_stat_graph_v2_no_customer_type_strategy_A.csv --gnn-pred outputs/predictions/model3_hetero_prop_v3_no_customer_type_strategy_A.csv --rule-pred outputs/predictions/model0_rule_v2_no_customer_type_strategy_A.csv --dynamic-pred outputs/predictions/model5_xgb_dynamic_graph_v6_rolling_memory_dynamic_no_customer_type_strategy_A.csv
+
+# 10. 可疑链路解释
 python src/07_explain_links.py --split test --top-n 5 --top-k-counterparties 20 --tx-scope history --confirmed-only
+
+# 11. 分层解释优化：确认嫌疑人缺边审计 + 有边高风险账户研判报告
+python src/12_layered_explainability.py --split test --tx-scope history --top-risk-active 30 --top-k-counterparties 20
+
+# 12. 综合网页：Top30 动态图谱 + 59账户审计 + Top30巡检 + 研判报告
+python src/09_dynamic_graph_viz.py --split test --top-n 30 --top-k-counterparties 20 --window monthly
+
+# 13. 比赛交付物
+python src/09_build_deliverables.py
+python src/13_final_project_audit.py
 ```
 
 ## 12. 文件对应关系
@@ -441,6 +489,12 @@ python src/07_explain_links.py --split test --top-n 5 --top-k-counterparties 20 
 | `src/06_model_gnn.py` | 轻量异配图传播模型 |
 | `src/07_explain_links.py` | 高风险账户和可疑链路解释 |
 | `src/08_model_stack.py` | 多模型融合 |
+| `src/09_dynamic_graph_viz.py` | 滚动动态资金图谱 HTML 展示和窗口证据报告 |
+| `src/09_build_deliverables.py` | 比赛任务交付物生成 |
+| `src/10_features_dynamic_graph.py` | 滚动动态资金图谱特征，含时间分桶、金额分箱、时序模体和节点记忆 |
+| `src/11_model_dynamic_graph_xgb.py` | 动态资金图谱 XGBoost 模型 |
+| `src/12_layered_explainability.py` | 分层解释优化：缺边审计、风险巡检队列、链路解释和研判报告 |
+| `src/13_final_project_audit.py` | 交付前全量覆盖、泄露、解释结果和任务指标一致性审计 |
 | `outputs/features/` | 特征宽表 |
 | `outputs/metrics/` | 模型评估指标 |
 | `outputs/predictions/` | 账户风险分数 |
@@ -448,16 +502,166 @@ python src/07_explain_links.py --split test --top-n 5 --top-k-counterparties 20 
 
 ## 13. 最终结论
 
-当前最稳的最终模型是：
+当前最贴合赛题要求的最终模型是：
 
 ```text
-model2_xgb_stat_graph_v2_no_customer_type_strategy_A
+model4_stack_v6_rolling_memory_dynamic_no_customer_type_strategy_A
 ```
 
 核心结论：
 
-1. 主模型效果强，测试集 Top5% 命中 58/59 个嫌疑人。
-2. 图结构特征能提升 XGBoost 的 AUC 和 PR-AUC。
+1. 滚动动态资金图谱模型显式使用账户节点、转账关系、时间分桶、金额分箱、风险标签、时序资金流模体和节点记忆。
+2. 动态资金图谱融合模型全量账户 Test AUC 为 0.9880，PR-AUC 为 0.3616，Top5% 命中 57/59 个嫌疑人。
 3. 弱画像消融显示模型确实存在静态画像依赖。
-4. 轻量图传播模型虽然不是最终主模型，但能证明资金图谱结构对高风险召回有增量价值。
+4. 统计+图 XGBoost 强基线全量账户 Top5% 命中 57/59；主模型 PR-AUC 相对其提升 24.44%，达到严格的 20% 提升要求。
 5. 由于标签表没有标签时间，当前实验应表述为“按交易时间窗口构建风险识别模型”，不要严格说成“预测未来新增风险标签”。
+
+## 14. 比赛任务目标交付物
+
+已按赛题 4 个任务目标生成集中交付目录：
+
+```text
+outputs/deliverables/
+```
+
+最重要的检查入口：
+
+| 文件 | 作用 |
+|---|---|
+| `task_completion_checklist.md` | 对照赛题 4 个任务逐项检查完成情况 |
+| `technical_problem_solution.md` | 对照 4 个技术攻关问题逐项说明解决方案 |
+| `task1_dynamic_graph_window_definition.json` | 动态资金图谱窗口、节点、边、标签定义 |
+| `task1_field_dictionary.csv` | 字段字典 |
+| `task1_time_split_leakage_audit.json` | 时间切分和泄露审计 |
+| `task1_graph_statistics_by_split.csv` | 图统计报告 |
+| `task2_model_metrics_summary.csv` | 模型指标和基线对比 |
+| `task2_requirement_audit.json` | AUC、PR-AUC、Top5% 是否达标 |
+| `task3_top20_associations.csv` | 高风险账户 Top20 关联账户 |
+| `task3_suspicious_paths.csv` | 多跳可疑路径 |
+| `task3_fund_flow_structures.csv` | 资金闭环、汇聚、分散结构 |
+| `task3_typical_cases.md` | 5 个典型案例分析 |
+| `task3_link_visualization_samples.md` | 链路可视化样例 |
+| `task4_judgement_report_template.md` | 辅助研判报告模板 |
+| `task4_judgement_report_samples.md` | 辅助研判报告样例 |
+| `final_project_audit.md` | 交付前自动一致性审计，硬错误为 0 才算通过 |
+
+生成命令：
+
+```bash
+python src/09_build_deliverables.py
+python src/13_final_project_audit.py
+```
+
+注意：任务1中的未来交易泄露率已审计为 0；但原始风险标签表没有标签时间，因此不能严格验证“未来新增标签”口径，只能保证标签字段不进入模型特征。
+
+## 15. 滚动动态资金图谱如何展示
+
+新增脚本：
+
+```bash
+python src/09_dynamic_graph_viz.py --split test --top-n 30 --top-k-counterparties 20 --window monthly
+```
+
+输出目录：
+
+```text
+outputs/dynamic_graph/
+```
+
+核心入口：
+
+| 文件 | 作用 |
+|---|---|
+| `index.html` | 可直接打开的滚动动态资金图谱页面 |
+| `top_accounts_dynamic_report.md` | 可写进报告/答辩稿的图谱展示说明 |
+| `rolling_window_stats.csv` | 每个高风险账户在每个窗口里的交易统计和风险信号 |
+| `top_accounts_dynamic_edges.csv` | 每个窗口中实际展示的聚合资金边 |
+| `top_accounts_dynamic_nodes.csv` | 每个窗口中实际展示的账户节点、标签和模型分数 |
+| `dynamic_graph_data.json` | HTML 页面使用的结构化图谱数据 |
+
+展示逻辑：
+
+```text
+账户 = 节点
+转账 = 有向边
+月份 = 滚动快照窗口
+金额分箱 = 边的金额等级
+模型风险分 = 根账户风险强度
+短时闭环、快进快出、多入一出 = 右侧研判证据
+```
+
+当前正式页面展示 Top30 高风险巡检账户，并同时包含 59 个确认嫌疑账户审计、分层解释结果和研判报告。若只做三个真实链路案例复盘，可额外使用 `--confirmed-only`；其中账户 4379 在 2025-11 窗口出现 24 小时内短时闭环，最短回流间隔为 21 秒，是最适合作为答辩主案例的动态图谱证据。
+
+如果要模拟业务上线后的“未知账户风险巡检”，去掉 `--confirmed-only` 即可：
+
+```bash
+python src/09_dynamic_graph_viz.py --split test --top-n 30 --top-k-counterparties 20 --window monthly
+```
+
+两种口径的区别：
+
+| 口径 | 用途 |
+|---|---|
+| 带 `--confirmed-only` | 典型案例复盘，方便展示模型是否抓住真实嫌疑账户的资金链路 |
+| 不带 `--confirmed-only` | 业务巡检口径，展示模型当前认为最需要人工复核的 Top 风险账户 |
+
+答辩推荐表述：
+
+> 我们不是展示全量 90 万条交易边，而是围绕模型输出的高风险账户构建滚动 ego 子图。每个窗口只使用 cutoff 之前的历史交易，展示账户节点、资金流向、金额分箱、Top 关联账户，以及短时闭环、快进快出、多入一出等时序资金流模体，从而把黑盒风险分数转化为可追溯的辅助研判证据。
+
+## 16. 59 个嫌疑人只有 3 个能解释怎么办
+
+这个问题不能靠“换一个路径搜索算法”硬解决。脚本审计结果显示：
+
+```text
+确认嫌疑账户总数：59
+有历史交易边的确认嫌疑账户：3
+无历史交易边的确认嫌疑账户：56
+```
+
+也就是说，其余 56 个账户在当前交易边表中没有可追溯资金边。如果强行生成链路，就是伪造解释，反而会破坏报告可信度。
+
+因此项目新增了分层解释脚本：
+
+```bash
+python src/12_layered_explainability.py --split test --tx-scope history --top-risk-active 30 --top-k-counterparties 20
+```
+
+输出目录：
+
+```text
+outputs/explanations/layered/
+```
+
+核心文件：
+
+| 文件 | 作用 |
+|---|---|
+| `confirmed_suspect_explainability_audit.md` | 59 个确认嫌疑账户的解释覆盖审计 |
+| `confirmed_suspect_explainability_audit.csv` | 每个确认嫌疑账户的解释等级、历史交易数、缺边原因 |
+| `risk_review_queue_active_accounts.csv` | 模型发现的有交易边高风险账户巡检队列 |
+| `risk_review_queue_top20_associations.csv` | 有边高风险账户 Top20 关联账户 |
+| `risk_review_queue_suspicious_paths.csv` | 有边高风险账户可疑多跳路径 |
+| `risk_review_queue_fund_flow_structures.csv` | 资金闭环、汇聚、分散结构 |
+| `layered_judgement_report_samples.md` | 分层辅助研判报告样例 |
+| `layered_explainability_coverage.json` | 分层解释覆盖统计 |
+
+分层解释结果：
+
+| 解释对象 | A 链路证据型 | B 直接关联型 | D 数据缺边型 |
+|---|---:|---:|---:|
+| 59 个确认嫌疑账户 | 1 | 2 | 56 |
+| 模型 Top 有边高风险巡检账户 30 个 | 9 | 21 | 0 |
+
+这套优化后的答辩口径是：
+
+> 对已确认的 59 个嫌疑账户，我们首先进行可解释性覆盖审计。审计发现只有 3 个账户在当前脱敏交易边表中存在历史交易边，因此只有这 3 个账户能生成真实链路解释；其余 56 个账户被标记为数据缺边型，不伪造链路。为了满足真实反诈运营需求，我们进一步从模型输出中筛选有历史交易边的高风险账户，生成 Top20 关联账户、多跳可疑路径、资金闭环/汇聚/分散结构和辅助研判报告。这样既保留确认嫌疑人的复盘解释，也能形成面向业务巡检的可落地高风险账户解释队列。
+
+向业务同学提出的补数建议：
+
+```text
+1. 补充 56 个缺边嫌疑账户的完整历史流水。
+2. 补充标签确认时间，才能严格评估“过去交易预测未来新增风险标签”。
+3. 补充设备/IP/开户批次/案件号等非交易关系，可构建异构图解释隐性协同网络。
+4. 对模型 Top 有边高风险账户进行人工抽检，记录解释通过率。
+```
