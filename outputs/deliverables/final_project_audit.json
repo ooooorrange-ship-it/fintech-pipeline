@@ -1,0 +1,141 @@
+{
+  "status": "pass",
+  "error_count": 0,
+  "warning_count": 1,
+  "checks": [
+    {
+      "name": "valid全量账户预测覆盖",
+      "status": "pass",
+      "detail": "预测行=11087，账户数=11087，重复ID=0"
+    },
+    {
+      "name": "valid全量指标存在",
+      "status": "pass",
+      "detail": "融合模型报告文件存在"
+    },
+    {
+      "name": "test全量账户预测覆盖",
+      "status": "pass",
+      "detail": "预测行=11087，账户数=11087，重复ID=0"
+    },
+    {
+      "name": "test全量指标存在",
+      "status": "pass",
+      "detail": "融合模型报告文件存在"
+    },
+    {
+      "name": "主模型标签覆盖",
+      "status": "pass",
+      "detail": "标签账户数=11087，节点账户数=11087"
+    },
+    {
+      "name": "未来交易未进入分片图样本",
+      "status": "pass",
+      "detail": "{\"train\": 0, \"valid\": 0, \"test\": 0}"
+    },
+    {
+      "name": "标签时间限制已显式记录",
+      "status": "pass",
+      "detail": "风险标签表没有标签时间，无法验证“未来新增标签”口径；当前审计保证标签字段不进入特征，动态特征只使用 split end 之前的滚动历史交易。"
+    },
+    {
+      "name": "特征文件不含标签字段",
+      "status": "pass",
+      "detail": "命中特征文件=[]"
+    },
+    {
+      "name": "train动态图观察截止时间",
+      "status": "pass",
+      "detail": "observation_end=2025-10-31 23:59:59，split_end=2025-10-31 23:59:59"
+    },
+    {
+      "name": "valid动态图观察截止时间",
+      "status": "pass",
+      "detail": "observation_end=2025-11-30 23:59:59，split_end=2025-11-30 23:59:59"
+    },
+    {
+      "name": "test动态图观察截止时间",
+      "status": "pass",
+      "detail": "observation_end=2025-12-31 23:59:59，split_end=2025-12-31 23:59:59"
+    },
+    {
+      "name": "59个嫌疑账户审计完整",
+      "status": "pass",
+      "detail": "审计=59，确认嫌疑人=59"
+    },
+    {
+      "name": "Top30巡检队列完整",
+      "status": "pass",
+      "detail": "巡检账户数=30"
+    },
+    {
+      "name": "分层覆盖统计与CSV一致",
+      "status": "pass",
+      "detail": "coverage JSON 与 CSV 行数一致"
+    },
+    {
+      "name": "关联账户节点ID可追溯",
+      "status": "pass",
+      "detail": "记录数=70，未知账户=[]"
+    },
+    {
+      "name": "可疑路径节点ID可追溯",
+      "status": "pass",
+      "detail": "记录数=144，未知账户=[]"
+    },
+    {
+      "name": "资金结构节点ID可追溯",
+      "status": "pass",
+      "detail": "记录数=2，未知账户=[]"
+    },
+    {
+      "name": "任务2使用全量账户评估",
+      "status": "pass",
+      "detail": "evaluation_scope=all_accounts"
+    },
+    {
+      "name": "任务2 AUC达标",
+      "status": "pass",
+      "detail": "AUC=0.9879674541844181"
+    },
+    {
+      "name": "任务2 Top5%召回达标",
+      "status": "pass",
+      "detail": "Top5%召回=0.9661016949152542"
+    },
+    {
+      "name": "任务2强基线PR-AUC提升20%",
+      "status": "pass",
+      "detail": "相对强XGB提升=0.24444788811646034"
+    },
+    {
+      "name": "任务3人工抽检状态真实",
+      "status": "warning",
+      "detail": "人工抽检通过率需要业务同学在 task4_consistency_audit.csv 基础上复核后填写；当前脚本只生成可抽检证据。"
+    },
+    {
+      "name": "任务4典型案例不少于5个",
+      "status": "pass",
+      "detail": "案例数=5"
+    },
+    {
+      "name": "交付物关联行数一致",
+      "status": "pass",
+      "detail": "layered=70，deliverable=70，audit=70"
+    },
+    {
+      "name": "交付物路径行数一致",
+      "status": "pass",
+      "detail": "layered=144，deliverable=144，audit=144"
+    },
+    {
+      "name": "交付物资金结构行数一致",
+      "status": "pass",
+      "detail": "layered=2，deliverable=2，audit=2"
+    }
+  ],
+  "known_limitations": [
+    "原始风险标签表没有标签确认时间，不能严格宣称预测未来新增风险标签。",
+    "任务3人工抽检通过率需要业务成员对生成证据进行人工确认。"
+  ]
+}

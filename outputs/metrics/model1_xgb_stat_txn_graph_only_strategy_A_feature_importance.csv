@@ -1,0 +1,11 @@
+feature,gain
+total_txn_count,1977.805908203125
+out_counterparty_nunique,1167.9974365234375
+in_amount_sum,686.6505737304688
+total_amount_sum,646.6734619140625
+in_amount_median,170.71963500976562
+in_active_days,166.593017578125
+net_amount,120.97266387939453
+out_txn_count,64.48223114013672
+in_txn_count,31.305198669433594
+in_round_1000_count,19.008081436157227

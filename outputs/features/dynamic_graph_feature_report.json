@@ -1,0 +1,54 @@
+{
+  "feature_family": "dynamic_graph_time_amount_bucket_features",
+  "amount_bin_count": 5,
+  "observation_policy": "rolling_120_days_until_split_end",
+  "temporal_motif_horizon_hours": [
+    1,
+    6,
+    24
+  ],
+  "temporal_memory_halflife_hours": [
+    1,
+    6,
+    24,
+    168
+  ],
+  "amount_bin_edges_from_train": [
+    0.0,
+    3000.8,
+    10000.0,
+    29090.24,
+    275782.8700000008,
+    11580903619.09
+  ],
+  "time_buckets": [
+    "dyn_week_bucket",
+    "dyn_day_bucket",
+    "dyn_hour_bucket",
+    "dyn_part_of_day"
+  ],
+  "splits": {
+    "train": {
+      "observation_start": "2025-07-03 23:59:59",
+      "observation_end": "2025-10-31 23:59:59",
+      "rows": 11087,
+      "cols": 181,
+      "path": "/Users/orange/Documents/study/金融科技大赛/outputs/features/dynamic_graph_features_train.csv"
+    },
+    "valid": {
+      "observation_start": "2025-08-02 23:59:59",
+      "observation_end": "2025-11-30 23:59:59",
+      "rows": 11087,
+      "cols": 181,
+      "path": "/Users/orange/Documents/study/金融科技大赛/outputs/features/dynamic_graph_features_valid.csv"
+    },
+    "test": {
+      "observation_start": "2025-09-02 23:59:59",
+      "observation_end": "2025-12-31 23:59:59",
+      "rows": 11087,
+      "cols": 181,
+      "path": "/Users/orange/Documents/study/金融科技大赛/outputs/features/dynamic_graph_features_test.csv"
+    }
+  },
+  "leakage_policy": "金额分箱边界仅由 train 窗口计算；每个 split 只使用截至 split end 的滚动历史交易边，不使用 split end 之后的未来交易。"
+}

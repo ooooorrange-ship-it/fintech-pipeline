@@ -1,0 +1,6 @@
+case_id,account_id,cites_model_score,cites_account_features,cites_link_or_structure,evidence_type_count,conclusion_consistent_with_evidence,needs_manual_review
+case_1,4379,True,True,True,3,True,True
+case_2,1740,True,True,True,3,True,True
+case_3,7265,True,True,True,3,True,True
+case_4,5260,True,True,False,2,True,True
+case_5,4955,True,True,False,2,True,True

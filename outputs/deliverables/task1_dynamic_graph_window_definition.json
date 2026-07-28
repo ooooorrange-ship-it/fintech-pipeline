@@ -1,0 +1,35 @@
+{
+  "node_definition": "账户脱敏ID为节点，节点属性来自账户节点表和当前时间窗口内聚合交易行为。",
+  "edge_definition": "付款账户到收款账户的有向转账为边，边属性包括交易时间、金额、时间桶、金额分箱和异常标记。",
+  "label_definition": "Strategy A：嫌疑人=1，其它=0，受害人=-1并在主任务训练/评估中剔除。",
+  "observation_windows": {
+    "train": [
+      "2025-07-01",
+      "2025-10-31 23:59:59"
+    ],
+    "valid": [
+      "2025-11-01",
+      "2025-11-30 23:59:59"
+    ],
+    "test": [
+      "2025-12-01",
+      "2025-12-31 23:59:59"
+    ]
+  },
+  "dynamic_feature_observation_policy": "动态特征采用 120 天滚动历史窗口，截至每个 split 的 end 时间生成当前图状态。",
+  "prediction_window_note": "原始标签表没有标签时间，因此不能严格定义未来新增标签预测；当前实现按交易观察窗口构建风险识别样本。",
+  "time_bucket_fields": [
+    "time_bucket_month",
+    "time_bucket_day",
+    "time_bucket_hour"
+  ],
+  "amount_bin_policy": "金额分箱边界仅由 train 窗口 amount_abs 分位数计算，再应用到 valid/test，避免未来金额分布泄露。",
+  "amount_bin_edges_from_train": [
+    0.0,
+    3000.8,
+    10000.0,
+    29090.24,
+    275782.8700000008,
+    11580903619.09
+  ]
+}

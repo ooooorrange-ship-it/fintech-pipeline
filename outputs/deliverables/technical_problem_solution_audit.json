@@ -1,0 +1,78 @@
+{
+  "problem_1_dynamic_graph_and_time_split": {
+    "status": "solved_with_data_limitation",
+    "solution": [
+      "账户作为节点、转账作为有向边，按 train/valid/test cutoff 构建滚动历史动态图谱样本。",
+      "边样例包含资金流向、时间桶、金额分箱、自环/非正金额异常标记。",
+      "金额分箱边界只由 train 窗口计算，再应用到 valid/test，动态特征只使用截至 split end 的交易，避免未来交易泄露。"
+    ],
+    "future_transaction_leakage_rate": 0.0,
+    "future_label_leakage_status": "原始标签表没有标签时间，无法严格验证未来新增标签；当前保证标签字段不进入模型特征。",
+    "evidence_files": [
+      "task1_dynamic_graph_window_definition.json",
+      "task1_time_split_leakage_audit.json",
+      "task1_graph_statistics_by_split.csv",
+      "task1_graph_samples/*.csv"
+    ]
+  },
+  "problem_2_risk_account_detection": {
+    "status": "solved",
+    "solution": [
+      "采用 Strategy A 过滤受害人进行训练，同时保留全量账户排名，避免候选池指标偏乐观。",
+      "XGBoost 使用类别权重处理 59 个嫌疑人导致的极端不平衡。",
+      "构造滚动动态图快照、时间桶、金额分箱、时序资金流模体和时间衰减节点记忆，并补充轻量异配图传播和融合消融。"
+    ],
+    "main_model": "model4_stack_v6_rolling_memory_dynamic_no_customer_type_strategy_A",
+    "test_auc": 0.9879674541844181,
+    "test_pr_auc": 0.36155310295978255,
+    "test_top5pct_recall": 0.9661016949152542,
+    "requirement_pass": {
+      "auc_ge_0_85": true,
+      "pr_auc_improvement_ge_20pct_vs_strong_xgb": true,
+      "pr_auc_improvement_ge_20pct_vs_rule": true,
+      "top5pct_recall_ge_50pct": true
+    },
+    "evidence_files": [
+      "task2_model_metrics_summary.csv",
+      "task2_requirement_audit.json",
+      "outputs/metrics/*feature_importance.csv"
+    ]
+  },
+  "problem_3_association_and_link_explanation": {
+    "status": "solved_with_observed_edge_limitation",
+    "solution": [
+      "围绕高风险账户输出 Top20 关联账户。",
+      "挖掘 24 小时内 root-mid-out、in-root-out 等多跳可疑路径。",
+      "支持输出多入一出、一入多出、闭环回流等资金结构；当前数据实际命中闭环回流结构。"
+    ],
+    "top20_association_rows": 70,
+    "suspicious_path_rows": 144,
+    "fund_flow_structure_rows": 2,
+    "confirmed_suspect_with_history_transaction": 3,
+    "limitation": "59 个确认嫌疑人中只有 3 个在当前交易边表内有可追溯历史交易边，其他账户不能硬生成链路。",
+    "evidence_files": [
+      "task3_top20_associations.csv",
+      "task3_suspicious_paths.csv",
+      "task3_fund_flow_structures.csv",
+      "task3_link_visualization_samples.md",
+      "task3_typical_cases.md"
+    ]
+  },
+  "problem_4_trustworthy_judgement_evidence": {
+    "status": "solved",
+    "solution": [
+      "研判报告样例至少引用模型分数和账户特征两类证据。",
+      "存在交易边时追加关联账户或多跳路径证据。",
+      "对无可追溯交易边账户明确写出局限，避免无依据结论。"
+    ],
+    "typical_case_count": 5,
+    "case_evidence_completeness_rate": 1.0,
+    "manual_review_note": "人工抽检通过率需要业务同学在 task4_consistency_audit.csv 基础上复核后填写；当前脚本只生成可抽检证据。",
+    "evidence_files": [
+      "task4_judgement_report_template.md",
+      "task4_judgement_report_samples.md",
+      "task4_evidence_field_dictionary.csv",
+      "task4_consistency_audit.csv"
+    ]
+  }
+}

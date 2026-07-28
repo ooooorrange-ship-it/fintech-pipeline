@@ -1,0 +1,405 @@
+source,raw_field,clean_field,field_role,meaning,leakage_policy
+账户节点表,账户脱敏id,account_id,节点 ID,脱敏账户唯一标识,ID 字段，不作为行为特征
+账户节点表,是否风险账户标签,account_label_code,标签核验,账户表自带最终风险标签,仅用于核验标签一致性，不进入模型特征
+账户节点表,开户时长,account_age_months,静态画像,开户时长,可作为消融变量，弱画像实验删除
+账户节点表,地区编码,region_code,静态画像,地区编码,可作为消融变量，弱画像实验删除
+账户节点表,客户类型,customer_type,静态画像,客户类型,主模型删除该字段以降低捷径学习
+交易边表,付款账户脱敏id,src_account_id,边起点,转出账户,用于构图和交易方向特征
+交易边表,收款账户脱敏id,dst_account_id,边终点,转入账户,用于构图和交易方向特征
+交易边表,交易时间,txn_time,边时间,交易发生时间,用于按时间窗口切分，避免未来交易泄露
+交易边表,金额,amount,边权重,交易金额,用于金额统计，负金额保留为异常信号
+风险标签表,账户脱敏id,account_id,标签 ID,标签对应账户,只作为监督目标或评估口径
+风险标签表,标签类型,label_type,标签文本,其它、嫌疑人、受害人,不进入模型特征
+stat_features,,account_age_months,模型特征,开户时长静态画像特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+stat_features,,region_code,模型特征,地区编码静态画像特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+stat_features,,out_txn_count,模型特征,付款方向交易统计特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+stat_features,,out_amount_sum,模型特征,付款方向交易统计特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+stat_features,,out_amount_mean,模型特征,付款方向交易统计特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+stat_features,,out_amount_max,模型特征,付款方向交易统计特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+stat_features,,out_amount_median,模型特征,付款方向交易统计特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+stat_features,,out_counterparty_nunique,模型特征,付款方向交易统计特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+stat_features,,out_active_days,模型特征,付款方向交易统计特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+stat_features,,out_active_months,模型特征,付款方向交易统计特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+stat_features,,out_self_loop_count,模型特征,付款方向交易统计特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+stat_features,,out_non_positive_amount_count,模型特征,付款方向交易统计特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+stat_features,,out_negative_amount_count,模型特征,付款方向交易统计特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+stat_features,,out_zero_amount_count,模型特征,付款方向交易统计特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+stat_features,,out_night_txn_count,模型特征,付款方向交易统计特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+stat_features,,out_round_1000_count,模型特征,付款方向交易统计特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+stat_features,,out_small_amount_count,模型特征,付款方向交易统计特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+stat_features,,out_large_amount_count,模型特征,付款方向交易统计特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+stat_features,,out_txn_per_active_day,模型特征,付款方向交易统计特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+stat_features,,out_amount_per_txn,模型特征,付款方向交易统计特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+stat_features,,out_night_txn_ratio,模型特征,付款方向交易统计特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+stat_features,,out_round_1000_ratio,模型特征,付款方向交易统计特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+stat_features,,out_small_amount_ratio,模型特征,付款方向交易统计特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+stat_features,,out_large_amount_ratio,模型特征,付款方向交易统计特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+stat_features,,in_txn_count,模型特征,收款方向交易统计特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+stat_features,,in_amount_sum,模型特征,收款方向交易统计特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+stat_features,,in_amount_mean,模型特征,收款方向交易统计特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+stat_features,,in_amount_max,模型特征,收款方向交易统计特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+stat_features,,in_amount_median,模型特征,收款方向交易统计特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+stat_features,,in_counterparty_nunique,模型特征,收款方向交易统计特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+stat_features,,in_active_days,模型特征,收款方向交易统计特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+stat_features,,in_active_months,模型特征,收款方向交易统计特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+stat_features,,in_self_loop_count,模型特征,收款方向交易统计特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+stat_features,,in_non_positive_amount_count,模型特征,收款方向交易统计特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+stat_features,,in_negative_amount_count,模型特征,收款方向交易统计特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+stat_features,,in_zero_amount_count,模型特征,收款方向交易统计特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+stat_features,,in_night_txn_count,模型特征,收款方向交易统计特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+stat_features,,in_round_1000_count,模型特征,收款方向交易统计特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+stat_features,,in_small_amount_count,模型特征,收款方向交易统计特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+stat_features,,in_large_amount_count,模型特征,收款方向交易统计特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+stat_features,,in_txn_per_active_day,模型特征,收款方向交易统计特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+stat_features,,in_amount_per_txn,模型特征,收款方向交易统计特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+stat_features,,in_night_txn_ratio,模型特征,收款方向交易统计特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+stat_features,,in_round_1000_ratio,模型特征,收款方向交易统计特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+stat_features,,in_small_amount_ratio,模型特征,收款方向交易统计特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+stat_features,,in_large_amount_ratio,模型特征,收款方向交易统计特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+stat_features,,monthly_txn_count_std,模型特征,按月交易波动和增长特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+stat_features,,monthly_amount_sum_std,模型特征,按月交易波动和增长特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+stat_features,,monthly_txn_count_mean,模型特征,按月交易波动和增长特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+stat_features,,monthly_amount_sum_mean,模型特征,按月交易波动和增长特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+stat_features,,monthly_txn_count_cv,模型特征,按月交易波动和增长特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+stat_features,,monthly_amount_sum_cv,模型特征,按月交易波动和增长特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+stat_features,,first_month_txn_count,模型特征,模型特征或中间字段,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+stat_features,,last_month_txn_count,模型特征,模型特征或中间字段,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+stat_features,,txn_count_growth,模型特征,模型特征或中间字段,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+stat_features,,daily_txn_count_mean,模型特征,按日交易突发性统计特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+stat_features,,daily_txn_count_std,模型特征,按日交易突发性统计特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+stat_features,,daily_txn_count_max,模型特征,按日交易突发性统计特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+stat_features,,daily_amount_sum_mean,模型特征,按日交易突发性统计特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+stat_features,,daily_amount_sum_std,模型特征,按日交易突发性统计特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+stat_features,,daily_amount_sum_max,模型特征,按日交易突发性统计特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+stat_features,,daily_txn_count_cv,模型特征,按日交易突发性统计特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+stat_features,,daily_amount_sum_cv,模型特征,按日交易突发性统计特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+stat_features,,burst_day_txn_ratio,模型特征,交易突发性比例特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+stat_features,,burst_day_amount_ratio,模型特征,交易突发性比例特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+stat_features,,activity_hour_nunique,模型特征,交易活跃小时分布特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+stat_features,,activity_hour_entropy,模型特征,交易活跃小时分布特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+stat_features,,activity_hour_txn_max_ratio,模型特征,交易活跃小时分布特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+stat_features,,txn_interarrival_min_mean,模型特征,交易间隔时间特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+stat_features,,txn_interarrival_min_std,模型特征,交易间隔时间特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+stat_features,,txn_interarrival_min_min,模型特征,交易间隔时间特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+stat_features,,txn_interarrival_min_cv,模型特征,交易间隔时间特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+stat_features,,counterparty_count,模型特征,交易对手数量、金额和集中度特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+stat_features,,counterparty_amount_max,模型特征,交易对手数量、金额和集中度特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+stat_features,,counterparty_amount_mean,模型特征,交易对手数量、金额和集中度特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+stat_features,,counterparty_txn_max,模型特征,交易对手数量、金额和集中度特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+stat_features,,counterparty_txn_mean,模型特征,交易对手数量、金额和集中度特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+stat_features,,counterparty_amount_top_ratio,模型特征,交易对手数量、金额和集中度特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+stat_features,,counterparty_txn_top_ratio,模型特征,交易对手数量、金额和集中度特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+stat_features,,fast_in_out_count_1h,模型特征,入账后短时间转出的快进快出时序模体,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+stat_features,,fast_in_out_in_amount_ratio_1h,模型特征,入账后短时间转出的快进快出时序模体,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+stat_features,,fast_in_out_out_amount_ratio_1h,模型特征,入账后短时间转出的快进快出时序模体,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+stat_features,,fast_in_out_balance_ratio_1h,模型特征,入账后短时间转出的快进快出时序模体,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+stat_features,,fast_in_out_mean_delay_min_1h,模型特征,入账后短时间转出的快进快出时序模体,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+stat_features,,prior_in_before_out_count_1h,模型特征,出账前短窗口内是否存在入账资金来源,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+stat_features,,prior_in_before_out_out_amount_ratio_1h,模型特征,出账前短窗口内是否存在入账资金来源,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+stat_features,,prior_in_before_out_mean_delay_min_1h,模型特征,出账前短窗口内是否存在入账资金来源,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+stat_features,,fast_in_out_count_6h,模型特征,入账后短时间转出的快进快出时序模体,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+stat_features,,fast_in_out_in_amount_ratio_6h,模型特征,入账后短时间转出的快进快出时序模体,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+stat_features,,fast_in_out_out_amount_ratio_6h,模型特征,入账后短时间转出的快进快出时序模体,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+stat_features,,fast_in_out_balance_ratio_6h,模型特征,入账后短时间转出的快进快出时序模体,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+stat_features,,fast_in_out_mean_delay_min_6h,模型特征,入账后短时间转出的快进快出时序模体,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+stat_features,,prior_in_before_out_count_6h,模型特征,出账前短窗口内是否存在入账资金来源,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+stat_features,,prior_in_before_out_out_amount_ratio_6h,模型特征,出账前短窗口内是否存在入账资金来源,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+stat_features,,prior_in_before_out_mean_delay_min_6h,模型特征,出账前短窗口内是否存在入账资金来源,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+stat_features,,fast_in_out_count_24h,模型特征,入账后短时间转出的快进快出时序模体,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+stat_features,,fast_in_out_in_amount_ratio_24h,模型特征,入账后短时间转出的快进快出时序模体,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+stat_features,,fast_in_out_out_amount_ratio_24h,模型特征,入账后短时间转出的快进快出时序模体,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+stat_features,,fast_in_out_balance_ratio_24h,模型特征,入账后短时间转出的快进快出时序模体,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+stat_features,,fast_in_out_mean_delay_min_24h,模型特征,入账后短时间转出的快进快出时序模体,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+stat_features,,prior_in_before_out_count_24h,模型特征,出账前短窗口内是否存在入账资金来源,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+stat_features,,prior_in_before_out_out_amount_ratio_24h,模型特征,出账前短窗口内是否存在入账资金来源,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+stat_features,,prior_in_before_out_mean_delay_min_24h,模型特征,出账前短窗口内是否存在入账资金来源,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+stat_features,,one_in_multi_out_count_24h,模型特征,一笔入账后拆分多笔出账的时序模体,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+stat_features,,one_in_multi_out_in_amount_ratio_24h,模型特征,一笔入账后拆分多笔出账的时序模体,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+stat_features,,multi_in_one_out_count_24h,模型特征,多笔入账后集中一笔出账的时序模体,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+stat_features,,multi_in_one_out_mean_amount_ratio_24h,模型特征,多笔入账后集中一笔出账的时序模体,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+stat_features,,max_prior_in_count_before_out_24h,模型特征,单笔出账前可追溯入账数量上限,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+stat_features,,max_next_out_count_after_in_24h,模型特征,单笔入账后可追溯出账数量上限,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+stat_features,,small_in_before_large_out_count_24h,模型特征,模型特征或中间字段,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+stat_features,,net_amount,模型特征,模型特征或中间字段,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+stat_features,,total_txn_count,模型特征,账户整体交易统计特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+stat_features,,total_amount_sum,模型特征,账户整体交易统计特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+stat_features,,in_out_amount_ratio,模型特征,收款方向交易统计特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+stat_features,,in_out_count_ratio,模型特征,收款方向交易统计特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+stat_features,,total_self_loop_count,模型特征,账户整体交易统计特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+stat_features,,total_non_positive_amount_count,模型特征,账户整体交易统计特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+stat_features,,customer_type_对公,模型特征,客户类型 one-hot 特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+stat_features,,customer_type_对私,模型特征,客户类型 one-hot 特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+graph_features,,graph_out_degree,模型特征,资金图谱拓扑结构特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+graph_features,,graph_in_degree,模型特征,资金图谱拓扑结构特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+graph_features,,graph_total_degree,模型特征,资金图谱拓扑结构特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+graph_features,,graph_reciprocal_neighbor_count,模型特征,资金图谱拓扑结构特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+graph_features,,graph_reciprocal_ratio,模型特征,资金图谱拓扑结构特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+graph_features,,graph_out_in_degree_ratio,模型特征,资金图谱拓扑结构特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+graph_features,,graph_in_out_degree_ratio,模型特征,资金图谱拓扑结构特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+graph_features,,graph_component_size,模型特征,资金图谱拓扑结构特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+graph_features,,graph_component_edge_count,模型特征,资金图谱拓扑结构特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+graph_features,,graph_component_density,模型特征,资金图谱拓扑结构特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+graph_features,,graph_two_hop_neighbor_count,模型特征,资金图谱拓扑结构特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+graph_features,,graph_out_two_hop_reach,模型特征,资金图谱拓扑结构特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+graph_features,,graph_in_two_hop_reach,模型特征,资金图谱拓扑结构特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+graph_features,,graph_path_through_proxy,模型特征,资金图谱拓扑结构特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+graph_features,,graph_fan_in_out_balance,模型特征,资金图谱拓扑结构特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+graph_features,,graph_cycle3_proxy_count,模型特征,资金图谱拓扑结构特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+graph_features,,graph_neighbor_degree_mean,模型特征,资金图谱拓扑结构特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+graph_features,,graph_neighbor_degree_max,模型特征,资金图谱拓扑结构特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+graph_features,,graph_neighbor_degree_std,模型特征,资金图谱拓扑结构特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+graph_features,,graph_low_degree_neighbor_ratio,模型特征,资金图谱拓扑结构特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+graph_features,,graph_hub_neighbor_ratio,模型特征,资金图谱拓扑结构特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+graph_features,,pagerank,模型特征,PageRank 图重要性特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+graph_features,,graph_nb_total_txn_count_mean,模型特征,一跳无向邻居行为聚合特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+graph_features,,graph_nb_total_txn_count_max,模型特征,一跳无向邻居行为聚合特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+graph_features,,graph_nb_total_amount_sum_mean,模型特征,一跳无向邻居行为聚合特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+graph_features,,graph_nb_total_amount_sum_max,模型特征,一跳无向邻居行为聚合特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+graph_features,,graph_nb_out_amount_sum_mean,模型特征,一跳无向邻居行为聚合特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+graph_features,,graph_nb_out_amount_sum_max,模型特征,一跳无向邻居行为聚合特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+graph_features,,graph_nb_in_amount_sum_mean,模型特征,一跳无向邻居行为聚合特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+graph_features,,graph_nb_in_amount_sum_max,模型特征,一跳无向邻居行为聚合特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+graph_features,,graph_nb_in_out_amount_ratio_mean,模型特征,一跳无向邻居行为聚合特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+graph_features,,graph_nb_in_out_amount_ratio_max,模型特征,一跳无向邻居行为聚合特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+graph_features,,graph_nb_burst_day_txn_ratio_mean,模型特征,一跳无向邻居行为聚合特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+graph_features,,graph_nb_burst_day_txn_ratio_max,模型特征,一跳无向邻居行为聚合特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+graph_features,,graph_nb_burst_day_amount_ratio_mean,模型特征,一跳无向邻居行为聚合特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+graph_features,,graph_nb_burst_day_amount_ratio_max,模型特征,一跳无向邻居行为聚合特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+graph_features,,graph_nb_counterparty_amount_top_ratio_mean,模型特征,一跳无向邻居行为聚合特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+graph_features,,graph_nb_counterparty_amount_top_ratio_max,模型特征,一跳无向邻居行为聚合特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+graph_features,,graph_nb_counterparty_txn_top_ratio_mean,模型特征,一跳无向邻居行为聚合特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+graph_features,,graph_nb_counterparty_txn_top_ratio_max,模型特征,一跳无向邻居行为聚合特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+graph_features,,graph_nb_fast_in_out_count_24h_mean,模型特征,一跳无向邻居行为聚合特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+graph_features,,graph_nb_fast_in_out_count_24h_max,模型特征,一跳无向邻居行为聚合特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+graph_features,,graph_nb_fast_in_out_balance_ratio_24h_mean,模型特征,一跳无向邻居行为聚合特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+graph_features,,graph_nb_fast_in_out_balance_ratio_24h_max,模型特征,一跳无向邻居行为聚合特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+graph_features,,graph_nb_multi_in_one_out_count_24h_mean,模型特征,一跳无向邻居行为聚合特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+graph_features,,graph_nb_multi_in_one_out_count_24h_max,模型特征,一跳无向邻居行为聚合特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+graph_features,,graph_nb_max_prior_in_count_before_out_24h_mean,模型特征,一跳无向邻居行为聚合特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+graph_features,,graph_nb_max_prior_in_count_before_out_24h_max,模型特征,一跳无向邻居行为聚合特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+graph_features,,graph_nb_max_next_out_count_after_in_24h_mean,模型特征,一跳无向邻居行为聚合特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+graph_features,,graph_nb_max_next_out_count_after_in_24h_max,模型特征,一跳无向邻居行为聚合特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+graph_features,,graph_nb_total_self_loop_count_mean,模型特征,一跳无向邻居行为聚合特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+graph_features,,graph_nb_total_self_loop_count_max,模型特征,一跳无向邻居行为聚合特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+graph_features,,graph_nb_total_non_positive_amount_count_mean,模型特征,一跳无向邻居行为聚合特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+graph_features,,graph_nb_total_non_positive_amount_count_max,模型特征,一跳无向邻居行为聚合特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+graph_features,,graph_out_nb_total_txn_count_mean,模型特征,出边邻居行为聚合特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+graph_features,,graph_out_nb_total_amount_sum_mean,模型特征,出边邻居行为聚合特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+graph_features,,graph_out_nb_out_amount_sum_mean,模型特征,出边邻居行为聚合特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+graph_features,,graph_out_nb_in_amount_sum_mean,模型特征,出边邻居行为聚合特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+graph_features,,graph_out_nb_in_out_amount_ratio_mean,模型特征,出边邻居行为聚合特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+graph_features,,graph_out_nb_burst_day_txn_ratio_mean,模型特征,出边邻居行为聚合特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+graph_features,,graph_out_nb_burst_day_amount_ratio_mean,模型特征,出边邻居行为聚合特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+graph_features,,graph_out_nb_counterparty_amount_top_ratio_mean,模型特征,出边邻居行为聚合特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+graph_features,,graph_out_nb_counterparty_txn_top_ratio_mean,模型特征,出边邻居行为聚合特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+graph_features,,graph_out_nb_fast_in_out_count_24h_mean,模型特征,出边邻居行为聚合特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+graph_features,,graph_out_nb_fast_in_out_balance_ratio_24h_mean,模型特征,出边邻居行为聚合特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+graph_features,,graph_out_nb_multi_in_one_out_count_24h_mean,模型特征,出边邻居行为聚合特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+graph_features,,graph_out_nb_max_prior_in_count_before_out_24h_mean,模型特征,出边邻居行为聚合特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+graph_features,,graph_out_nb_max_next_out_count_after_in_24h_mean,模型特征,出边邻居行为聚合特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+graph_features,,graph_out_nb_total_self_loop_count_mean,模型特征,出边邻居行为聚合特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+graph_features,,graph_out_nb_total_non_positive_amount_count_mean,模型特征,出边邻居行为聚合特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+graph_features,,graph_in_nb_total_txn_count_mean,模型特征,入边邻居行为聚合特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+graph_features,,graph_in_nb_total_amount_sum_mean,模型特征,入边邻居行为聚合特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+graph_features,,graph_in_nb_out_amount_sum_mean,模型特征,入边邻居行为聚合特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+graph_features,,graph_in_nb_in_amount_sum_mean,模型特征,入边邻居行为聚合特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+graph_features,,graph_in_nb_in_out_amount_ratio_mean,模型特征,入边邻居行为聚合特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+graph_features,,graph_in_nb_burst_day_txn_ratio_mean,模型特征,入边邻居行为聚合特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+graph_features,,graph_in_nb_burst_day_amount_ratio_mean,模型特征,入边邻居行为聚合特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+graph_features,,graph_in_nb_counterparty_amount_top_ratio_mean,模型特征,入边邻居行为聚合特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+graph_features,,graph_in_nb_counterparty_txn_top_ratio_mean,模型特征,入边邻居行为聚合特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+graph_features,,graph_in_nb_fast_in_out_count_24h_mean,模型特征,入边邻居行为聚合特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+graph_features,,graph_in_nb_fast_in_out_balance_ratio_24h_mean,模型特征,入边邻居行为聚合特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+graph_features,,graph_in_nb_multi_in_one_out_count_24h_mean,模型特征,入边邻居行为聚合特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+graph_features,,graph_in_nb_max_prior_in_count_before_out_24h_mean,模型特征,入边邻居行为聚合特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+graph_features,,graph_in_nb_max_next_out_count_after_in_24h_mean,模型特征,入边邻居行为聚合特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+graph_features,,graph_in_nb_total_self_loop_count_mean,模型特征,入边邻居行为聚合特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+graph_features,,graph_in_nb_total_non_positive_amount_count_mean,模型特征,入边邻居行为聚合特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+node2vec_features,,node2vec_00,模型特征,Node2Vec 无监督图表示向量,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+node2vec_features,,node2vec_01,模型特征,Node2Vec 无监督图表示向量,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+node2vec_features,,node2vec_02,模型特征,Node2Vec 无监督图表示向量,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+node2vec_features,,node2vec_03,模型特征,Node2Vec 无监督图表示向量,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+node2vec_features,,node2vec_04,模型特征,Node2Vec 无监督图表示向量,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+node2vec_features,,node2vec_05,模型特征,Node2Vec 无监督图表示向量,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+node2vec_features,,node2vec_06,模型特征,Node2Vec 无监督图表示向量,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+node2vec_features,,node2vec_07,模型特征,Node2Vec 无监督图表示向量,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_total_active_week_count,模型特征,动态资金图谱整体时间桶特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_total_week_txn_mean,模型特征,动态资金图谱整体时间桶特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_total_week_txn_std,模型特征,动态资金图谱整体时间桶特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_total_week_txn_max,模型特征,动态资金图谱整体时间桶特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_total_week_amount_mean,模型特征,动态资金图谱整体时间桶特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_total_week_amount_std,模型特征,动态资金图谱整体时间桶特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_total_week_amount_max,模型特征,动态资金图谱整体时间桶特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_total_week_counterparty_mean,模型特征,动态资金图谱整体时间桶特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_total_week_counterparty_max,模型特征,动态资金图谱整体时间桶特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_total_week_txn_cv,模型特征,动态资金图谱整体时间桶特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_total_week_amount_cv,模型特征,动态资金图谱整体时间桶特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_total_week_txn_burst_ratio,模型特征,动态资金图谱整体时间桶特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_total_week_amount_burst_ratio,模型特征,动态资金图谱整体时间桶特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_total_last_week_txn,模型特征,动态资金图谱整体时间桶特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_total_prev_week_txn,模型特征,动态资金图谱整体时间桶特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_total_last_prev_week_txn_growth,模型特征,动态资金图谱整体时间桶特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_out_active_week_count,模型特征,动态资金图谱出账方向时间桶特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_out_week_txn_mean,模型特征,动态资金图谱出账方向时间桶特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_out_week_txn_std,模型特征,动态资金图谱出账方向时间桶特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_out_week_txn_max,模型特征,动态资金图谱出账方向时间桶特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_out_week_amount_mean,模型特征,动态资金图谱出账方向时间桶特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_out_week_amount_std,模型特征,动态资金图谱出账方向时间桶特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_out_week_amount_max,模型特征,动态资金图谱出账方向时间桶特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_out_week_counterparty_mean,模型特征,动态资金图谱出账方向时间桶特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_out_week_counterparty_max,模型特征,动态资金图谱出账方向时间桶特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_out_week_txn_cv,模型特征,动态资金图谱出账方向时间桶特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_out_week_amount_cv,模型特征,动态资金图谱出账方向时间桶特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_out_week_txn_burst_ratio,模型特征,动态资金图谱出账方向时间桶特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_out_week_amount_burst_ratio,模型特征,动态资金图谱出账方向时间桶特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_out_last_week_txn,模型特征,动态资金图谱出账方向时间桶特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_out_prev_week_txn,模型特征,动态资金图谱出账方向时间桶特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_out_last_prev_week_txn_growth,模型特征,动态资金图谱出账方向时间桶特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_in_active_week_count,模型特征,动态资金图谱入账方向时间桶特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_in_week_txn_mean,模型特征,动态资金图谱入账方向时间桶特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_in_week_txn_std,模型特征,动态资金图谱入账方向时间桶特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_in_week_txn_max,模型特征,动态资金图谱入账方向时间桶特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_in_week_amount_mean,模型特征,动态资金图谱入账方向时间桶特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_in_week_amount_std,模型特征,动态资金图谱入账方向时间桶特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_in_week_amount_max,模型特征,动态资金图谱入账方向时间桶特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_in_week_counterparty_mean,模型特征,动态资金图谱入账方向时间桶特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_in_week_counterparty_max,模型特征,动态资金图谱入账方向时间桶特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_in_week_txn_cv,模型特征,动态资金图谱入账方向时间桶特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_in_week_amount_cv,模型特征,动态资金图谱入账方向时间桶特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_in_week_txn_burst_ratio,模型特征,动态资金图谱入账方向时间桶特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_in_week_amount_burst_ratio,模型特征,动态资金图谱入账方向时间桶特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_in_last_week_txn,模型特征,动态资金图谱入账方向时间桶特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_in_prev_week_txn,模型特征,动态资金图谱入账方向时间桶特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_in_last_prev_week_txn_growth,模型特征,动态资金图谱入账方向时间桶特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_total_amount_bin_b0_count,模型特征,动态资金图谱整体时间桶特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_total_amount_bin_b1_count,模型特征,动态资金图谱整体时间桶特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_total_amount_bin_b2_count,模型特征,动态资金图谱整体时间桶特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_total_amount_bin_b3_count,模型特征,动态资金图谱整体时间桶特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_total_amount_bin_b4_count,模型特征,动态资金图谱整体时间桶特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_total_amount_bin_b0_ratio,模型特征,动态资金图谱整体时间桶特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_total_amount_bin_b1_ratio,模型特征,动态资金图谱整体时间桶特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_total_amount_bin_b2_ratio,模型特征,动态资金图谱整体时间桶特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_total_amount_bin_b3_ratio,模型特征,动态资金图谱整体时间桶特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_total_amount_bin_b4_ratio,模型特征,动态资金图谱整体时间桶特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_total_amount_bin_entropy,模型特征,动态资金图谱整体时间桶特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_out_amount_bin_b0_count,模型特征,动态资金图谱出账方向时间桶特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_out_amount_bin_b1_count,模型特征,动态资金图谱出账方向时间桶特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_out_amount_bin_b2_count,模型特征,动态资金图谱出账方向时间桶特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_out_amount_bin_b3_count,模型特征,动态资金图谱出账方向时间桶特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_out_amount_bin_b4_count,模型特征,动态资金图谱出账方向时间桶特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_out_amount_bin_b0_ratio,模型特征,动态资金图谱出账方向时间桶特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_out_amount_bin_b1_ratio,模型特征,动态资金图谱出账方向时间桶特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_out_amount_bin_b2_ratio,模型特征,动态资金图谱出账方向时间桶特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_out_amount_bin_b3_ratio,模型特征,动态资金图谱出账方向时间桶特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_out_amount_bin_b4_ratio,模型特征,动态资金图谱出账方向时间桶特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_out_amount_bin_entropy,模型特征,动态资金图谱出账方向时间桶特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_in_amount_bin_b0_count,模型特征,动态资金图谱入账方向时间桶特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_in_amount_bin_b1_count,模型特征,动态资金图谱入账方向时间桶特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_in_amount_bin_b2_count,模型特征,动态资金图谱入账方向时间桶特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_in_amount_bin_b3_count,模型特征,动态资金图谱入账方向时间桶特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_in_amount_bin_b4_count,模型特征,动态资金图谱入账方向时间桶特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_in_amount_bin_b0_ratio,模型特征,动态资金图谱入账方向时间桶特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_in_amount_bin_b1_ratio,模型特征,动态资金图谱入账方向时间桶特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_in_amount_bin_b2_ratio,模型特征,动态资金图谱入账方向时间桶特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_in_amount_bin_b3_ratio,模型特征,动态资金图谱入账方向时间桶特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_in_amount_bin_b4_ratio,模型特征,动态资金图谱入账方向时间桶特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_in_amount_bin_entropy,模型特征,动态资金图谱入账方向时间桶特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_total_time_bucket_night_count,模型特征,动态资金图谱整体时间桶特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_total_time_bucket_morning_count,模型特征,动态资金图谱整体时间桶特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_total_time_bucket_afternoon_count,模型特征,动态资金图谱整体时间桶特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_total_time_bucket_evening_count,模型特征,动态资金图谱整体时间桶特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_total_time_bucket_night_ratio,模型特征,动态资金图谱整体时间桶特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_total_time_bucket_morning_ratio,模型特征,动态资金图谱整体时间桶特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_total_time_bucket_afternoon_ratio,模型特征,动态资金图谱整体时间桶特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_total_time_bucket_evening_ratio,模型特征,动态资金图谱整体时间桶特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_total_time_bucket_entropy,模型特征,动态资金图谱整体时间桶特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_graph_out_degree_week_mean,模型特征,按时间桶构建的动态交易图快照特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_graph_out_degree_week_std,模型特征,按时间桶构建的动态交易图快照特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_graph_out_degree_week_max,模型特征,按时间桶构建的动态交易图快照特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_graph_out_active_week_count,模型特征,按时间桶构建的动态交易图快照特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_graph_out_degree_week_cv,模型特征,按时间桶构建的动态交易图快照特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_graph_in_degree_week_mean,模型特征,按时间桶构建的动态交易图快照特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_graph_in_degree_week_std,模型特征,按时间桶构建的动态交易图快照特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_graph_in_degree_week_max,模型特征,按时间桶构建的动态交易图快照特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_graph_in_active_week_count,模型特征,按时间桶构建的动态交易图快照特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_graph_in_degree_week_cv,模型特征,按时间桶构建的动态交易图快照特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_cp_first_half_count,模型特征,交易对手在前后半窗口的新增、流失和稳定性特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_cp_second_half_count,模型特征,交易对手在前后半窗口的新增、流失和稳定性特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_cp_new_second_half_count,模型特征,交易对手在前后半窗口的新增、流失和稳定性特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_cp_lost_second_half_count,模型特征,交易对手在前后半窗口的新增、流失和稳定性特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_cp_new_second_half_ratio,模型特征,交易对手在前后半窗口的新增、流失和稳定性特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_cp_jaccard_first_second,模型特征,交易对手在前后半窗口的新增、流失和稳定性特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_motif_fast_in_out_count_1h,模型特征,动态图事件流中的快进快出、多入一出、一入多出时序资金流模体,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_motif_fast_in_out_in_amount_ratio_1h,模型特征,动态图事件流中的快进快出、多入一出、一入多出时序资金流模体,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_motif_fast_in_out_out_amount_ratio_1h,模型特征,动态图事件流中的快进快出、多入一出、一入多出时序资金流模体,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_motif_fast_in_out_balance_ratio_1h,模型特征,动态图事件流中的快进快出、多入一出、一入多出时序资金流模体,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_motif_fast_in_out_mean_delay_min_1h,模型特征,动态图事件流中的快进快出、多入一出、一入多出时序资金流模体,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_motif_prior_in_before_out_count_1h,模型特征,动态图事件流中的快进快出、多入一出、一入多出时序资金流模体,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_motif_prior_in_before_out_out_amount_ratio_1h,模型特征,动态图事件流中的快进快出、多入一出、一入多出时序资金流模体,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_motif_prior_in_before_out_mean_delay_min_1h,模型特征,动态图事件流中的快进快出、多入一出、一入多出时序资金流模体,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_motif_fast_in_out_count_6h,模型特征,动态图事件流中的快进快出、多入一出、一入多出时序资金流模体,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_motif_fast_in_out_in_amount_ratio_6h,模型特征,动态图事件流中的快进快出、多入一出、一入多出时序资金流模体,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_motif_fast_in_out_out_amount_ratio_6h,模型特征,动态图事件流中的快进快出、多入一出、一入多出时序资金流模体,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_motif_fast_in_out_balance_ratio_6h,模型特征,动态图事件流中的快进快出、多入一出、一入多出时序资金流模体,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_motif_fast_in_out_mean_delay_min_6h,模型特征,动态图事件流中的快进快出、多入一出、一入多出时序资金流模体,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_motif_prior_in_before_out_count_6h,模型特征,动态图事件流中的快进快出、多入一出、一入多出时序资金流模体,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_motif_prior_in_before_out_out_amount_ratio_6h,模型特征,动态图事件流中的快进快出、多入一出、一入多出时序资金流模体,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_motif_prior_in_before_out_mean_delay_min_6h,模型特征,动态图事件流中的快进快出、多入一出、一入多出时序资金流模体,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_motif_fast_in_out_count_24h,模型特征,动态图事件流中的快进快出、多入一出、一入多出时序资金流模体,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_motif_fast_in_out_in_amount_ratio_24h,模型特征,动态图事件流中的快进快出、多入一出、一入多出时序资金流模体,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_motif_fast_in_out_out_amount_ratio_24h,模型特征,动态图事件流中的快进快出、多入一出、一入多出时序资金流模体,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_motif_fast_in_out_balance_ratio_24h,模型特征,动态图事件流中的快进快出、多入一出、一入多出时序资金流模体,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_motif_fast_in_out_mean_delay_min_24h,模型特征,动态图事件流中的快进快出、多入一出、一入多出时序资金流模体,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_motif_prior_in_before_out_count_24h,模型特征,动态图事件流中的快进快出、多入一出、一入多出时序资金流模体,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_motif_prior_in_before_out_out_amount_ratio_24h,模型特征,动态图事件流中的快进快出、多入一出、一入多出时序资金流模体,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_motif_prior_in_before_out_mean_delay_min_24h,模型特征,动态图事件流中的快进快出、多入一出、一入多出时序资金流模体,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_motif_one_in_multi_out_count_24h,模型特征,动态图事件流中的快进快出、多入一出、一入多出时序资金流模体,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_motif_one_in_multi_out_in_amount_ratio_24h,模型特征,动态图事件流中的快进快出、多入一出、一入多出时序资金流模体,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_motif_multi_in_one_out_count_24h,模型特征,动态图事件流中的快进快出、多入一出、一入多出时序资金流模体,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_motif_multi_in_one_out_mean_amount_ratio_24h,模型特征,动态图事件流中的快进快出、多入一出、一入多出时序资金流模体,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_motif_max_prior_in_count_before_out_24h,模型特征,动态图事件流中的快进快出、多入一出、一入多出时序资金流模体,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_motif_max_next_out_count_after_in_24h,模型特征,动态图事件流中的快进快出、多入一出、一入多出时序资金流模体,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_motif_low_bin_before_high_bin_out_count_24h,模型特征,动态图事件流中的快进快出、多入一出、一入多出时序资金流模体,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_mem_in_count_1h,模型特征,TGN 思路的时间衰减节点记忆特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_mem_out_count_1h,模型特征,TGN 思路的时间衰减节点记忆特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_mem_total_count_1h,模型特征,TGN 思路的时间衰减节点记忆特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_mem_in_amount_1h,模型特征,TGN 思路的时间衰减节点记忆特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_mem_out_amount_1h,模型特征,TGN 思路的时间衰减节点记忆特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_mem_net_amount_1h,模型特征,TGN 思路的时间衰减节点记忆特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_mem_in_out_amount_ratio_1h,模型特征,TGN 思路的时间衰减节点记忆特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_mem_high_bin_ratio_1h,模型特征,TGN 思路的时间衰减节点记忆特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_mem_low_bin_ratio_1h,模型特征,TGN 思路的时间衰减节点记忆特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_mem_night_ratio_1h,模型特征,TGN 思路的时间衰减节点记忆特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_mem_in_count_6h,模型特征,TGN 思路的时间衰减节点记忆特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_mem_out_count_6h,模型特征,TGN 思路的时间衰减节点记忆特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_mem_total_count_6h,模型特征,TGN 思路的时间衰减节点记忆特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_mem_in_amount_6h,模型特征,TGN 思路的时间衰减节点记忆特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_mem_out_amount_6h,模型特征,TGN 思路的时间衰减节点记忆特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_mem_net_amount_6h,模型特征,TGN 思路的时间衰减节点记忆特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_mem_in_out_amount_ratio_6h,模型特征,TGN 思路的时间衰减节点记忆特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_mem_high_bin_ratio_6h,模型特征,TGN 思路的时间衰减节点记忆特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_mem_low_bin_ratio_6h,模型特征,TGN 思路的时间衰减节点记忆特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_mem_night_ratio_6h,模型特征,TGN 思路的时间衰减节点记忆特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_mem_in_count_24h,模型特征,TGN 思路的时间衰减节点记忆特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_mem_out_count_24h,模型特征,TGN 思路的时间衰减节点记忆特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_mem_total_count_24h,模型特征,TGN 思路的时间衰减节点记忆特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_mem_in_amount_24h,模型特征,TGN 思路的时间衰减节点记忆特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_mem_out_amount_24h,模型特征,TGN 思路的时间衰减节点记忆特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_mem_net_amount_24h,模型特征,TGN 思路的时间衰减节点记忆特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_mem_in_out_amount_ratio_24h,模型特征,TGN 思路的时间衰减节点记忆特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_mem_high_bin_ratio_24h,模型特征,TGN 思路的时间衰减节点记忆特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_mem_low_bin_ratio_24h,模型特征,TGN 思路的时间衰减节点记忆特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_mem_night_ratio_24h,模型特征,TGN 思路的时间衰减节点记忆特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_mem_in_count_7d,模型特征,TGN 思路的时间衰减节点记忆特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_mem_out_count_7d,模型特征,TGN 思路的时间衰减节点记忆特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_mem_total_count_7d,模型特征,TGN 思路的时间衰减节点记忆特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_mem_in_amount_7d,模型特征,TGN 思路的时间衰减节点记忆特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_mem_out_amount_7d,模型特征,TGN 思路的时间衰减节点记忆特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_mem_net_amount_7d,模型特征,TGN 思路的时间衰减节点记忆特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_mem_in_out_amount_ratio_7d,模型特征,TGN 思路的时间衰减节点记忆特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_mem_high_bin_ratio_7d,模型特征,TGN 思路的时间衰减节点记忆特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_mem_low_bin_ratio_7d,模型特征,TGN 思路的时间衰减节点记忆特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_mem_night_ratio_7d,模型特征,TGN 思路的时间衰减节点记忆特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_mem_last_event_age_hours,模型特征,TGN 思路的时间衰减节点记忆特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_mem_last_in_age_hours,模型特征,TGN 思路的时间衰减节点记忆特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段
+dynamic_graph_features,,dyn_mem_last_out_age_hours,模型特征,TGN 思路的时间衰减节点记忆特征,仅由当前 split 交易窗口或账户画像生成，不包含目标标签字段

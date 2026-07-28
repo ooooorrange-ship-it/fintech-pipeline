@@ -1,0 +1,21 @@
+{
+  "small_amount_threshold_from_train_p05": 551.3810000000001,
+  "large_amount_threshold_from_train_p95": 15920941.899500104,
+  "splits": {
+    "train": {
+      "rows": 11087,
+      "cols": 120,
+      "path": "/Users/orange/Documents/study/金融科技大赛/outputs/features/stat_features_train.csv"
+    },
+    "valid": {
+      "rows": 11087,
+      "cols": 120,
+      "path": "/Users/orange/Documents/study/金融科技大赛/outputs/features/stat_features_valid.csv"
+    },
+    "test": {
+      "rows": 11087,
+      "cols": 120,
+      "path": "/Users/orange/Documents/study/金融科技大赛/outputs/features/stat_features_test.csv"
+    }
+  }
+}

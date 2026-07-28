@@ -1,0 +1,15 @@
+feature,gain
+customer_type_对公,777.4808959960938
+customer_type_对私,615.5736083984375
+daily_txn_count_max,592.3178100585938
+daily_txn_count_mean,401.4429016113281
+total_amount_sum,152.36151123046875
+total_txn_count,108.31079864501953
+daily_amount_sum_max,97.22368621826172
+daily_amount_sum_mean,86.90737915039062
+region_code,78.06974029541016
+account_age_months,67.77411651611328
+in_small_amount_count,11.877593994140625
+in_small_amount_ratio,7.38916015625
+in_amount_mean,3.336928367614746
+in_amount_median,3.0451507568359375

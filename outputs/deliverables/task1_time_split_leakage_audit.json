@@ -1,0 +1,65 @@
+{
+  "split_policy": {
+    "train": [
+      "2025-07-01",
+      "2025-10-31 23:59:59"
+    ],
+    "valid": [
+      "2025-11-01",
+      "2025-11-30 23:59:59"
+    ],
+    "test": [
+      "2025-12-01",
+      "2025-12-31 23:59:59"
+    ]
+  },
+  "future_transaction_leakage_rate": 0.0,
+  "label_time_available": false,
+  "label_time_note": "风险标签表没有标签时间，无法验证“未来新增标签”口径；当前审计保证标签字段不进入特征，动态特征只使用 split end 之前的滚动历史交易。",
+  "feature_label_column_hits": {
+    "stat_features_train.csv": [],
+    "graph_features_train.csv": [],
+    "node2vec_features_train.csv": [],
+    "dynamic_graph_features_train.csv": [],
+    "stat_features_valid.csv": [],
+    "graph_features_valid.csv": [],
+    "node2vec_features_valid.csv": [],
+    "dynamic_graph_features_valid.csv": [],
+    "stat_features_test.csv": [],
+    "graph_features_test.csv": [],
+    "node2vec_features_test.csv": [],
+    "dynamic_graph_features_test.csv": []
+  },
+  "splits": {
+    "train": {
+      "start": "2025-07-01",
+      "end": "2025-10-31 23:59:59",
+      "transaction_rows_used": 583168,
+      "min_txn_time_used": "2025-07-01 02:15:01",
+      "max_txn_time_used": "2025-10-31 22:58:56",
+      "future_transaction_rows_available": 321227,
+      "future_transaction_rows_used": 0,
+      "future_transaction_leakage_rate": 0.0
+    },
+    "valid": {
+      "start": "2025-11-01",
+      "end": "2025-11-30 23:59:59",
+      "transaction_rows_used": 149097,
+      "min_txn_time_used": "2025-11-01 06:38:06",
+      "max_txn_time_used": "2025-11-30 23:44:40",
+      "future_transaction_rows_available": 172130,
+      "future_transaction_rows_used": 0,
+      "future_transaction_leakage_rate": 0.0
+    },
+    "test": {
+      "start": "2025-12-01",
+      "end": "2025-12-31 23:59:59",
+      "transaction_rows_used": 172130,
+      "min_txn_time_used": "2025-12-01 07:39:32",
+      "max_txn_time_used": "2025-12-31 20:28:55",
+      "future_transaction_rows_available": 0,
+      "future_transaction_rows_used": 0,
+      "future_transaction_leakage_rate": 0.0
+    }
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "prediction_file": "/Users/orange/Documents/study/金融科技大赛/outputs/predictions/model2_xgb_stat_graph_v2_no_customer_type_strategy_A.csv",
+  "split": "test",
+  "tx_scope": "history",
+  "top_account_count": 3,
+  "association_rows": 6,
+  "suspicious_path_rows": 10,
+  "top_association_risk_label_hit_rate": 0.0,
+  "outputs": {
+    "top_accounts_evidence": "/Users/orange/Documents/study/金融科技大赛/outputs/explanations/model2_xgb_stat_graph_v2_no_customer_type_test_top_accounts_evidence.csv",
+    "top20_associations": "/Users/orange/Documents/study/金融科技大赛/outputs/explanations/model2_xgb_stat_graph_v2_no_customer_type_test_top20_associations.csv",
+    "suspicious_paths": "/Users/orange/Documents/study/金融科技大赛/outputs/explanations/model2_xgb_stat_graph_v2_no_customer_type_test_suspicious_paths.csv"
+  }
+}

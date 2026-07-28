@@ -1,0 +1,12 @@
+feature,gain
+customer_type_对公,789.7530517578125
+graph_total_degree,512.3323974609375
+total_txn_count,477.5438232421875
+graph_component_size,337.90966796875
+graph_two_hop_neighbor_count,214.219482421875
+customer_type_对私,182.59107971191406
+total_amount_sum,77.3055191040039
+region_code,75.02084350585938
+account_age_months,68.19013214111328
+pagerank,4.756738185882568
+in_txn_count,0.378173828125

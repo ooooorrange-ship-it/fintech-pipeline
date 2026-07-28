@@ -1,0 +1,15 @@
+feature,gain
+daily_txn_count_max,3303.04248046875
+graph_two_hop_neighbor_count,1735.0887451171875
+graph_neighbor_degree_max,773.2391967773438
+daily_txn_count_mean,736.6858520507812
+total_amount_sum,79.67671966552734
+daily_amount_sum_mean,61.92887878417969
+in_amount_sum,39.88106918334961
+out_txn_count,38.03982925415039
+in_amount_mean,23.352996826171875
+graph_neighbor_degree_mean,22.938125610351562
+in_amount_max,22.552902221679688
+in_amount_median,21.3782958984375
+in_txn_per_active_day,21.234846115112305
+pagerank,11.268689155578613

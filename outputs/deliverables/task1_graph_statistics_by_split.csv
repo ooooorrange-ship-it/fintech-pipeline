@@ -1,0 +1,4 @@
+split,start,end,node_count,active_node_count,edge_row_count,unique_directed_edge_count,self_loop_edge_rows,non_positive_amount_rows,negative_amount_rows,component_count,largest_component_size,directed_graph_density,active_label_0_other,active_label_1_suspect,active_label_2_victim
+train,2025-07-01,2025-10-31 23:59:59,11087,7022,583168,86730,202,2,2,4080,6991,0.0007056355047082152,6994,1,27
+valid,2025-11-01,2025-11-30 23:59:59,11087,5549,149097,43618,88,0,0,5564,5485,0.0003548761610096037,5531,3,15
+test,2025-12-01,2025-12-31 23:59:59,11087,5963,172130,47621,150,0,0,5146,5913,0.0003874445793809514,5939,2,22

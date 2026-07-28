@@ -1,0 +1,15 @@
+{
+  "top_high_risk_account_count": 30,
+  "top20_association_rows": 70,
+  "suspicious_path_rows": 144,
+  "fund_flow_structure_rows": 2,
+  "fund_flow_structure_types": [
+    "closed_loop_return_24h"
+  ],
+  "confirmed_risk_association_hit_rate": 0.0,
+  "confirmed_suspect_total": 59,
+  "confirmed_suspect_with_history_transaction": 3,
+  "typical_case_count": 5,
+  "case_evidence_completeness_rate": 1.0,
+  "manual_review_note": "人工抽检通过率需要业务同学在 task4_consistency_audit.csv 基础上复核后填写；当前脚本只生成可抽检证据。"
+}

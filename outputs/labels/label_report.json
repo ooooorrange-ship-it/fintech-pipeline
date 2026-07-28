@@ -1,0 +1,23 @@
+{
+  "rows": 11087,
+  "label_code_distribution": {
+    "0": 9875,
+    "1": 59,
+    "2": 1153
+  },
+  "strategy_A_distribution": {
+    "-1": 1153,
+    "0": 9875,
+    "1": 59
+  },
+  "strategy_B_distribution": {
+    "0": 9875,
+    "1": 1212
+  },
+  "strategy_C_distribution": {
+    "0": 9875,
+    "1": 59,
+    "2": 1153
+  },
+  "note": "strategy_A 中 -1 为受害人，主任务训练和评估默认剔除。"
+}

@@ -1,0 +1,55 @@
+{
+  "_metadata": {
+    "drop_customer_type": true,
+    "drop_static_profile": false,
+    "experiment_suffix": "v3_no_customer_type",
+    "model_family": "lightweight_heterophily_propagation",
+    "graph_window_policy": "each split uses only transactions inside its own time window",
+    "papers": [
+      "SplitGNN",
+      "IGSL",
+      "HGIF",
+      "MultiFraud",
+      "GNNExplainer",
+      "GraphSMOTE"
+    ]
+  },
+  "status": "ok",
+  "feature_count": 819,
+  "train": {
+    "auc": 0.9096537223771723,
+    "pr_auc_average_precision": 0.055097731950844754,
+    "top1pct_k": 100,
+    "top1pct_hits": 4,
+    "top1pct_precision": 0.04,
+    "top1pct_recall": 0.06779661016949153,
+    "top5pct_k": 497,
+    "top5pct_hits": 22,
+    "top5pct_precision": 0.04426559356136821,
+    "top5pct_recall": 0.3728813559322034
+  },
+  "valid": {
+    "auc": 0.8456090967603519,
+    "pr_auc_average_precision": 0.04240611636077264,
+    "top1pct_k": 100,
+    "top1pct_hits": 4,
+    "top1pct_precision": 0.04,
+    "top1pct_recall": 0.06779661016949153,
+    "top5pct_k": 497,
+    "top5pct_hits": 18,
+    "top5pct_precision": 0.03621730382293763,
+    "top5pct_recall": 0.3050847457627119
+  },
+  "test": {
+    "auc": 0.87128084102124,
+    "pr_auc_average_precision": 0.04778210639194184,
+    "top1pct_k": 100,
+    "top1pct_hits": 4,
+    "top1pct_precision": 0.04,
+    "top1pct_recall": 0.06779661016949153,
+    "top5pct_k": 497,
+    "top5pct_hits": 21,
+    "top5pct_precision": 0.04225352112676056,
+    "top5pct_recall": 0.3559322033898305
+  }
+}

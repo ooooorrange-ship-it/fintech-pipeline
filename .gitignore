@@ -4,8 +4,8 @@ __pycache__/
 *.pyc
 .DS_Store
 
-# 忽略所有产出与数据
-outputs/
+# 保留项目产出，忽略系统文件
+outputs/.DS_Store
 data/
 
 # 忽略赛题原始文件与二进制文档

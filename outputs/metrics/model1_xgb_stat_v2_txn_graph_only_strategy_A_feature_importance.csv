@@ -1,0 +1,14 @@
+feature,gain
+activity_hour_nunique,6918.201171875
+daily_txn_count_mean,3505.683837890625
+daily_txn_count_max,920.8958740234375
+counterparty_amount_mean,911.7777709960938
+total_amount_sum,799.3024291992188
+counterparty_amount_max,532.0283813476562
+net_amount,238.88504028320312
+daily_amount_sum_mean,193.63539123535156
+in_amount_median,90.01808166503906
+out_txn_count,68.517822265625
+txn_interarrival_min_mean,48.196571350097656
+in_small_amount_count,44.208106994628906
+in_small_amount_ratio,41.816162109375

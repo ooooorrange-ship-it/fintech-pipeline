@@ -1,0 +1,62 @@
+{
+  "_metadata": {
+    "model_family": "dynamic_graph_xgboost",
+    "experiment_suffix": "v5_memory_dynamic_only",
+    "dynamic_only": true,
+    "drop_customer_type": true,
+    "drop_static_profile": true,
+    "transaction_time_windows": {
+      "train": [
+        "2025-07-01",
+        "2025-10-31 23:59:59"
+      ],
+      "valid": [
+        "2025-11-01",
+        "2025-11-30 23:59:59"
+      ],
+      "test": [
+        "2025-12-01",
+        "2025-12-31 23:59:59"
+      ]
+    },
+    "core_requirement_mapping": {
+      "anonymized_account_nodes": "account_id",
+      "anonymized_transfer_edges": "src_account_id -> dst_account_id",
+      "time_bucket": "dyn_week_bucket / dyn_day_bucket / dyn_hour_bucket / dyn_part_of_day",
+      "amount_bin": "dyn_amount_bin from train quantiles",
+      "temporal_motif": "dyn_motif_* 快进快出、多入一出、一入多出事件流模体",
+      "temporal_memory": "dyn_mem_* 时间衰减节点记忆，半衰期覆盖 1h/6h/24h/7d",
+      "risk_label": "Strategy A suspect vs other, victim filtered"
+    },
+    "leakage_policy": "动态特征按 split 内交易构建；金额分箱边界只由 train 计算；标签字段不进入特征。"
+  },
+  "model5_xgb_dynamic_graph_strategy_A": {
+    "status": "ok",
+    "feature_count": 180,
+    "best_iteration": 0,
+    "valid": {
+      "auc": 0.7180244582707573,
+      "pr_auc_average_precision": 0.028839725629682105,
+      "top1pct_k": 100,
+      "top1pct_hits": 1,
+      "top1pct_precision": 0.01,
+      "top1pct_recall": 0.01694915254237288,
+      "top5pct_k": 497,
+      "top5pct_hits": 1,
+      "top5pct_precision": 0.002012072434607646,
+      "top5pct_recall": 0.01694915254237288
+    },
+    "test": {
+      "auc": 0.7358626904097834,
+      "pr_auc_average_precision": 0.029442280591830794,
+      "top1pct_k": 100,
+      "top1pct_hits": 1,
+      "top1pct_precision": 0.01,
+      "top1pct_recall": 0.01694915254237288,
+      "top5pct_k": 497,
+      "top5pct_hits": 1,
+      "top5pct_precision": 0.002012072434607646,
+      "top5pct_recall": 0.01694915254237288
+    }
+  }
+}

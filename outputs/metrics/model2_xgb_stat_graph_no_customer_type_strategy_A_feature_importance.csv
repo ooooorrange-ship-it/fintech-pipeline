@@ -1,0 +1,13 @@
+feature,gain
+graph_total_degree,1523.2860107421875
+graph_two_hop_neighbor_count,1151.93359375
+total_txn_count,615.149658203125
+total_amount_sum,352.77056884765625
+in_txn_per_active_day,130.14715576171875
+net_amount,88.79335021972656
+in_amount_sum,81.99585723876953
+account_age_months,65.03609466552734
+region_code,60.819793701171875
+out_txn_count,59.11177062988281
+pagerank,26.369478225708008
+graph_component_size,2.6380934715270996

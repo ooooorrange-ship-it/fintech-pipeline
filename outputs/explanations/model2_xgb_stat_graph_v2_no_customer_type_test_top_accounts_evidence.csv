@@ -1,0 +1,4 @@
+account_id,split,target,score,label_code,label_text,total_txn_count,total_amount_sum,counterparty_amount_top_ratio,burst_day_txn_ratio,fast_in_out_balance_ratio_24h,prior_in_before_out_out_amount_ratio_24h,multi_in_one_out_count_24h,graph_total_degree,graph_two_hop_neighbor_count,graph_path_through_proxy,pagerank,explain_txn_count,explain_amount_sum,explain_counterparty_count
+4379,test,1,0.955459,1,嫌疑人,0.0,0.0,0.0,0.0,0.0,0.0,0,0.0,0,0.0,3.590655713069054e-05,4,12000.0,2
+1740,test,1,0.6712172,1,嫌疑人,2.0,6332.08,0.5,1.0,0.0,0.0,0,2.0,3,0.0,6.685593274261989e-05,6,18828.88,2
+7265,test,1,0.32141677,1,嫌疑人,2.0,1128.6,0.5,1.0,0.0,0.0,0,2.0,0,0.0,3.590655713069054e-05,6,2633.3999999999996,2

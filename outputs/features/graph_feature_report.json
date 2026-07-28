@@ -1,0 +1,36 @@
+{
+  "splits": {
+    "train": {
+      "rows": 11087,
+      "cols": 87,
+      "path": "/Users/orange/Documents/study/金融科技大赛/outputs/features/graph_features_train.csv"
+    },
+    "valid": {
+      "rows": 11087,
+      "cols": 87,
+      "path": "/Users/orange/Documents/study/金融科技大赛/outputs/features/graph_features_valid.csv"
+    },
+    "test": {
+      "rows": 11087,
+      "cols": 87,
+      "path": "/Users/orange/Documents/study/金融科技大赛/outputs/features/graph_features_test.csv"
+    }
+  },
+  "node2vec": [
+    {
+      "split": "train",
+      "status": "ok",
+      "dimensions": 8
+    },
+    {
+      "split": "valid",
+      "status": "ok",
+      "dimensions": 8
+    },
+    {
+      "split": "test",
+      "status": "ok",
+      "dimensions": 8
+    }
+  ]
+}

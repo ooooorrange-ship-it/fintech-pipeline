@@ -1,0 +1,14 @@
+feature,gain
+total_txn_count,846.4383544921875
+total_amount_sum,582.7708129882812
+out_txn_count,423.31427001953125
+in_amount_sum,267.00323486328125
+in_amount_median,223.35386657714844
+out_active_days,103.58514404296875
+net_amount,74.7225341796875
+account_age_months,69.94357299804688
+region_code,66.83077239990234
+in_amount_per_txn,28.85126495361328
+in_amount_mean,14.812393188476562
+in_amount_max,12.045669555664062
+in_txn_per_active_day,7.941190719604492

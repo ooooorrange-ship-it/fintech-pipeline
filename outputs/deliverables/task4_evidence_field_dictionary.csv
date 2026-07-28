@@ -1,0 +1,9 @@
+field,name,usage
+score,模型风险分,越高表示模型判断越可疑
+total_txn_count,账户交易次数,账户在测试窗口内的交易活跃程度
+fast_in_out_balance_ratio_24h,24小时快进快出平衡度,用于识别资金快速流入后转出
+multi_in_one_out_count_24h,24小时多入一出次数,用于识别归集后集中转出
+graph_total_degree,图总度数,账户直接连接的交易对手规模
+pagerank,PageRank,账户在资金图谱中的相对重要性
+Top20 关联账户,关联账户清单,用于人工核验上下游账户
+多跳可疑路径,链路结构,用于解释资金流转路径

@@ -1,0 +1,12 @@
+feature,gain
+daily_txn_count_mean,3933.39404296875
+graph_two_hop_neighbor_count,3038.585693359375
+graph_neighbor_degree_max,1550.87939453125
+graph_nb_counterparty_amount_top_ratio_max,106.45868682861328
+graph_nb_counterparty_amount_top_ratio_mean,91.97667694091797
+graph_nb_burst_day_txn_ratio_max,53.393890380859375
+in_counterparty_nunique,36.63494873046875
+graph_nb_total_txn_count_mean,35.878273010253906
+in_txn_count,35.55470657348633
+in_amount_mean,32.3277587890625
+graph_in_two_hop_reach,27.9251708984375

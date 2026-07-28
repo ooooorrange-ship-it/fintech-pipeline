@@ -1,0 +1,38 @@
+{
+  "raw_rows": {
+    "accounts": 11087,
+    "transactions": 904395,
+    "labels": 11087
+  },
+  "clean_rows": {
+    "accounts": 11087,
+    "transactions": 904395,
+    "labels": 11087
+  },
+  "label_distribution_account_table": {
+    "0": 9875,
+    "1": 59,
+    "2": 1153
+  },
+  "label_distribution_label_table": {
+    "0": 9875,
+    "1": 59,
+    "2": 1153
+  },
+  "account_label_merge": {
+    "both": 11087,
+    "left_only": 0,
+    "right_only": 0
+  },
+  "account_label_mismatch_count": 0,
+  "transaction_flags": {
+    "self_loop": 440,
+    "non_positive_amount": 2,
+    "negative_amount": 2,
+    "zero_amount": 0
+  },
+  "time_range": {
+    "min": "2025-07-01 02:15:01",
+    "max": "2025-12-31 20:28:55"
+  }
+}

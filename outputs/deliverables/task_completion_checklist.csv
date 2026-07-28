@@ -1,0 +1,23 @@
+task,requirement,status,evidence_file_or_note
+任务1,账户节点表、交易边表、风险标签表构建,已完成,outputs/clean/*.csv
+任务1,动态资金图谱样本定义,已完成,task1_dynamic_graph_window_definition.json
+任务1,按时间顺序切分 train/valid/test,已完成,task1_time_split_leakage_audit.json
+任务1,未来交易泄露率为0,已完成,0.0000
+任务1,未来标签泄露率为0,数据受限,原始标签表没有标签时间；已保证标签字段不进入特征
+任务1,字段字典,已完成,task1_field_dictionary.csv
+任务1,节点/边/标签样例,已完成,task1_graph_samples/*.csv
+任务1,图统计报告,已完成,task1_graph_statistics_by_split.csv
+任务2,测试集 AUC >= 0.85,已完成,0.9880
+任务2,PR-AUC 较强XGB基线提升 >=20%,已完成,24.44%
+任务2,PR-AUC 较规则基线提升 >=20%,已完成,10117.21%
+任务2,Top5% 覆盖确认风险账户 >=50%,已完成,96.61%
+任务2,模型代码、特征说明、基线对比、指标报告,已完成,src/10_features_dynamic_graph.py + src/11_model_dynamic_graph_xgb.py + task2_model_metrics_summary.csv
+任务3,Top20 关联账户,已完成,task3_top20_associations.csv
+任务3,多跳可疑路径,已完成,task3_suspicious_paths.csv
+任务3,资金汇聚/分散结构,已完成,task3_fund_flow_structures.csv
+任务3,不少于5个典型案例,已完成,task3_typical_cases.md
+任务3,人工抽检通过率,待业务复核,已生成结构化证据，需队友按样例人工确认通过率
+任务4,研判报告模板,已完成,task4_judgement_report_template.md
+任务4,研判报告样例,已完成,task4_judgement_report_samples.md
+任务4,证据字段说明,已完成,task4_evidence_field_dictionary.csv
+任务4,可读性/一致性评估说明,已完成,task4_consistency_audit.csv

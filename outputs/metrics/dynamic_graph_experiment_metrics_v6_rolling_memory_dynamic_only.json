@@ -1,0 +1,99 @@
+{
+  "_metadata": {
+    "model_family": "dynamic_graph_xgboost",
+    "experiment_suffix": "v6_rolling_memory_dynamic_only",
+    "dynamic_only": true,
+    "drop_customer_type": true,
+    "drop_static_profile": true,
+    "transaction_time_windows": {
+      "train": [
+        "2025-07-01",
+        "2025-10-31 23:59:59"
+      ],
+      "valid": [
+        "2025-11-01",
+        "2025-11-30 23:59:59"
+      ],
+      "test": [
+        "2025-12-01",
+        "2025-12-31 23:59:59"
+      ]
+    },
+    "core_requirement_mapping": {
+      "anonymized_account_nodes": "account_id",
+      "anonymized_transfer_edges": "src_account_id -> dst_account_id",
+      "time_bucket": "dyn_week_bucket / dyn_day_bucket / dyn_hour_bucket / dyn_part_of_day",
+      "amount_bin": "dyn_amount_bin from train quantiles",
+      "temporal_motif": "dyn_motif_* 快进快出、多入一出、一入多出事件流模体",
+      "temporal_memory": "dyn_mem_* 时间衰减节点记忆，半衰期覆盖 1h/6h/24h/7d",
+      "risk_label": "Strategy A suspect vs other, victim filtered"
+    },
+    "leakage_policy": "动态特征按滚动历史窗口构建，只使用截至 split end 的交易；金额分箱边界只由 train 计算；标签字段不进入特征。"
+  },
+  "model5_xgb_dynamic_graph_strategy_A": {
+    "status": "ok",
+    "feature_count": 180,
+    "best_iteration": 1,
+    "candidate_pool_policy": "训练和候选池指标剔除受害人；all_accounts 指标保留全量账户排名。",
+    "valid": {
+      "auc": 0.7941420296073803,
+      "pr_auc_average_precision": 0.03256195369501541,
+      "top1pct_k": 100,
+      "top1pct_hits": 1,
+      "top1pct_precision": 0.01,
+      "top1pct_recall": 0.01694915254237288,
+      "top5pct_k": 497,
+      "top5pct_hits": 2,
+      "top5pct_precision": 0.004024144869215292,
+      "top5pct_recall": 0.03389830508474576
+    },
+    "test": {
+      "auc": 0.8066148895086891,
+      "pr_auc_average_precision": 0.03376116813046822,
+      "top1pct_k": 100,
+      "top1pct_hits": 1,
+      "top1pct_precision": 0.01,
+      "top1pct_recall": 0.01694915254237288,
+      "top5pct_k": 497,
+      "top5pct_hits": 2,
+      "top5pct_precision": 0.004024144869215292,
+      "top5pct_recall": 0.03389830508474576
+    },
+    "train_all_accounts": {
+      "auc": 0.7898385004580021,
+      "pr_auc_average_precision": 0.030892248668806695,
+      "top1pct_k": 111,
+      "top1pct_hits": 4,
+      "top1pct_precision": 0.036036036036036036,
+      "top1pct_recall": 0.06779661016949153,
+      "top5pct_k": 555,
+      "top5pct_hits": 9,
+      "top5pct_precision": 0.016216216216216217,
+      "top5pct_recall": 0.15254237288135594
+    },
+    "valid_all_accounts": {
+      "auc": 0.771377018744275,
+      "pr_auc_average_precision": 0.017959779077769727,
+      "top1pct_k": 111,
+      "top1pct_hits": 2,
+      "top1pct_precision": 0.018018018018018018,
+      "top1pct_recall": 0.03389830508474576,
+      "top5pct_k": 555,
+      "top5pct_hits": 9,
+      "top5pct_precision": 0.016216216216216217,
+      "top5pct_recall": 0.15254237288135594
+    },
+    "test_all_accounts": {
+      "auc": 0.7903226302232222,
+      "pr_auc_average_precision": 0.018639619397294502,
+      "top1pct_k": 111,
+      "top1pct_hits": 2,
+      "top1pct_precision": 0.018018018018018018,
+      "top1pct_recall": 0.03389830508474576,
+      "top5pct_k": 555,
+      "top5pct_hits": 9,
+      "top5pct_precision": 0.016216216216216217,
+      "top5pct_recall": 0.15254237288135594
+    }
+  }
+}
