@@ -119,9 +119,9 @@
       "detail": "相对强XGB提升=0.24444788811646034"
     },
     {
-      "name": "任务3人工抽检状态真实",
+      "name": "任务3关联命中或人工抽检指标",
       "status": "warning",
-      "detail": "人工抽检通过率需要业务同学在 task4_consistency_audit.csv 基础上复核后填写；当前脚本只生成可抽检证据。"
+      "detail": "关联命中率=0.00%，已抽检=0/5，人工通过率=0.00%"
     },
     {
       "name": "任务4典型案例不少于5个",
@@ -147,10 +147,31 @@
       "name": "交付物缺边恢复队列行数一致",
       "status": "pass",
       "detail": "layered=56，deliverable=56，audit=56"
+    },
+    {
+      "name": "最终模型权重与清单",
+      "status": "pass",
+      "detail": "缺失=[]"
+    },
+    {
+      "name": "Conda环境文件",
+      "status": "pass",
+      "detail": "environment.yml"
+    },
+    {
+      "name": "部署文档",
+      "status": "pass",
+      "detail": "DEPLOYMENT.md"
+    },
+    {
+      "name": "提交就绪审计",
+      "status": "pass",
+      "detail": "status=pass，error_count=0"
     }
   ],
   "known_limitations": [
     "原始风险标签表没有标签确认时间，不能严格宣称预测未来新增风险标签。",
+    "59个确认嫌疑账户中56个在交易边表内无入边或出边，不能生成真实资金链路。",
     "任务3人工抽检通过率需要业务成员对生成证据进行人工确认。"
   ]
 }

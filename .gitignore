@@ -1,5 +1,6 @@
 # 忽略环境与缓存
 .venv/
+.conda_env/
 __pycache__/
 *.pyc
 .DS_Store

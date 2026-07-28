@@ -11,7 +11,7 @@ from pathlib import Path
 import pandas as pd
 
 sys.path.append(str(Path(__file__).resolve().parents[1]))
-from config import CLEAN_DIR, DOCS_DIR, EXPLANATION_DIR, ID_COL, LABEL_DIR, OUTPUT_DIR, PREDICTION_DIR, SPLITS, SRC_COL, DST_COL, TIME_COL  # noqa: E402
+from config import CLEAN_DIR, DOCS_DIR, EXPLANATION_DIR, ID_COL, LABEL_DIR, MODEL_DIR, OUTPUT_DIR, PREDICTION_DIR, SPLITS, SRC_COL, DST_COL, TIME_COL  # noqa: E402
 
 
 DELIVERABLE_DIR = OUTPUT_DIR / "deliverables"
@@ -111,7 +111,20 @@ def audit_deliverables(checks: list[dict]) -> None:
     add_check(checks, "任务2 AUC达标", bool(task2.get("auc_requirement_auc_ge_0_85")), f"AUC={task2.get('test_auc')}")
     add_check(checks, "任务2 Top5%召回达标", bool(task2.get("top5pct_recall_requirement_ge_50pct")), f"Top5%召回={task2.get('test_top5pct_recall')}")
     add_check(checks, "任务2强基线PR-AUC提升20%", bool(task2.get("pr_auc_improvement_ge_20pct")), f"相对强XGB提升={task2.get('pr_auc_improvement_vs_xgb_ratio')}", severity="warning")
-    add_check(checks, "任务3人工抽检状态真实", "manual_review_note" in task3 and "待" in str(task3.get("manual_review_note")), task3.get("manual_review_note", ""), severity="warning")
+    review_path = DELIVERABLE_DIR / "task3_manual_review_form.csv"
+    review = pd.read_csv(review_path, keep_default_na=False) if review_path.exists() else pd.DataFrame()
+    reviewed = review[review.get("manual_pass", pd.Series(dtype=str)).astype(str).str.strip().ne("")] if not review.empty else pd.DataFrame()
+    passed = reviewed["manual_pass"].astype(str).str.strip().str.lower().isin({"1", "true", "yes", "y", "是", "通过"}).sum() if not reviewed.empty else 0
+    manual_pass_rate = float(passed / len(reviewed)) if len(reviewed) else 0.0
+    association_hit_rate = float(task3.get("confirmed_risk_association_hit_rate", 0.0))
+    task3_metric_met = association_hit_rate >= 0.5 or (len(reviewed) >= 5 and manual_pass_rate >= 0.7)
+    add_check(
+        checks,
+        "任务3关联命中或人工抽检指标",
+        task3_metric_met,
+        f"关联命中率={association_hit_rate:.2%}，已抽检={len(reviewed)}/5，人工通过率={manual_pass_rate:.2%}",
+        severity="warning",
+    )
     add_check(checks, "任务4典型案例不少于5个", int(task3.get("typical_case_count", 0)) >= 5, f"案例数={task3.get('typical_case_count')}")
     for name, key, layered_name, deliverable_name in [
         ("交付物关联行数一致", "top20_association_rows", "risk_review_queue_top20_associations.csv", "task3_top20_associations.csv"),
@@ -129,6 +142,26 @@ def audit_deliverables(checks: list[dict]) -> None:
             layered_count == deliverable_count == int(task3.get(key, -2)),
             f"layered={layered_count}，deliverable={deliverable_count}，audit={task3.get(key)}",
         )
+
+
+def audit_submission_assets(checks: list[dict]) -> None:
+    required_models = [
+        MODEL_DIR / "model5_xgb_dynamic_graph_v6_rolling_memory_dynamic_no_customer_type_strategy_A.json",
+        MODEL_DIR / "model3_hetero_prop_v3_no_customer_type_strategy_A.joblib",
+        MODEL_DIR / "model4_stack_v6_rolling_memory_dynamic_no_customer_type_strategy_A.json",
+        MODEL_DIR / "model_manifest.json",
+    ]
+    missing_models = [path.name for path in required_models if not path.exists()]
+    add_check(checks, "最终模型权重与清单", not missing_models, f"缺失={missing_models}")
+    add_check(checks, "Conda环境文件", (OUTPUT_DIR.parent / "environment.yml").exists(), "environment.yml")
+    add_check(checks, "部署文档", (OUTPUT_DIR.parent / "DEPLOYMENT.md").exists(), "DEPLOYMENT.md")
+    readiness = read_json(DELIVERABLE_DIR / "submission_readiness_audit.json")
+    add_check(
+        checks,
+        "提交就绪审计",
+        readiness.get("status") == "pass" and int(readiness.get("error_count", 1)) == 0,
+        f"status={readiness.get('status')}，error_count={readiness.get('error_count')}",
+    )
 
 
 def render_markdown(result: dict) -> str:
@@ -149,6 +182,7 @@ def main() -> None:
     audit_leakage(checks)
     audit_explanations(checks, accounts)
     audit_deliverables(checks)
+    audit_submission_assets(checks)
     errors = [x for x in checks if x["status"] == "error"]
     warnings = [x for x in checks if x["status"] == "warning"]
     result = {
@@ -158,6 +192,7 @@ def main() -> None:
         "checks": checks,
         "known_limitations": [
             "原始风险标签表没有标签确认时间，不能严格宣称预测未来新增风险标签。",
+            "59个确认嫌疑账户中56个在交易边表内无入边或出边，不能生成真实资金链路。",
             "任务3人工抽检通过率需要业务成员对生成证据进行人工确认。",
         ],
     }

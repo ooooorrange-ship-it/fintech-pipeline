@@ -6,17 +6,19 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 import scipy.sparse as sp
+import joblib
 from sklearn.impute import SimpleImputer
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import average_precision_score, roc_auc_score
 from sklearn.preprocessing import StandardScaler
 
 sys.path.append(str(Path(__file__).resolve().parents[1]))
-from config import CLEAN_DIR, FEATURE_DIR, ID_COL, LABEL_DIR, METRIC_DIR, PREDICTION_DIR, RANDOM_SEED, SPLITS, SRC_COL, DST_COL, TIME_COL  # noqa: E402
+from config import CLEAN_DIR, FEATURE_DIR, ID_COL, LABEL_DIR, METRIC_DIR, MODEL_DIR, PREDICTION_DIR, RANDOM_SEED, SPLITS, SRC_COL, DST_COL, TIME_COL  # noqa: E402
 
 
 def ensure_dirs() -> None:
     METRIC_DIR.mkdir(parents=True, exist_ok=True)
+    MODEL_DIR.mkdir(parents=True, exist_ok=True)
     PREDICTION_DIR.mkdir(parents=True, exist_ok=True)
 
 
@@ -151,7 +153,7 @@ def fit_graph_model(
     train_adj: tuple[sp.csr_matrix, sp.csr_matrix, sp.csr_matrix],
     valid_adj: tuple[sp.csr_matrix, sp.csr_matrix, sp.csr_matrix],
     test_adj: tuple[sp.csr_matrix, sp.csr_matrix, sp.csr_matrix],
-) -> tuple[LogisticRegression, dict]:
+) -> tuple[LogisticRegression, StandardScaler, SimpleImputer, dict, np.ndarray, np.ndarray, np.ndarray, dict]:
     scaler = StandardScaler()
     x_train = scaler.fit_transform(x_train)
     x_valid = scaler.transform(x_valid)
@@ -207,7 +209,7 @@ def fit_graph_model(
         "test": evaluate(y_test, test_score[test_mask]),
     }
     masks = {"train": train_mask, "valid": valid_mask, "test": test_mask}
-    return model, metrics, x_train_p, x_valid_p, x_test_p, masks
+    return model, scaler, imputer, metrics, x_train_p, x_valid_p, x_test_p, masks
 
 
 def parse_args() -> argparse.Namespace:
@@ -236,7 +238,7 @@ def main() -> None:
     valid_adj = build_sparse_adjacency(transactions, accounts, *SPLITS["valid"])
     test_adj = build_sparse_adjacency(transactions, accounts, *SPLITS["test"])
 
-    model, metrics, x_train_p, x_valid_p, x_test_p, masks = fit_graph_model(
+    model, scaler, imputer, metrics, x_train_p, x_valid_p, x_test_p, masks = fit_graph_model(
         train_df,
         valid_df,
         test_df,
@@ -269,6 +271,21 @@ def main() -> None:
     prefixes = ["self", "out_nb", "in_nb", "und_nb", "und2_nb", "delta", "mix"]
     for prefix in prefixes:
         feature_names.extend([f"{prefix}::{col}" for col in base_cols])
+    artifact_stem = output_stem("model3_hetero_prop", suffix)
+    joblib.dump(
+        {
+            "model": model,
+            "scaler": scaler,
+            "imputer": imputer,
+            "base_feature_columns": base_cols,
+            "propagated_feature_names": feature_names,
+            "propagation_prefixes": prefixes,
+            "drop_customer_type": bool(args.drop_customer_type),
+            "drop_static_profile": bool(args.drop_static_profile),
+            "random_seed": RANDOM_SEED,
+        },
+        MODEL_DIR / f"{artifact_stem}_strategy_A.joblib",
+    )
     importance = (
         pd.DataFrame({"feature": feature_names, "coef": coef, "abs_coef": np.abs(coef)})
         .sort_values("abs_coef", ascending=False)

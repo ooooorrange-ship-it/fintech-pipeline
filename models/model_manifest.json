@@ -1,0 +1,35 @@
+{
+  "final_model": "model4_stack_v6_rolling_memory_dynamic_no_customer_type_strategy_A",
+  "artifacts": [
+    {
+      "role": "dynamic_xgboost",
+      "path": "models/model5_xgb_dynamic_graph_v6_rolling_memory_dynamic_no_customer_type_strategy_A.json",
+      "size_bytes": 604579,
+      "sha256": "250e17a3f2c42951506460d2ff8e8613ca80a8f47d68180af04ad59f5e037c22"
+    },
+    {
+      "role": "heterophily_propagation",
+      "path": "models/model3_hetero_prop_v3_no_customer_type_strategy_A.joblib",
+      "size_bytes": 48592,
+      "sha256": "32d08adb75bcc05633df3201e02587a48c2e2e4cf65439c400efdf7b0807121d"
+    },
+    {
+      "role": "stack_config",
+      "path": "models/model4_stack_v6_rolling_memory_dynamic_no_customer_type_strategy_A.json",
+      "size_bytes": 929,
+      "sha256": "9d5a86fcc5a3ad44e76df38a58d2f832bbabd2a9be34f8affe784fc960a544ef"
+    }
+  ],
+  "package_versions": {
+    "numpy": "1.26.4",
+    "pandas": "2.2.3",
+    "scipy": "1.17.1",
+    "scikit-learn": "1.9.0",
+    "xgboost": "3.3.0",
+    "networkx": "3.6.1",
+    "gensim": "4.4.0",
+    "joblib": "1.5.3",
+    "node2vec": "0.5.0"
+  },
+  "reproduction_document": "DEPLOYMENT.md"
+}

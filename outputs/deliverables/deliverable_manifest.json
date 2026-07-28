@@ -67,11 +67,12 @@
     "confirmed_suspect_link_coverage_rate": 0.05084745762711865,
     "typical_case_count": 5,
     "case_evidence_completeness_rate": 1.0,
-    "manual_review_note": "人工抽检通过率需要业务同学在 task4_consistency_audit.csv 基础上复核后填写；当前脚本只生成可抽检证据。"
+    "manual_review_note": "人工抽检通过率需要业务同学填写 task3_manual_review_form.csv；当前脚本只生成 5 个有真实交易边的可抽检案例。"
   },
   "files": [
     "deliverable_manifest.json",
     "final_project_audit.json",
+    "submission_readiness_audit.json",
     "task1_dynamic_graph_window_definition.json",
     "task1_field_dictionary.csv",
     "task1_graph_samples/test_edges_sample.csv",
@@ -89,6 +90,7 @@
     "task2_requirement_audit.json",
     "task3_fund_flow_structures.csv",
     "task3_link_recovery_queue.csv",
+    "task3_manual_review_form.csv",
     "task3_suspicious_paths.csv",
     "task3_task4_explanation_audit.json",
     "task3_top20_associations.csv",
@@ -102,6 +104,7 @@
     "confirmed_suspect_explainability_audit.md",
     "final_project_audit.md",
     "layered_judgement_report_samples.md",
+    "submission_readiness_audit.md",
     "task3_link_visualization_samples.md",
     "task3_typical_cases.md",
     "task4_judgement_report_samples.md",

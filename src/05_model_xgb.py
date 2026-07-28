@@ -7,11 +7,12 @@ import numpy as np
 import pandas as pd
 
 sys.path.append(str(Path(__file__).resolve().parents[1]))
-from config import FEATURE_DIR, ID_COL, LABEL_DIR, METRIC_DIR, PREDICTION_DIR, RANDOM_SEED, SPLITS  # noqa: E402
+from config import FEATURE_DIR, ID_COL, LABEL_DIR, METRIC_DIR, MODEL_DIR, PREDICTION_DIR, RANDOM_SEED, SPLITS  # noqa: E402
 
 
 def ensure_dirs() -> None:
     METRIC_DIR.mkdir(parents=True, exist_ok=True)
+    MODEL_DIR.mkdir(parents=True, exist_ok=True)
     PREDICTION_DIR.mkdir(parents=True, exist_ok=True)
 
 
@@ -247,7 +248,7 @@ def run_xgb_model(
         predictions.append(pd.DataFrame({ID_COL: all_df[ID_COL], "split": split, "target": all_y, "score": score}))
 
     model_stem = output_stem(model_name, suffix)
-    model.save_model(str(PREDICTION_DIR / f"{model_stem}_strategy_{strategy}.json"))
+    model.save_model(str(MODEL_DIR / f"{model_stem}_strategy_{strategy}.json"))
     importance = model.get_score(importance_type="gain")
     importance_df = (
         pd.DataFrame(

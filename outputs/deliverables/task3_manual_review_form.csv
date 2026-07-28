@@ -1,0 +1,6 @@
+case_id,account_id,case_type,has_real_transaction_evidence,review_edge_traceable,review_conclusion_consistent,review_business_readable,manual_pass,reviewer,review_note
+case_1,4379,链路证据型,True,,,,,,
+case_2,1740,直接关联型,True,,,,,,
+case_3,7265,直接关联型,True,,,,,,
+case_4,9544,链路证据型,True,,,,,,
+case_5,10083,链路证据型,True,,,,,,

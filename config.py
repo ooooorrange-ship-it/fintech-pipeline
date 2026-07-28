@@ -17,6 +17,7 @@ FEATURE_DIR = OUTPUT_DIR / "features"
 METRIC_DIR = OUTPUT_DIR / "metrics"
 PREDICTION_DIR = OUTPUT_DIR / "predictions"
 EXPLANATION_DIR = OUTPUT_DIR / "explanations"
+MODEL_DIR = PROJECT_ROOT / "models"
 
 RANDOM_SEED = 2026
 

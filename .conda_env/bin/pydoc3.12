@@ -1,5 +1,0 @@
-#!/Users/orange/Documents/study/金融科技大赛/.conda_env/bin/python3.12
-
-import pydoc
-if __name__ == '__main__':
-    pydoc.cli()

@@ -1,0 +1,22 @@
+{
+  "artifact_type": "rank_weighted_ensemble",
+  "experiment_suffix": "v6_rolling_memory_dynamic_no_customer_type",
+  "selected_weights": {
+    "xgb": 0.0,
+    "gnn": 0.1,
+    "rule": 0.0,
+    "dynamic": 0.9
+  },
+  "normalization": "within_split_ordinal_rank_divided_by_n_minus_1",
+  "component_predictions": {
+    "xgb": "outputs/predictions/model2_xgb_stat_graph_v2_no_customer_type_strategy_A.csv",
+    "gnn": "outputs/predictions/model3_hetero_prop_v3_no_customer_type_strategy_A.csv",
+    "rule": "outputs/predictions/model0_rule_v2_no_customer_type_strategy_A.csv",
+    "dynamic": "outputs/predictions/model5_xgb_dynamic_graph_v6_rolling_memory_dynamic_no_customer_type_strategy_A.csv"
+  },
+  "required_model_artifacts": {
+    "gnn": "model3_hetero_prop_v3_no_customer_type_strategy_A.joblib",
+    "dynamic": "model5_xgb_dynamic_graph_v6_rolling_memory_dynamic_no_customer_type_strategy_A.json"
+  },
+  "random_seed": 2026
+}

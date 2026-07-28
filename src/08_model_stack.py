@@ -11,11 +11,12 @@ if str(Path(__file__).resolve().parents[1]) not in sys.path:
     sys.path.append(str(Path(__file__).resolve().parents[1]))
     sys_path_added = True
 
-from config import METRIC_DIR, PREDICTION_DIR, ID_COL, RANDOM_SEED  # noqa: E402
+from config import METRIC_DIR, MODEL_DIR, PREDICTION_DIR, ID_COL, RANDOM_SEED  # noqa: E402
 
 
 def ensure_dirs() -> None:
     METRIC_DIR.mkdir(parents=True, exist_ok=True)
+    MODEL_DIR.mkdir(parents=True, exist_ok=True)
 
 
 def average_precision(y_true: np.ndarray, score: np.ndarray) -> float:
@@ -272,6 +273,25 @@ def main() -> None:
         report["valid_all_accounts"] = valid_all_metrics
         report["test_all_accounts"] = test_all_metrics
         report["evaluation_policy"] = "valid/test 为各分支共同覆盖的 Strategy A 候选池；*_all_accounts 为全量账户排名，受害人保留在候选池中。"
+    stack_artifact = {
+        "artifact_type": "rank_weighted_ensemble",
+        "experiment_suffix": suffix,
+        "selected_weights": weights,
+        "normalization": "within_split_ordinal_rank_divided_by_n_minus_1",
+        "component_predictions": {
+            "xgb": str(xgb_path),
+            "gnn": str(gnn_path),
+            "rule": str(rule_path),
+            "dynamic": str(dynamic_path) if dynamic_path else "",
+        },
+        "required_model_artifacts": {
+            "gnn": f"{Path(gnn_path).stem}.joblib",
+            "dynamic": f"{Path(dynamic_path).stem}.json" if dynamic_path else "",
+        },
+        "random_seed": RANDOM_SEED,
+    }
+    with (MODEL_DIR / f"{output_stem('model4_stack', suffix)}_strategy_A.json").open("w", encoding="utf-8") as f:
+        json.dump(stack_artifact, f, ensure_ascii=False, indent=2)
     with (METRIC_DIR / f"{output_stem('stack_experiment_metrics', suffix)}.json").open("w", encoding="utf-8") as f:
         json.dump(report, f, ensure_ascii=False, indent=2)
     print(json.dumps(report, ensure_ascii=False, indent=2))

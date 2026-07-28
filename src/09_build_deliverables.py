@@ -781,8 +781,25 @@ def build_task3_and_task4(
     high_risk_accounts = predictions.sort_values("score", ascending=False).head(30)
     cases_base = predictions[predictions["label_code"].eq(1)].copy()
     active_cases = cases_base[cases_base[ID_COL].isin(active_ids)].sort_values("score", ascending=False)
-    inactive_cases = cases_base[~cases_base[ID_COL].isin(active_ids)].sort_values("score", ascending=False)
-    case_accounts = pd.concat([active_cases, inactive_cases], ignore_index=True).head(5)
+    active_case_ids = set(active_cases[ID_COL].astype(int))
+    layered_path_source = EXPLANATION_DIR / "layered" / "risk_review_queue_suspicious_paths.csv"
+    path_root_ids = (
+        set(pd.read_csv(layered_path_source)["root_account_id"].astype(int))
+        if layered_path_source.exists()
+        else set()
+    )
+    active_path_discovery_cases = predictions[
+        predictions[ID_COL].isin(path_root_ids) & ~predictions[ID_COL].isin(active_case_ids)
+    ].sort_values("score", ascending=False)
+    active_discovery_cases = predictions[
+        predictions[ID_COL].isin(active_ids)
+        & ~predictions[ID_COL].isin(active_case_ids)
+        & ~predictions[ID_COL].isin(path_root_ids)
+    ].sort_values("score", ascending=False)
+    # 典型链路案例必须有真实交易边。优先已确认嫌疑账户，再用命中多跳路径的高风险账户补足。
+    case_accounts = pd.concat(
+        [active_cases, active_path_discovery_cases, active_discovery_cases], ignore_index=True
+    ).head(5)
 
     root_ids = sorted(set(high_risk_accounts[ID_COL].astype(int)).union(set(case_accounts[ID_COL].astype(int))))
     # 分层解释脚本是正式巡检口径，直接复用其结果，避免网页、解释目录和交付物数量不一致。
@@ -853,8 +870,8 @@ def build_task3_and_task4(
         elif has_assoc:
             case_type = "直接关联型"
         else:
-            case_type = "账户行为异常型"
-        # 模型分数 + 账户画像/行为特征构成两类基础证据；存在交易边时再追加链路/关联证据。
+            case_type = "节点画像高风险型（无交易边）"
+        # 模型分数和节点画像是审计线索，只有真实交易边才计为链路证据。
         evidence_types = 2 + int(has_path or has_assoc)
         case_rows.append(
             {
@@ -1001,6 +1018,24 @@ def build_task3_and_task4(
     evidence_dict.to_csv(DELIVERABLE_DIR / "task4_evidence_field_dictionary.csv", index=False)
     pd.DataFrame(audit_rows).to_csv(DELIVERABLE_DIR / "task4_consistency_audit.csv", index=False)
 
+    manual_review_rows = []
+    for row in case_rows:
+        manual_review_rows.append(
+            {
+                "case_id": row["case_id"],
+                "account_id": row["account_id"],
+                "case_type": row["case_type"],
+                "has_real_transaction_evidence": bool(row["has_direct_association"] or row["has_suspicious_path"]),
+                "review_edge_traceable": "",
+                "review_conclusion_consistent": "",
+                "review_business_readable": "",
+                "manual_pass": "",
+                "reviewer": "",
+                "review_note": "",
+            }
+        )
+    pd.DataFrame(manual_review_rows).to_csv(DELIVERABLE_DIR / "task3_manual_review_form.csv", index=False)
+
     assoc_hit_rate = 0.0 if associations.empty else float(associations["label_code"].isin([1, 2]).mean())
     confirmed_with_history = int(cases_base[ID_COL].isin(active_ids).sum())
     audit = {
@@ -1016,7 +1051,7 @@ def build_task3_and_task4(
         "confirmed_suspect_link_coverage_rate": float(confirmed_with_history / len(cases_base)) if len(cases_base) else 0.0,
         "typical_case_count": int(len(cases)),
         "case_evidence_completeness_rate": float((cases["evidence_type_count"] >= 2).mean()) if len(cases) else 0.0,
-        "manual_review_note": "人工抽检通过率需要业务同学在 task4_consistency_audit.csv 基础上复核后填写；当前脚本只生成可抽检证据。",
+        "manual_review_note": "人工抽检通过率需要业务同学填写 task3_manual_review_form.csv；当前脚本只生成 5 个有真实交易边的可抽检案例。",
     }
     json_dump(audit, DELIVERABLE_DIR / "task3_task4_explanation_audit.json")
     return audit

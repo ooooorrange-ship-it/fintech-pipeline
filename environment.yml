@@ -7,13 +7,13 @@ dependencies:
   - numpy=1.26
   - pandas=2.2
   - openpyxl=3.1
-  - scipy
-  - scikit-learn
-  - xgboost
-  - networkx
-  - gensim
-  - tqdm
-  - joblib
-  - llvm-openmp
+  - scipy=1.17
+  - scikit-learn=1.9
+  - xgboost=3.3
+  - networkx=3.6
+  - gensim=4.4
+  - tqdm=4.69
+  - joblib=1.5
+  - llvm-openmp=22
   - pip:
       - node2vec==0.5.0

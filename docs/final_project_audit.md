@@ -27,11 +27,15 @@
 | 任务2 AUC达标 | pass | AUC=0.9879674541844181 |
 | 任务2 Top5%召回达标 | pass | Top5%召回=0.9661016949152542 |
 | 任务2强基线PR-AUC提升20% | pass | 相对强XGB提升=0.24444788811646034 |
-| 任务3人工抽检状态真实 | warning | 人工抽检通过率需要业务同学在 task4_consistency_audit.csv 基础上复核后填写；当前脚本只生成可抽检证据。 |
+| 任务3关联命中或人工抽检指标 | warning | 关联命中率=0.00%，已抽检=0/5，人工通过率=0.00% |
 | 任务4典型案例不少于5个 | pass | 案例数=5 |
 | 交付物关联行数一致 | pass | layered=70，deliverable=70，audit=70 |
 | 交付物路径行数一致 | pass | layered=144，deliverable=144，audit=144 |
 | 交付物资金结构行数一致 | pass | layered=2，deliverable=2，audit=2 |
 | 交付物缺边恢复队列行数一致 | pass | layered=56，deliverable=56，audit=56 |
+| 最终模型权重与清单 | pass | 缺失=[] |
+| Conda环境文件 | pass | environment.yml |
+| 部署文档 | pass | DEPLOYMENT.md |
+| 提交就绪审计 | pass | status=pass，error_count=0 |
 
 说明：warning 不代表代码不可运行，表示赛题口径或人工环节仍需在答辩中如实说明。

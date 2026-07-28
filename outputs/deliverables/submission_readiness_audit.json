@@ -1,0 +1,111 @@
+{
+  "status": "pass",
+  "error_count": 0,
+  "warning_count": 0,
+  "checks": [
+    {
+      "name": "完整源代码",
+      "status": "pass",
+      "detail": "脚本数=16，缺失=[]"
+    },
+    {
+      "name": "Conda 环境文件",
+      "status": "pass",
+      "detail": "environment.yml"
+    },
+    {
+      "name": "部署文档",
+      "status": "pass",
+      "detail": "DEPLOYMENT.md"
+    },
+    {
+      "name": "项目说明",
+      "status": "pass",
+      "detail": "readme.md"
+    },
+    {
+      "name": "可复现的清洗数据输入",
+      "status": "pass",
+      "detail": "缺失=[]"
+    },
+    {
+      "name": "确认嫌疑账户交易边覆盖审计",
+      "status": "pass",
+      "detail": "嫌疑账户=59，有边=3，无边=56"
+    },
+    {
+      "name": "原始/清洗交易行数一致",
+      "status": "pass",
+      "detail": "raw=904395，clean=904395"
+    },
+    {
+      "name": "关键比赛输出",
+      "status": "pass",
+      "detail": "缺失=[]"
+    },
+    {
+      "name": "运行依赖可导入",
+      "status": "pass",
+      "detail": "缺失=[]"
+    },
+    {
+      "name": "模型文件 dynamic_xgboost",
+      "status": "pass",
+      "detail": "models/model5_xgb_dynamic_graph_v6_rolling_memory_dynamic_no_customer_type_strategy_A.json"
+    },
+    {
+      "name": "模型文件 heterophily_propagation",
+      "status": "pass",
+      "detail": "models/model3_hetero_prop_v3_no_customer_type_strategy_A.joblib"
+    },
+    {
+      "name": "模型文件 stack_config",
+      "status": "pass",
+      "detail": "models/model4_stack_v6_rolling_memory_dynamic_no_customer_type_strategy_A.json"
+    },
+    {
+      "name": "动态 XGBoost 权重可加载",
+      "status": "pass",
+      "detail": "特征数=383"
+    },
+    {
+      "name": "图传播模型包可加载",
+      "status": "pass",
+      "detail": "缺失键=[]"
+    },
+    {
+      "name": "融合权重可加载",
+      "status": "pass",
+      "detail": "weights={'xgb': 0.0, 'gnn': 0.1, 'rule': 0.0, 'dynamic': 0.9}"
+    },
+    {
+      "name": "模型校验清单",
+      "status": "pass",
+      "detail": "models/model_manifest.json"
+    }
+  ],
+  "model_artifacts": [
+    {
+      "role": "dynamic_xgboost",
+      "path": "models/model5_xgb_dynamic_graph_v6_rolling_memory_dynamic_no_customer_type_strategy_A.json",
+      "size_bytes": 604579,
+      "sha256": "250e17a3f2c42951506460d2ff8e8613ca80a8f47d68180af04ad59f5e037c22"
+    },
+    {
+      "role": "heterophily_propagation",
+      "path": "models/model3_hetero_prop_v3_no_customer_type_strategy_A.joblib",
+      "size_bytes": 48592,
+      "sha256": "32d08adb75bcc05633df3201e02587a48c2e2e4cf65439c400efdf7b0807121d"
+    },
+    {
+      "role": "stack_config",
+      "path": "models/model4_stack_v6_rolling_memory_dynamic_no_customer_type_strategy_A.json",
+      "size_bytes": 929,
+      "sha256": "9d5a86fcc5a3ad44e76df38a58d2f832bbabd2a9be34f8affe784fc960a544ef"
+    }
+  ],
+  "known_data_limitations": [
+    "风险标签表无标签确认时间。",
+    "59个确认嫌疑账户中56个未出现在交易边表。"
+  ]
+}

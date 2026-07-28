@@ -1,5 +1,17 @@
 # 基于资金图谱的涉诈账户发现模型说明
 
+> 评委安装、数据放置、完整运行顺序和模型文件说明见 [`DEPLOYMENT.md`](DEPLOYMENT.md)。
+
+提交前快速检查：
+
+```bash
+conda activate fintech09
+python src/14_submission_audit.py
+python src/13_final_project_audit.py
+```
+
+两个审计均应输出 `status: pass` 且 `error_count: 0`。
+
 ## 1. 项目任务
 
 本项目对应第五届中国研究生金融科技创新大赛“揭榜挂帅”主赛道赛题：
@@ -82,11 +94,13 @@ dynamic = 0.9
 
 标签分布：
 
-| 标签 | 含义 | 数量 |
-|---|---|---:|
-| 0 | 其它 | 9875 |
-| 1 | 嫌疑人 | 59 |
-| 2 | 受害人 | 1153 |
+| 标签 | 含义 | 数量 | 全量占比 |
+|---|---|---:|---:|
+| 0 | 其它 | 9875 | 89.07% |
+| 1 | 嫌疑人 | 59 | 0.53% |
+| 2 | 受害人 | 1153 | 10.40% |
+
+注意：“其它”账户占比是 89.07%，不是接近 99%；接近 99% 的是“非嫌疑人”（其它 + 受害人）口径。
 
 当前主实验使用 Strategy A：
 
@@ -262,7 +276,8 @@ model4_stack_v6_rolling_memory_dynamic_no_customer_type_strategy_A
 | Top1% 命中 | 33/59 |
 | Top1% 召回率 | 55.93% |
 | Top5% 命中 | 57/59 |
-| Top5% 召回率 | 96.61% |
+| Top5% 确认风险覆盖率（召回） | 96.61% |
+| Top5% 精确率 | 57/555 = 10.27% |
 
 以上是全量 11087 个账户的正式评估口径。训练阶段使用 Strategy A 排除受害人，但比赛排名和测试指标保留全量账户；候选池指标不能替代正式全量指标。
 
@@ -271,6 +286,15 @@ model4_stack_v6_rolling_memory_dynamic_no_customer_type_strategy_A
 > 如果银行只人工复核风险分最高的前 5% 账户，动态资金图谱模型可以覆盖 59 个嫌疑人中的 57 个。
 
 在正样本只有 59 个的极端不平衡场景下，Top5% 召回率是最重要的业务指标之一。
+
+本项目严格区分两个容易混淆的口径：
+
+```text
+Top5% 确认风险覆盖率 = Top5% 中命中的嫌疑人数 / 全部嫌疑人数 = 57/59
+Top5% 精确率         = Top5% 中命中的嫌疑人数 / Top5% 账户数 = 57/555
+```
+
+赛题“Top5% 高风险账户覆盖确认风险账户比例”按第一个口径评估，即召回/覆盖，不是精确率。
 
 ### 7.2 消融实验结果
 
@@ -297,22 +321,18 @@ model4_stack_v6_rolling_memory_dynamic_no_customer_type_strategy_A
 
 > 剥离 customer_type、region_code、account_age_months 后，模型明显下降，说明当前数据中的静态画像仍有较强区分力。弱画像分支仍保留交易和动态图结构，但暂未达到主模型的识别能力，因此不能把它表述成已经解决静态画像依赖。
 
-### 7.3 是否过拟合
+### 7.3 过拟合与评估局限
 
-从验证集和测试集表现看，当前主模型没有明显过拟合。
+验证集和测试集的指标没有出现断崖差距：
 
 | 数据集 | AUC | PR-AUC | Top5% 命中 |
 |---|---:|---:|---:|
 | valid | 0.9757 | 0.3331 | 56/59 |
 | test | 0.9880 | 0.3616 | 57/59 |
 
-验证集和测试集没有断崖式差距，因此不像典型训练集过拟合。
+但这不能严格证明“没有过拟合”。train/valid/test 包含相同的 11087 个账户，只是交易观察窗口不同；同时标签表没有确认时间，三个分片使用的是同一份最终标签。因此，当前结果只能说明不同交易时点下的指标稳定，不能等价为对未见账户或未来新增标签的泛化证明。
 
-但需要注意：
-
-> 模型存在一定静态画像依赖风险。
-
-这不是普通意义上的训练集过拟合，而是模型可能学到部分静态画像规律，比如地区、开户时长等。这个问题已经通过消融实验进行了说明。
+消融实验还证明模型存在明显的静态画像依赖；答辩时应主动报告，不应宣称已完全解决。
 
 ## 8. 可疑链路解释
 
@@ -473,6 +493,7 @@ python src/09_dynamic_graph_viz.py --split test --top-n 30 --top-k-counterpartie
 
 # 13. 比赛交付物
 python src/09_build_deliverables.py
+python src/14_submission_audit.py
 python src/13_final_project_audit.py
 ```
 
@@ -495,6 +516,9 @@ python src/13_final_project_audit.py
 | `src/11_model_dynamic_graph_xgb.py` | 动态资金图谱 XGBoost 模型 |
 | `src/12_layered_explainability.py` | 分层解释优化：缺边审计、风险巡检队列、链路解释和研判报告 |
 | `src/13_final_project_audit.py` | 交付前全量覆盖、泄露、解释结果和任务指标一致性审计 |
+| `src/14_submission_audit.py` | 源代码、环境、模型权重、部署文档和关键输出的提交就绪审计 |
+| `models/` | 最终动态 XGBoost、图传播模型包、融合权重和校验清单 |
+| `DEPLOYMENT.md` | Conda 环境、数据放置、完整运行顺序和快速审计 |
 | `outputs/features/` | 特征宽表 |
 | `outputs/metrics/` | 模型评估指标 |
 | `outputs/predictions/` | 账户风险分数 |
@@ -510,7 +534,7 @@ model4_stack_v6_rolling_memory_dynamic_no_customer_type_strategy_A
 
 核心结论：
 
-1. 滚动动态资金图谱模型显式使用账户节点、转账关系、时间分桶、金额分箱、风险标签、时序资金流模体和节点记忆。
+1. 滚动动态资金图谱模型显式使用账户节点、转账关系、时间分桶、金额分箱、时序资金流模体和节点记忆；风险标签只用作监督目标，不进入模型特征。
 2. 动态资金图谱融合模型全量账户 Test AUC 为 0.9880，PR-AUC 为 0.3616，Top5% 命中 57/59 个嫌疑人。
 3. 弱画像消融显示模型确实存在静态画像依赖。
 4. 统计+图 XGBoost 强基线全量账户 Top5% 命中 57/59；主模型 PR-AUC 相对其提升 24.44%，达到严格的 20% 提升要求。
@@ -539,6 +563,7 @@ outputs/deliverables/
 | `task3_top20_associations.csv` | 高风险账户 Top20 关联账户 |
 | `task3_suspicious_paths.csv` | 多跳可疑路径 |
 | `task3_fund_flow_structures.csv` | 资金闭环、汇聚、分散结构 |
+| `task3_manual_review_form.csv` | 5 个真实有边案例的人工抽检表 |
 | `docs/task3_typical_cases.md` | 5 个典型案例分析 |
 | `docs/task3_link_visualization_samples.md` | 链路可视化样例 |
 | `docs/task4_judgement_report_template.md` | 辅助研判报告模板 |
@@ -553,6 +578,8 @@ python src/13_final_project_audit.py
 ```
 
 注意：任务1中的未来交易泄露率已审计为 0；但原始风险标签表没有标签时间，因此不能严格验证“未来新增标签”口径，只能保证标签字段不进入模型特征。
+
+任务 3 的结构化输出已完成，但确认风险关联命中率当前为 0%；在业务成员填写 `task3_manual_review_form.csv` 并确认通过率达到 70% 前，不应宣称任务 3 的量化指标已达标。
 
 ## 15. 滚动动态资金图谱如何展示
 
