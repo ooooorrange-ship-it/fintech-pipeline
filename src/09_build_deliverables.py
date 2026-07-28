@@ -791,6 +791,7 @@ def build_task3_and_task4(
         "associations": layered_dir / "risk_review_queue_top20_associations.csv",
         "paths": layered_dir / "risk_review_queue_suspicious_paths.csv",
         "structures": layered_dir / "risk_review_queue_fund_flow_structures.csv",
+        "missing_edge_queue": layered_dir / "suspect_link_recovery_queue.csv",
     }
     if all(path.exists() for path in layered_files.values()):
         associations = pd.read_csv(layered_files["associations"])
@@ -813,6 +814,12 @@ def build_task3_and_task4(
     associations.to_csv(DELIVERABLE_DIR / "task3_top20_associations.csv", index=False)
     paths.to_csv(DELIVERABLE_DIR / "task3_suspicious_paths.csv", index=False)
     structures.to_csv(DELIVERABLE_DIR / "task3_fund_flow_structures.csv", index=False)
+    missing_edge_queue = (
+        pd.read_csv(layered_files["missing_edge_queue"])
+        if layered_files["missing_edge_queue"].exists()
+        else pd.DataFrame()
+    )
+    missing_edge_queue.to_csv(DELIVERABLE_DIR / "task3_link_recovery_queue.csv", index=False)
 
     stat = pd.read_csv(FEATURE_DIR / "stat_features_test.csv")
     graph = pd.read_csv(FEATURE_DIR / "graph_features_test.csv")
@@ -985,6 +992,9 @@ def build_task3_and_task4(
             ("pagerank", "PageRank", "账户在资金图谱中的相对重要性"),
             ("Top20 关联账户", "关联账户清单", "用于人工核验上下游账户"),
             ("多跳可疑路径", "链路结构", "用于解释资金流转路径"),
+            ("node_profile_evidence", "账户节点画像证据", "缺边账户仍可核验的非交易节点字段"),
+            ("edge_coverage_status", "交易边覆盖状态", "区分真实链路、直接关联和数据缺边"),
+            ("required_query", "缺边恢复查询", "补充指定账户作为付款方或收款方的历史流水"),
         ],
         columns=["field", "name", "usage"],
     )
@@ -999,9 +1009,11 @@ def build_task3_and_task4(
         "suspicious_path_rows": int(len(paths)),
         "fund_flow_structure_rows": int(len(structures)),
         "fund_flow_structure_types": sorted(structures["structure_type"].dropna().unique().tolist()) if not structures.empty else [],
+        "missing_edge_recovery_queue_rows": int(len(missing_edge_queue)),
         "confirmed_risk_association_hit_rate": assoc_hit_rate,
         "confirmed_suspect_total": int((predictions["label_code"] == 1).sum()),
         "confirmed_suspect_with_history_transaction": confirmed_with_history,
+        "confirmed_suspect_link_coverage_rate": float(confirmed_with_history / len(cases_base)) if len(cases_base) else 0.0,
         "typical_case_count": int(len(cases)),
         "case_evidence_completeness_rate": float((cases["evidence_type_count"] >= 2).mean()) if len(cases) else 0.0,
         "manual_review_note": "人工抽检通过率需要业务同学在 task4_consistency_audit.csv 基础上复核后填写；当前脚本只生成可抽检证据。",
@@ -1028,6 +1040,7 @@ def build_completion_checklist(task2_audit: dict, task3_audit: dict, leakage_rep
         ("任务3", "Top20 关联账户", "已完成", "task3_top20_associations.csv"),
         ("任务3", "多跳可疑路径", "已完成", "task3_suspicious_paths.csv"),
         ("任务3", "资金汇聚/分散结构", "已完成", "task3_fund_flow_structures.csv"),
+        ("任务3", "缺边嫌疑账户恢复队列", "已完成", "task3_link_recovery_queue.csv；补数后自动重建链路"),
         ("任务3", "不少于5个典型案例", "已完成", "docs/task3_typical_cases.md"),
         ("任务3", "人工抽检通过率", "待业务复核", "已生成结构化证据，需队友按样例人工确认通过率"),
         ("任务4", "研判报告模板", "已完成", "docs/task4_judgement_report_template.md"),
@@ -1089,21 +1102,24 @@ def build_technical_problem_solution_audit(task2_audit: dict, task3_audit: dict,
             ],
         },
         "problem_3_association_and_link_explanation": {
-            "status": "solved_with_observed_edge_limitation",
+            "status": "solved_with_observed_edge_limitation_and_recovery_queue",
             "solution": [
                 "围绕高风险账户输出 Top20 关联账户。",
                 "挖掘 24 小时内 root-mid-out、in-root-out 等多跳可疑路径。",
                 "支持输出多入一出、一入多出、闭环回流等资金结构；当前数据实际命中闭环回流结构。",
+                "对没有任何入边或出边的确认嫌疑账户生成缺边恢复队列，记录模型分、节点画像、补数查询和补数后应重建的链路类型。",
             ],
             "top20_association_rows": task3_audit["top20_association_rows"],
             "suspicious_path_rows": task3_audit["suspicious_path_rows"],
             "fund_flow_structure_rows": task3_audit["fund_flow_structure_rows"],
+            "missing_edge_recovery_queue_rows": task3_audit["missing_edge_recovery_queue_rows"],
             "confirmed_suspect_with_history_transaction": task3_audit["confirmed_suspect_with_history_transaction"],
-            "limitation": "59 个确认嫌疑人中只有 3 个在当前交易边表内有可追溯历史交易边，其他账户不能硬生成链路。",
+            "limitation": "当前脱敏交易边表中 56 个确认嫌疑账户没有任何入边或出边，因此无法在现有数据范围内恢复真实资金链路；项目已将其转为可执行的缺边恢复队列，而不是伪造路径。",
             "evidence_files": [
                 "task3_top20_associations.csv",
                 "task3_suspicious_paths.csv",
                 "task3_fund_flow_structures.csv",
+                "task3_link_recovery_queue.csv",
                 "docs/task3_link_visualization_samples.md",
                 "docs/task3_typical_cases.md",
             ],
@@ -1157,6 +1173,9 @@ def build_technical_problem_solution_audit(task2_audit: dict, task3_audit: dict,
             md.append(f"- Top20 关联账户行数：{item['top20_association_rows']}")
             md.append(f"- 多跳路径行数：{item['suspicious_path_rows']}")
             md.append(f"- 汇聚/分散结构行数：{item['fund_flow_structure_rows']}")
+            md.append(f"- 缺边恢复队列行数：{item['missing_edge_recovery_queue_rows']}")
+            md.append(f"- 当前真实链路覆盖率：{item['confirmed_suspect_with_history_transaction']}/{task3_audit['confirmed_suspect_total']}（{item['confirmed_suspect_with_history_transaction'] / task3_audit['confirmed_suspect_total']:.2%}）")
+            md.append("- 处理方式：对缺边账户输出模型分数、节点画像、缺边状态和补数查询；补数后重新运行解释脚本即可自动恢复链路分层。")
         if key == "problem_4_trustworthy_judgement_evidence":
             md.append(f"- 典型案例数：{item['typical_case_count']}")
             md.append(f"- 样例证据完整率：{item['case_evidence_completeness_rate']:.2%}")

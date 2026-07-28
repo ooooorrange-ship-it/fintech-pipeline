@@ -16,6 +16,8 @@
 | valid动态图观察截止时间 | pass | observation_end=2025-11-30 23:59:59，split_end=2025-11-30 23:59:59 |
 | test动态图观察截止时间 | pass | observation_end=2025-12-31 23:59:59，split_end=2025-12-31 23:59:59 |
 | 59个嫌疑账户审计完整 | pass | 审计=59，确认嫌疑人=59 |
+| 缺边恢复队列完整 | pass | 恢复队列=56，审计缺边账户=56 |
+| 缺边恢复队列账户可追溯 | pass | 恢复队列账户=56，审计缺边账户=56 |
 | Top30巡检队列完整 | pass | 巡检账户数=30 |
 | 分层覆盖统计与CSV一致 | pass | coverage JSON 与 CSV 行数一致 |
 | 关联账户节点ID可追溯 | pass | 记录数=70，未知账户=[] |
@@ -30,5 +32,6 @@
 | 交付物关联行数一致 | pass | layered=70，deliverable=70，audit=70 |
 | 交付物路径行数一致 | pass | layered=144，deliverable=144，audit=144 |
 | 交付物资金结构行数一致 | pass | layered=2，deliverable=2，audit=2 |
+| 交付物缺边恢复队列行数一致 | pass | layered=56，deliverable=56，audit=56 |
 
 说明：warning 不代表代码不可运行，表示赛题口径或人工环节仍需在答辩中如实说明。

@@ -79,6 +79,15 @@ def load_feature_frame(split: str) -> pd.DataFrame:
     return out.fillna(0)
 
 
+def load_account_profile() -> pd.DataFrame:
+    path = CLEAN_DIR / "clean_accounts.csv"
+    if not path.exists():
+        return pd.DataFrame(columns=[ID_COL])
+    accounts = pd.read_csv(path)
+    columns = [ID_COL, "account_age_months", "region_code", "customer_type"]
+    return accounts[[col for col in columns if col in accounts.columns]].copy()
+
+
 def direct_event_stats(tx: pd.DataFrame, root_id: int) -> dict:
     direct = tx[tx[SRC_COL].eq(root_id) | tx[DST_COL].eq(root_id)].copy()
     if direct.empty:
@@ -232,16 +241,72 @@ def feature_evidence_for_account(features: pd.DataFrame, account_id: int, event_
     return "交易统计、图结构、动态资金图谱特征均为0，说明当前交易边表没有覆盖该账户行为。", 0
 
 
+def profile_evidence_for_account(accounts: pd.DataFrame, account_id: int) -> tuple[str, int]:
+    row = accounts[accounts[ID_COL].eq(account_id)]
+    if row.empty:
+        return "未找到账户节点画像记录。", 0
+    row = row.iloc[0]
+    pieces = []
+    for col, name in [
+        ("account_age_months", "开户时长分箱"),
+        ("region_code", "地区编码"),
+        ("customer_type", "客户类型"),
+    ]:
+        if col not in accounts.columns or pd.isna(row[col]):
+            continue
+        pieces.append(f"{name}={row[col]}")
+    return "；".join(pieces) if pieces else "账户节点画像字段为空。", len(pieces)
+
+
 def explanation_grade(has_path: bool, has_assoc: bool, feature_nonzero: int, history_txn_count: int) -> tuple[str, str]:
     if has_path:
         return "A", "链路证据型：存在多跳可疑路径或资金流结构，可直接画资金链路。"
     if has_assoc:
         return "B", "直接关联型：存在直接交易对手，可输出 Top20 关联账户。"
-    if feature_nonzero > 0:
-        return "C", "动态特征型：无显式路径，但有账户级交易/图谱异常特征。"
     if history_txn_count == 0:
         return "D", "数据缺边型：交易边表没有该账户历史交易，不能生成可信资金链路。"
+    if feature_nonzero > 0:
+        return "C", "动态特征型：无显式路径，但有账户级交易/图谱异常特征。"
     return "C", "账户行为型：有交易记录但未命中当前路径规则。"
+
+
+def build_missing_edge_queue(audit_df: pd.DataFrame) -> pd.DataFrame:
+    missing = audit_df[audit_df["history_txn_count"].eq(0)].copy()
+    if missing.empty:
+        return pd.DataFrame(
+            columns=[ID_COL, "score", "risk_rank", "label_text", "edge_coverage_status", "recovery_priority"]
+        )
+    top5_cutoff = int(np.ceil(len(audit_df) * 0.05))
+    missing["edge_coverage_status"] = "account_id_not_present_as_src_or_dst"
+    missing["link_generation_blocked"] = True
+    missing["recovery_priority"] = np.where(missing["risk_rank"].le(top5_cutoff), "P0", "P1")
+    missing["required_query"] = missing[ID_COL].map(
+        lambda account_id: f"补充 account_id={int(account_id)} 作为付款方或收款方的完整历史交易流水"
+    )
+    missing["expected_link_evidence"] = (
+        "补数后按历史时间顺序重建直接对手、in-root-out、root-mid-out、汇聚/分散和闭环结构"
+    )
+    missing["current_evidence_boundary"] = (
+        "当前仅可使用模型风险分、账户节点画像和缺边审计，不能把任意账户声明为资金对手"
+    )
+    columns = [
+        ID_COL,
+        "score",
+        "risk_rank",
+        "label_text",
+        "edge_coverage_status",
+        "link_generation_blocked",
+        "recovery_priority",
+        "history_txn_count",
+        "direct_counterparty_count",
+        "node_profile_evidence",
+        "required_query",
+        "expected_link_evidence",
+        "current_evidence_boundary",
+    ]
+    return missing[[col for col in columns if col in missing.columns]].sort_values(
+        ["recovery_priority", "score"], ascending=[True, False]
+    )
 
 
 def build_markdown_audit(audit_df: pd.DataFrame, path: Path) -> None:
@@ -250,7 +315,7 @@ def build_markdown_audit(audit_df: pd.DataFrame, path: Path) -> None:
         "",
         "## 结论",
         "",
-        "当前 59 个确认嫌疑账户中，只有存在历史交易边的账户才能生成真实资金链路。对没有交易边的账户，本项目不伪造路径，而是输出数据缺边原因、模型分数、特征证据和后续补数建议。",
+        "当前 59 个确认嫌疑账户中，只有存在历史交易边的账户才能生成真实资金链路。对没有交易边的账户，本项目不伪造路径，而是输出模型分数、账户节点画像、缺边审计和可执行的补数查询。",
         "",
         "## 分层解释口径",
         "",
@@ -263,18 +328,23 @@ def build_markdown_audit(audit_df: pd.DataFrame, path: Path) -> None:
         "",
         "## 覆盖统计",
         "",
+        f"- 真实链路覆盖：{int((audit_df['history_txn_count'] > 0).sum())}/{len(audit_df)}（{(audit_df['history_txn_count'] > 0).mean():.2%}）。",
+        f"- 账户审计覆盖：{len(audit_df)}/{len(audit_df)}（100%）；每个账户均有模型分数、节点画像和边覆盖状态。",
+        "- D 级账户不代表模型没有风险判断，而是当前脱敏交易子图缺少可核验边；恢复队列见 `outputs/explanations/layered/suspect_link_recovery_queue.csv`。",
+        "",
     ]
     grade_counts = audit_df["explanation_grade"].value_counts().sort_index()
     lines.append("| 等级 | 账户数 |")
     lines.append("|---|---:|")
     for grade, count in grade_counts.items():
         lines.append(f"| {grade} | {int(count)} |")
-    lines.extend(["", "## 账户明细", "", "| 账户 | 分数 | 排名 | 等级 | 历史交易数 | 对手数 | 证据摘要 |"])
-    lines.append("|---|---:|---:|---|---:|---:|---|")
+    lines.extend(["", "## 账户明细", "", "| 账户 | 分数 | 排名 | 等级 | 历史交易数 | 对手数 | 边覆盖 | 证据摘要 |"])
+    lines.append("|---|---:|---:|---|---:|---:|---|---|")
     for row in audit_df.sort_values(["explanation_grade", "score"], ascending=[True, False]).itertuples(index=False):
         lines.append(
             f"| {int(row.account_id)} | {float(row.score):.4f} | {int(row.risk_rank)} | {row.explanation_grade} | "
-            f"{int(row.history_txn_count)} | {int(row.direct_counterparty_count)} | {row.short_evidence} |"
+            f"{int(row.history_txn_count)} | {int(row.direct_counterparty_count)} | "
+            f"{'有真实边' if row.history_txn_count else '缺边'} | {row.short_evidence} |"
         )
     path.write_text("\n".join(lines), encoding="utf-8")
 
@@ -296,7 +366,8 @@ def build_judgement_reports(
     cases = pd.concat(
         [
             audit[audit["explanation_grade"].isin(["A", "B"])].sort_values("score", ascending=False).head(3),
-            queue.sort_values("score", ascending=False).head(5),
+            queue.sort_values("score", ascending=False).head(3),
+            audit[audit["explanation_grade"].eq("D")].sort_values("score", ascending=False).head(2),
         ],
         ignore_index=True,
     ).drop_duplicates(subset=[ID_COL]).head(8)
@@ -314,6 +385,7 @@ def build_judgement_reports(
                 f"- 标签：{row.label_text}",
                 f"- 解释等级：{row.explanation_grade}，{row.explanation_reason}",
                 f"- 交易证据：历史交易 {int(row.history_txn_count)} 笔，直接对手 {int(row.direct_counterparty_count)} 个。",
+                f"- 节点画像证据：{row.node_profile_evidence}",
                 f"- 特征证据：{row.feature_evidence}",
             ]
         )
@@ -340,9 +412,13 @@ def build_judgement_reports(
             )
             lines.append(f"- 关联账户：{assoc_text}。")
         else:
-            lines.append("- 链路结构：当前未观测到可追溯多跳路径。")
+            lines.append("- 链路结构：当前交易边表没有该账户的入边或出边，已进入缺边恢复队列，不生成虚构路径。")
         if row.explanation_grade == "D":
-            lines.append("- 处置建议：补充该账户完整历史流水、设备/IP、开户资料和处置时间后再复核。")
+            lines.append(
+                f"- 链路恢复任务：补充 account_id={int(row.account_id)} 作为付款方或收款方的完整历史流水，"
+                "再按时间顺序重建直接对手、24小时多跳路径和资金流结构。"
+            )
+            lines.append("- 处置建议：在链路恢复前保留模型风险分和节点画像作为预警依据，不直接据此冻结或定性。")
         else:
             lines.append("- 处置建议：进入人工复核队列，优先核验上下游账户、时间间隔和金额比例。")
         lines.append("")
@@ -372,6 +448,7 @@ def main() -> None:
     transactions = pd.read_csv(CLEAN_DIR / "clean_transactions.csv", parse_dates=[TIME_COL])
     tx = scoped_transactions(transactions, args.split, args.tx_scope)
     features = load_feature_frame(args.split)
+    account_profiles = load_account_profile()
 
     predictions = predictions.merge(labels[[ID_COL, "label_code", "label_text"]], on=ID_COL, how="left")
     predictions = predictions.sort_values("score", ascending=False).reset_index(drop=True)
@@ -414,6 +491,7 @@ def main() -> None:
         account_structures = structures[structures["root_account_id"].eq(account_id)] if not structures.empty else pd.DataFrame()
         stats = direct_event_stats(tx, account_id)
         feature_text, feature_nonzero = feature_evidence_for_account(features, account_id, stats)
+        profile_text, profile_nonzero = profile_evidence_for_account(account_profiles, account_id)
         has_path = (not account_paths.empty) or (not account_structures.empty)
         has_assoc = not assoc.empty
         grade, reason = explanation_grade(has_path, has_assoc, feature_nonzero, stats["history_txn_count"])
@@ -437,6 +515,11 @@ def main() -> None:
                 "has_suspicious_path_or_structure": bool(has_path),
                 "feature_nonzero_count": int(feature_nonzero),
                 "feature_evidence": feature_text,
+                "node_profile_evidence": profile_text,
+                "node_profile_evidence_count": int(profile_nonzero),
+                "edge_coverage_status": "has_incident_transaction_edge" if stats["history_txn_count"] else "account_id_not_present_as_src_or_dst",
+                "link_generation_blocked": bool(not stats["history_txn_count"]),
+                "evidence_coverage_status": "model_score+node_profile+edge_audit",
                 "short_evidence": short,
                 **stats,
                 "recommended_next_step": (
@@ -461,6 +544,7 @@ def main() -> None:
         account_structures = structures[structures["root_account_id"].eq(account_id)] if not structures.empty else pd.DataFrame()
         stats = direct_event_stats(tx, account_id)
         feature_text, feature_nonzero = feature_evidence_for_account(features, account_id, stats)
+        profile_text, profile_nonzero = profile_evidence_for_account(account_profiles, account_id)
         has_path = (not account_paths.empty) or (not account_structures.empty)
         has_assoc = not assoc.empty
         grade, reason = explanation_grade(has_path, has_assoc, feature_nonzero, stats["history_txn_count"])
@@ -473,6 +557,11 @@ def main() -> None:
                 "explanation_grade": grade,
                 "explanation_reason": reason,
                 "feature_evidence": feature_text,
+                "node_profile_evidence": profile_text,
+                "node_profile_evidence_count": int(profile_nonzero),
+                "edge_coverage_status": "has_incident_transaction_edge",
+                "link_generation_blocked": False,
+                "evidence_coverage_status": "model_score+node_profile+edge+dynamic_features",
                 **stats,
             }
         )
@@ -481,6 +570,8 @@ def main() -> None:
     associations.to_csv(LAYERED_DIR / "risk_review_queue_top20_associations.csv", index=False)
     paths.to_csv(LAYERED_DIR / "risk_review_queue_suspicious_paths.csv", index=False)
     structures.to_csv(LAYERED_DIR / "risk_review_queue_fund_flow_structures.csv", index=False)
+    missing_edge_queue = build_missing_edge_queue(audit_df)
+    missing_edge_queue.to_csv(LAYERED_DIR / "suspect_link_recovery_queue.csv", index=False)
     build_judgement_reports(
         queue_df,
         audit_df,
@@ -496,21 +587,25 @@ def main() -> None:
         "tx_scope": args.tx_scope,
         "confirmed_suspect_total": int(len(audit_df)),
         "confirmed_suspect_with_history_transaction": int((audit_df["history_txn_count"] > 0).sum()),
+        "confirmed_suspect_link_coverage_rate": float((audit_df["history_txn_count"] > 0).mean()),
+        "confirmed_suspect_audit_evidence_coverage_rate": 1.0,
+        "missing_edge_recovery_queue_count": int(len(missing_edge_queue)),
         "confirmed_suspect_grade_counts": audit_df["explanation_grade"].value_counts().sort_index().to_dict(),
         "active_risk_review_account_count": int(len(queue_df)),
         "active_risk_review_grade_counts": queue_df["explanation_grade"].value_counts().sort_index().to_dict() if len(queue_df) else {},
         "association_rows": int(len(associations)),
         "suspicious_path_rows": int(len(paths)),
         "fund_flow_structure_rows": int(len(structures)),
-        "core_note": "59个确认嫌疑账户中，缺少交易边的账户不能生成可信链路；本脚本将其纳入缺边审计，并对有边的高风险账户生成链路和研判报告。",
+        "core_note": "59个确认嫌疑账户中，只有有历史交易边的账户能生成真实链路；缺边账户进入恢复队列，所有账户均保留模型、节点画像和边覆盖审计，并对有边的高风险账户生成链路和研判报告。",
         "outputs": {
             "confirmed_suspect_audit_csv": str(audit_path),
             "confirmed_suspect_audit_md": str(audit_md_path),
             "risk_review_queue": str(LAYERED_DIR / "risk_review_queue_active_accounts.csv"),
             "associations": str(LAYERED_DIR / "risk_review_queue_top20_associations.csv"),
             "paths": str(LAYERED_DIR / "risk_review_queue_suspicious_paths.csv"),
-            "structures": str(LAYERED_DIR / "risk_review_queue_fund_flow_structures.csv"),
-            "judgement_reports": str(DOCS_DIR / "layered_judgement_report_samples.md"),
+        "structures": str(LAYERED_DIR / "risk_review_queue_fund_flow_structures.csv"),
+        "missing_edge_recovery_queue": str(LAYERED_DIR / "suspect_link_recovery_queue.csv"),
+        "judgement_reports": str(DOCS_DIR / "layered_judgement_report_samples.md"),
         },
     }
     coverage_path = LAYERED_DIR / "layered_explainability_coverage.json"

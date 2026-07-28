@@ -18,6 +18,7 @@
 | 任务3 | Top20 关联账户 | 已完成 | task3_top20_associations.csv |
 | 任务3 | 多跳可疑路径 | 已完成 | task3_suspicious_paths.csv |
 | 任务3 | 资金汇聚/分散结构 | 已完成 | task3_fund_flow_structures.csv |
+| 任务3 | 缺边嫌疑账户恢复队列 | 已完成 | task3_link_recovery_queue.csv；补数后自动重建链路 |
 | 任务3 | 不少于5个典型案例 | 已完成 | docs/task3_typical_cases.md |
 | 任务3 | 人工抽检通过率 | 待业务复核 | 已生成结构化证据，需队友按样例人工确认通过率 |
 | 任务4 | 研判报告模板 | 已完成 | docs/task4_judgement_report_template.md |

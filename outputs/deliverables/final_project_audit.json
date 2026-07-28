@@ -64,6 +64,16 @@
       "detail": "审计=59，确认嫌疑人=59"
     },
     {
+      "name": "缺边恢复队列完整",
+      "status": "pass",
+      "detail": "恢复队列=56，审计缺边账户=56"
+    },
+    {
+      "name": "缺边恢复队列账户可追溯",
+      "status": "pass",
+      "detail": "恢复队列账户=56，审计缺边账户=56"
+    },
+    {
       "name": "Top30巡检队列完整",
       "status": "pass",
       "detail": "巡检账户数=30"
@@ -132,6 +142,11 @@
       "name": "交付物资金结构行数一致",
       "status": "pass",
       "detail": "layered=2，deliverable=2，audit=2"
+    },
+    {
+      "name": "交付物缺边恢复队列行数一致",
+      "status": "pass",
+      "detail": "layered=56，deliverable=56，audit=56"
     }
   ],
   "known_limitations": [

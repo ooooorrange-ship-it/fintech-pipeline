@@ -7,3 +7,6 @@ graph_total_degree,图总度数,账户直接连接的交易对手规模
 pagerank,PageRank,账户在资金图谱中的相对重要性
 Top20 关联账户,关联账户清单,用于人工核验上下游账户
 多跳可疑路径,链路结构,用于解释资金流转路径
+node_profile_evidence,账户节点画像证据,缺边账户仍可核验的非交易节点字段
+edge_coverage_status,交易边覆盖状态,区分真实链路、直接关联和数据缺边
+required_query,缺边恢复查询,补充指定账户作为付款方或收款方的历史流水

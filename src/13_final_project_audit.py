@@ -79,9 +79,16 @@ def audit_leakage(checks: list[dict]) -> None:
 def audit_explanations(checks: list[dict], accounts: pd.DataFrame) -> None:
     coverage = read_json(LAYERED_DIR / "layered_explainability_coverage.json")
     audit = pd.read_csv(LAYERED_DIR / "confirmed_suspect_explainability_audit.csv") if (LAYERED_DIR / "confirmed_suspect_explainability_audit.csv").exists() else pd.DataFrame()
+    recovery = pd.read_csv(LAYERED_DIR / "suspect_link_recovery_queue.csv") if (LAYERED_DIR / "suspect_link_recovery_queue.csv").exists() else pd.DataFrame()
     queue = pd.read_csv(LAYERED_DIR / "risk_review_queue_active_accounts.csv") if (LAYERED_DIR / "risk_review_queue_active_accounts.csv").exists() else pd.DataFrame()
     expected_suspects = int((pd.read_csv(LABEL_DIR / "labels_all_strategies.csv")["label_code"] == 1).sum())
     add_check(checks, "59个嫌疑账户审计完整", len(audit) == expected_suspects, f"审计={len(audit)}，确认嫌疑人={expected_suspects}")
+    expected_missing_edges = int((audit["history_txn_count"] == 0).sum()) if "history_txn_count" in audit.columns else -1
+    add_check(checks, "缺边恢复队列完整", len(recovery) == expected_missing_edges, f"恢复队列={len(recovery)}，审计缺边账户={expected_missing_edges}")
+    if not recovery.empty and ID_COL in recovery.columns and ID_COL in audit.columns:
+        expected_ids = set(audit.loc[audit["history_txn_count"].eq(0), ID_COL].astype(int))
+        recovery_ids = set(recovery[ID_COL].astype(int))
+        add_check(checks, "缺边恢复队列账户可追溯", recovery_ids == expected_ids, f"恢复队列账户={len(recovery_ids)}，审计缺边账户={len(expected_ids)}")
     add_check(checks, "Top30巡检队列完整", len(queue) == 30, f"巡检账户数={len(queue)}")
     add_check(checks, "分层覆盖统计与CSV一致", int(coverage.get("confirmed_suspect_total", -1)) == len(audit) and int(coverage.get("active_risk_review_account_count", -1)) == len(queue), "coverage JSON 与 CSV 行数一致")
 
@@ -110,6 +117,7 @@ def audit_deliverables(checks: list[dict]) -> None:
         ("交付物关联行数一致", "top20_association_rows", "risk_review_queue_top20_associations.csv", "task3_top20_associations.csv"),
         ("交付物路径行数一致", "suspicious_path_rows", "risk_review_queue_suspicious_paths.csv", "task3_suspicious_paths.csv"),
         ("交付物资金结构行数一致", "fund_flow_structure_rows", "risk_review_queue_fund_flow_structures.csv", "task3_fund_flow_structures.csv"),
+        ("交付物缺边恢复队列行数一致", "missing_edge_recovery_queue_rows", "suspect_link_recovery_queue.csv", "task3_link_recovery_queue.csv"),
     ]:
         layered_path = LAYERED_DIR / layered_name
         deliverable_path = DELIVERABLE_DIR / deliverable_name

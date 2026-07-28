@@ -59,6 +59,7 @@ def load_layered_data() -> dict:
     return {
         "coverage": coverage,
         "audit": json_records(LAYERED_DIR / "confirmed_suspect_explainability_audit.csv"),
+        "recovery": json_records(LAYERED_DIR / "suspect_link_recovery_queue.csv"),
         "queue": json_records(LAYERED_DIR / "risk_review_queue_active_accounts.csv"),
         "associations": json_records(LAYERED_DIR / "risk_review_queue_top20_associations.csv"),
         "paths": json_records(LAYERED_DIR / "risk_review_queue_suspicious_paths.csv"),
@@ -757,6 +758,7 @@ def js_v2() -> str:
     let auditGrade = "all";
     let auditQuery = "";
     let queueAccount = DATA.layered.queue.length ? DATA.layered.queue[0].account_id : null;
+    let recoveryAccount = DATA.layered.recovery.length ? DATA.layered.recovery[0].account_id : null;
 
     function esc(value) {
       return String(value ?? "").replace(/[&<>"']/g, ch => { if (ch === '"') return "&quot;"; return ({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;"}[ch]); });
@@ -780,6 +782,7 @@ def js_v2() -> str:
       document.querySelectorAll("[data-view]").forEach(btn => btn.classList.toggle("active", btn.dataset.view === view));
       if (view === "graph") renderGraphView();
       if (view === "audit") renderAudit();
+      if (view === "recovery") renderRecovery();
       if (view === "queue") renderQueue();
       if (view === "report") renderReports();
     }
@@ -791,6 +794,7 @@ def js_v2() -> str:
         ["确认嫌疑账户", c.confirmed_suspect_total || 0, "#c9342d"],
         ["可追溯历史交易", c.confirmed_suspect_with_history_transaction || 0, "#345d9d"],
         ["缺边审计账户", grades.D || 0, "#a32924"],
+        ["缺边恢复队列", DATA.layered.recovery.length, "#8b5a00"],
         ["Top30巡检账户", c.active_risk_review_account_count || 0, "#1f7a55"],
         ["巡检A/B级", `${qGrades.A || 0} / ${qGrades.B || 0}`, "#345d9d"],
         ["路径/结构证据", `${c.suspicious_path_rows || 0} / ${c.fund_flow_structure_rows || 0}`, "#8b5a00"]
@@ -854,8 +858,21 @@ def js_v2() -> str:
     }
     function showAuditDetail(id) {
       const row = DATA.layered.audit.find(x => Number(x.account_id) === Number(id)); if (!row) return;
-      document.getElementById("auditDetail").innerHTML = `<h3>账户 ${row.account_id} 审计详情</h3><div class="detail-grid"><div class="detail-item"><span>模型风险分</span><b>${num(row.score)}</b></div><div class="detail-item"><span>解释等级</span><b>${badge(row.explanation_grade)}</b></div><div class="detail-item"><span>历史交易</span><b>${row.history_txn_count || 0} 笔</b></div><div class="detail-item"><span>直接对手</span><b>${row.direct_counterparty_count || 0} 个</b></div></div><p><b>解释结论：</b>${esc(row.explanation_reason)}</p><p><b>特征证据：</b>${esc(row.feature_evidence || "-")}</p><p><b>短证据：</b>${esc(row.short_evidence || "-")}</p><p><b>下一步：</b>${esc(row.recommended_next_step || "-")}</p>`;
+      document.getElementById("auditDetail").innerHTML = `<h3>账户 ${row.account_id} 审计详情</h3><div class="detail-grid"><div class="detail-item"><span>模型风险分</span><b>${num(row.score)}</b></div><div class="detail-item"><span>解释等级</span><b>${badge(row.explanation_grade)}</b></div><div class="detail-item"><span>历史交易</span><b>${row.history_txn_count || 0} 笔</b></div><div class="detail-item"><span>直接对手</span><b>${row.direct_counterparty_count || 0} 个</b></div><div class="detail-item"><span>边覆盖</span><b>${esc(row.edge_coverage_status || "-")}</b></div></div><p><b>解释结论：</b>${esc(row.explanation_reason)}</p><p><b>节点画像证据：</b>${esc(row.node_profile_evidence || "-")}</p><p><b>特征证据：</b>${esc(row.feature_evidence || "-")}</p><p><b>短证据：</b>${esc(row.short_evidence || "-")}</p><p><b>下一步：</b>${esc(row.recommended_next_step || "-")}</p>`;
       document.getElementById("auditDetail").scrollIntoView({behavior:"smooth", block:"start"});
+    }
+    function renderRecovery() {
+      const rows = DATA.layered.recovery || [];
+      document.getElementById("recoveryCount").textContent = `显示 ${rows.length} 个缺边账户；当前不生成虚构链路`;
+      document.getElementById("recoveryTableBody").innerHTML = rows.map(row => `<tr data-recovery-account="${row.account_id}"><td>${row.recovery_priority}</td><td><b>${row.account_id}</b><br><span class="muted">${esc(row.label_text)}</span></td><td>${num(row.score)}</td><td>${row.risk_rank}</td><td>${row.history_txn_count || 0}</td><td class="evidence-cell">${esc(row.node_profile_evidence || "-")}</td><td class="reason-cell">${esc(row.required_query || "-")}</td></tr>`).join("") || `<tr><td colspan="7" class="empty">没有缺边账户</td></tr>`;
+      document.querySelectorAll("#recoveryTableBody tr[data-recovery-account]").forEach(row => row.onclick = () => showRecoveryDetail(Number(row.dataset.recoveryAccount)));
+      if (rows.length && !rows.some(x => Number(x.account_id) === Number(recoveryAccount))) recoveryAccount = rows[0].account_id;
+      showRecoveryDetail(recoveryAccount);
+    }
+    function showRecoveryDetail(id) {
+      const row = (DATA.layered.recovery || []).find(x => Number(x.account_id) === Number(id)); if (!row) return;
+      document.getElementById("recoveryDetail").innerHTML = `<h3>账户 ${row.account_id} 链路恢复任务</h3><div class="detail-grid"><div class="detail-item"><span>模型风险分</span><b>${num(row.score)}</b></div><div class="detail-item"><span>风险排名</span><b>${row.risk_rank}</b></div><div class="detail-item"><span>恢复优先级</span><b>${esc(row.recovery_priority)}</b></div><div class="detail-item"><span>当前历史交易</span><b>${row.history_txn_count || 0} 笔</b></div></div><p><b>当前边状态：</b>${esc(row.edge_coverage_status || "-")}</p><p><b>节点画像证据：</b>${esc(row.node_profile_evidence || "-")}</p><p><b>补数查询：</b>${esc(row.required_query || "-")}</p><p><b>补数后重建：</b>${esc(row.expected_link_evidence || "-")}</p><p><b>当前边界：</b>${esc(row.current_evidence_boundary || "-")}</p>`;
+      document.getElementById("recoveryDetail").scrollIntoView({behavior:"smooth", block:"start"});
     }
     function renderQueue() {
       document.getElementById("queueTableBody").innerHTML = DATA.layered.queue.map(row => `<tr data-queue-account="${row.account_id}"><td>${row.risk_rank}</td><td><b>${row.account_id}</b><br><span class="muted">${esc(row.label_text)}</span></td><td>${num(row.score)}</td><td>${badge(row.explanation_grade)}</td><td class="reason-cell">${esc(row.explanation_reason)}</td><td>${row.history_txn_count || 0}</td><td>${fmt(row.history_amount_sum)}</td><td>${row.direct_counterparty_count || 0}</td><td class="evidence-cell">${esc(row.feature_evidence || "-")}</td></tr>`).join("") || `<tr><td colspan="9" class="empty">没有巡检记录</td></tr>`;
@@ -876,7 +893,7 @@ def js_v2() -> str:
       document.getElementById("rawReport").textContent = md || "暂无报告原文";
     }
     function openGraph(id) { currentAccount=Number(id); currentWindow=DATA.windows.length ? DATA.windows[DATA.windows.length-1].name : null; setView("graph"); }
-    document.addEventListener("DOMContentLoaded", () => { renderOverview(); renderSelectors(); document.querySelectorAll("[data-view]").forEach(btn => btn.onclick=() => setView(btn.dataset.view)); document.querySelectorAll("[data-grade]").forEach(btn => btn.onclick=() => { auditGrade=btn.dataset.grade; document.querySelectorAll("[data-grade]").forEach(x => x.classList.toggle("active", x===btn)); renderAudit(); }); document.getElementById("auditSearch").oninput=e => { auditQuery=e.target.value; renderAudit(); }; renderGraphView(); renderAudit(); renderQueue(); renderReports(); });
+    document.addEventListener("DOMContentLoaded", () => { renderOverview(); renderSelectors(); document.querySelectorAll("[data-view]").forEach(btn => btn.onclick=() => setView(btn.dataset.view)); document.querySelectorAll("[data-grade]").forEach(btn => btn.onclick=() => { auditGrade=btn.dataset.grade; document.querySelectorAll("[data-grade]").forEach(x => x.classList.toggle("active", x===btn)); renderAudit(); }); document.getElementById("auditSearch").oninput=e => { auditQuery=e.target.value; renderAudit(); }; renderGraphView(); renderAudit(); renderRecovery(); renderQueue(); renderReports(); });
     """
 
 
@@ -896,7 +913,7 @@ def render_html_v2(data: dict) -> str:
     <h1>动态资金图谱与辅助研判工作台</h1>
     <p id="subtitle">动态图谱 · 账户风险子图</p>
     <p>观察窗口：{escape(data["meta"]["history_start"])} 至 {escape(data["meta"]["history_end"])}；边界只使用历史交易，金额分箱来自 train。</p>
-    <nav class="nav" aria-label="页面视图"><button class="nav-btn active" data-view="graph">动态图谱</button><button class="nav-btn" data-view="audit">59账户审计</button><button class="nav-btn" data-view="queue">Top30风险巡检</button><button class="nav-btn" data-view="report">辅助研判报告</button></nav>
+    <nav class="nav" aria-label="页面视图"><button class="nav-btn active" data-view="graph">动态图谱</button><button class="nav-btn" data-view="audit">59账户审计</button><button class="nav-btn" data-view="recovery">缺边恢复</button><button class="nav-btn" data-view="queue">Top30风险巡检</button><button class="nav-btn" data-view="report">辅助研判报告</button></nav>
   </header>
   <section class="overview" id="overviewMetrics"></section>
   <main id="graphView" class="view active"><div class="graph-layout">
@@ -905,6 +922,7 @@ def render_html_v2(data: dict) -> str:
     <section class="right"><div class="panel-title">研判证据</div><div id="evidence"></div><h3>Top 交易边</h3><table><thead><tr><th>边</th><th>笔数</th><th>金额</th><th>分箱</th></tr></thead><tbody id="edgeTable"></tbody></table></section>
   </div></main>
   <main id="auditView" class="view wide"><h2>59 个确认嫌疑账户分层审计</h2><p>先审计数据覆盖，再判断解释等级。D 级表示当前交易边表没有覆盖该账户，不生成虚构链路。</p><div class="toolbar"><button class="filter-btn active" data-grade="all">全部</button><button class="filter-btn" data-grade="A">A 链路证据</button><button class="filter-btn" data-grade="B">B 直接关联</button><button class="filter-btn" data-grade="C">C 特征证据</button><button class="filter-btn" data-grade="D">D 缺边审计</button><input id="auditSearch" placeholder="搜索账户、标签或证据"><span id="auditCount" class="muted"></span></div><div class="table-wrap"><table><thead><tr><th>风险排名</th><th>账户/标签</th><th>模型分</th><th>等级</th><th>解释原因</th><th>历史交易</th><th>历史金额</th><th>直接对手</th><th>证据摘要</th><th>下一步</th></tr></thead><tbody id="auditTableBody"></tbody></table></div><div id="auditDetail" class="detail-panel"><p class="empty">点击上方任一账户查看审计详情。</p></div></main>
+  <main id="recoveryView" class="view wide"><h2>缺边嫌疑账户恢复队列</h2><p>这些账户在当前脱敏交易边表中没有入边或出边。页面只提供真实的模型/节点证据和补数任务，补数后再自动重建资金链路。</p><div class="toolbar"><span id="recoveryCount" class="muted"></span></div><div class="table-wrap"><table><thead><tr><th>优先级</th><th>账户/标签</th><th>模型分</th><th>风险排名</th><th>当前历史交易</th><th>节点画像</th><th>补数查询</th></tr></thead><tbody id="recoveryTableBody"></tbody></table></div><div id="recoveryDetail" class="detail-panel"><p class="empty">点击任一账户查看链路恢复任务。</p></div></main>
   <main id="queueView" class="view wide"><h2>Top30 高风险主动巡检队列</h2><p>从模型高风险账户中筛选有历史交易边的账户，输出可核验的关联、路径和资金结构证据。</p><div class="table-wrap"><table><thead><tr><th>风险排名</th><th>账户/标签</th><th>模型分</th><th>等级</th><th>解释原因</th><th>历史交易</th><th>历史金额</th><th>直接对手</th><th>动态/交易特征证据</th></tr></thead><tbody id="queueTableBody"></tbody></table></div><div id="queueDetail" class="detail-panel"></div></main>
   <main id="reportView" class="view wide"><h2>辅助研判报告</h2><p>每个报告同时引用模型风险分、交易统计、关键交易边/路径、图结构或动态特征中的至少两类证据；无交易边的账户只给出补数建议。</p><div id="reportGrid" class="report-grid"></div><div class="subsection"><h3>报告原文</h3><pre id="rawReport" class="raw-report"></pre></div></main>
   <script>{script}</script>

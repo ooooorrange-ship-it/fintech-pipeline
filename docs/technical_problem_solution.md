@@ -33,21 +33,26 @@
 
 ## 问题3：可疑关联账户和资金链路解释
 
-- 状态：solved_with_observed_edge_limitation
+- 状态：solved_with_observed_edge_limitation_and_recovery_queue
 - 解决方案：
   - 围绕高风险账户输出 Top20 关联账户。
   - 挖掘 24 小时内 root-mid-out、in-root-out 等多跳可疑路径。
   - 支持输出多入一出、一入多出、闭环回流等资金结构；当前数据实际命中闭环回流结构。
+  - 对没有任何入边或出边的确认嫌疑账户生成缺边恢复队列，记录模型分、节点画像、补数查询和补数后应重建的链路类型。
 - 证据文件：
   - `task3_top20_associations.csv`
   - `task3_suspicious_paths.csv`
   - `task3_fund_flow_structures.csv`
+  - `task3_link_recovery_queue.csv`
   - `docs/task3_link_visualization_samples.md`
   - `docs/task3_typical_cases.md`
-- 局限：59 个确认嫌疑人中只有 3 个在当前交易边表内有可追溯历史交易边，其他账户不能硬生成链路。
+- 局限：当前脱敏交易边表中 56 个确认嫌疑账户没有任何入边或出边，因此无法在现有数据范围内恢复真实资金链路；项目已将其转为可执行的缺边恢复队列，而不是伪造路径。
 - Top20 关联账户行数：70
 - 多跳路径行数：144
 - 汇聚/分散结构行数：2
+- 缺边恢复队列行数：56
+- 当前真实链路覆盖率：3/59（5.08%）
+- 处理方式：对缺边账户输出模型分数、节点画像、缺边状态和补数查询；补数后重新运行解释脚本即可自动恢复链路分层。
 
 ## 问题4：辅助研判证据可信可用
 

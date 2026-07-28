@@ -4,6 +4,9 @@
   "tx_scope": "history",
   "confirmed_suspect_total": 59,
   "confirmed_suspect_with_history_transaction": 3,
+  "confirmed_suspect_link_coverage_rate": 0.05084745762711865,
+  "confirmed_suspect_audit_evidence_coverage_rate": 1.0,
+  "missing_edge_recovery_queue_count": 56,
   "confirmed_suspect_grade_counts": {
     "A": 1,
     "B": 2,
@@ -17,7 +20,7 @@
   "association_rows": 70,
   "suspicious_path_rows": 144,
   "fund_flow_structure_rows": 2,
-  "core_note": "59个确认嫌疑账户中，缺少交易边的账户不能生成可信链路；本脚本将其纳入缺边审计，并对有边的高风险账户生成链路和研判报告。",
+  "core_note": "59个确认嫌疑账户中，只有有历史交易边的账户能生成真实链路；缺边账户进入恢复队列，所有账户均保留模型、节点画像和边覆盖审计，并对有边的高风险账户生成链路和研判报告。",
   "outputs": {
     "confirmed_suspect_audit_csv": "/Users/orange/Documents/study/金融科技大赛/outputs/explanations/layered/confirmed_suspect_explainability_audit.csv",
     "confirmed_suspect_audit_md": "/Users/orange/Documents/study/金融科技大赛/docs/confirmed_suspect_explainability_audit.md",
@@ -25,6 +28,7 @@
     "associations": "/Users/orange/Documents/study/金融科技大赛/outputs/explanations/layered/risk_review_queue_top20_associations.csv",
     "paths": "/Users/orange/Documents/study/金融科技大赛/outputs/explanations/layered/risk_review_queue_suspicious_paths.csv",
     "structures": "/Users/orange/Documents/study/金融科技大赛/outputs/explanations/layered/risk_review_queue_fund_flow_structures.csv",
+    "missing_edge_recovery_queue": "/Users/orange/Documents/study/金融科技大赛/outputs/explanations/layered/suspect_link_recovery_queue.csv",
     "judgement_reports": "/Users/orange/Documents/study/金融科技大赛/docs/layered_judgement_report_samples.md"
   }
 }
