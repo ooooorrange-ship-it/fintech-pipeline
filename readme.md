@@ -2,6 +2,15 @@
 
 > 评委安装、数据放置、完整运行顺序和模型文件说明见 [`DEPLOYMENT.md`](DEPLOYMENT.md)。
 
+## 技术文档索引
+
+| 文档 | 作用 |
+|---|---|
+| [DEPLOYMENT.md](/Users/orange/Documents/study/金融科技大赛/DEPLOYMENT.md) | Conda 环境、数据放置、完整运行顺序、模型文件说明 |
+| [double_layer_judgement_architecture.md](/Users/orange/Documents/study/金融科技大赛/docs/double_layer_judgement_architecture.md) | 双层研判架构：有交易链路账户如何解释、无交易链路账户如何审计 |
+| [technical_problem_solution.md](/Users/orange/Documents/study/金融科技大赛/docs/technical_problem_solution.md) | 对比赛 4 个技术攻关问题的逐项解决说明 |
+| [submission_readiness_audit.md](/Users/orange/Documents/study/金融科技大赛/docs/submission_readiness_audit.md) | 完整源代码、模型文件、部署文档和关键输出的提交检查 |
+
 提交前快速检查：
 
 ```bash
