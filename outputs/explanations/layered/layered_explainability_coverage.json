@@ -1,5 +1,5 @@
 {
-  "prediction_file": "/Users/orange/Documents/study/金融科技大赛/outputs/predictions/model4_stack_v6_rolling_memory_dynamic_no_customer_type_strategy_A.csv",
+  "prediction_file": "outputs/predictions/model8_final_dynamic_fusion_v7_strategy_A.csv",
   "split": "test",
   "tx_scope": "history",
   "confirmed_suspect_total": 59,
@@ -14,11 +14,11 @@
   },
   "active_risk_review_account_count": 30,
   "active_risk_review_grade_counts": {
-    "A": 9,
-    "B": 21
+    "A": 14,
+    "B": 16
   },
-  "association_rows": 70,
-  "suspicious_path_rows": 144,
+  "association_rows": 71,
+  "suspicious_path_rows": 186,
   "fund_flow_structure_rows": 2,
   "core_note": "59个确认嫌疑账户中，只有有历史交易边的账户能生成真实链路；缺边账户进入恢复队列，所有账户均保留模型、节点画像和边覆盖审计，并对有边的高风险账户生成链路和研判报告。",
   "outputs": {

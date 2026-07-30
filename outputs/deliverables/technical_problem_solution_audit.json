@@ -22,9 +22,9 @@
       "XGBoost 使用类别权重处理 59 个嫌疑人导致的极端不平衡。",
       "构造滚动动态图快照、时间桶、金额分箱、时序资金流模体和时间衰减节点记忆，并补充轻量异配图传播和融合消融。"
     ],
-    "main_model": "model4_stack_v6_rolling_memory_dynamic_no_customer_type_strategy_A",
-    "test_auc": 0.9879674541844181,
-    "test_pr_auc": 0.36155310295978255,
+    "main_model": "model8_final_dynamic_fusion_v7_strategy_A",
+    "test_auc": 0.9865596355655557,
+    "test_pr_auc": 0.6937814869587354,
     "test_top5pct_recall": 0.9661016949152542,
     "requirement_pass": {
       "auc_ge_0_85": true,
@@ -46,8 +46,8 @@
       "支持输出多入一出、一入多出、闭环回流等资金结构；当前数据实际命中闭环回流结构。",
       "对没有任何入边或出边的确认嫌疑账户生成缺边恢复队列，记录模型分、节点画像、补数查询和补数后应重建的链路类型。"
     ],
-    "top20_association_rows": 70,
-    "suspicious_path_rows": 144,
+    "top20_association_rows": 71,
+    "suspicious_path_rows": 186,
     "fund_flow_structure_rows": 2,
     "missing_edge_recovery_queue_rows": 56,
     "confirmed_suspect_with_history_transaction": 3,

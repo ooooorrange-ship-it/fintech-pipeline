@@ -1,0 +1,48 @@
+{
+  "_metadata": {
+    "artifact_type": "validation_selected_rank_ensemble",
+    "selected_weights": {
+      "dynamic_random_forest": 0.7,
+      "dynamic_stack": 0.3,
+      "graphsage": 0.0
+    },
+    "component_predictions": {
+      "dynamic_random_forest": "outputs/predictions/model7_dynamic_graph_random_forest_v1_no_customer_type_strategy_A.csv",
+      "dynamic_stack": "outputs/predictions/model4_stack_v6_rolling_memory_dynamic_no_customer_type_strategy_A.csv",
+      "graphsage": "outputs/predictions/model6_graphsage_v1_no_customer_type_strategy_A.csv"
+    },
+    "normalization": "within_split_average_percentile_rank",
+    "weight_grid_step": 0.05,
+    "selection_metric_order": [
+      "valid PR-AUC",
+      "valid Top5% recall",
+      "valid AUC"
+    ],
+    "random_seed": 2026
+  },
+  "status": "ok",
+  "valid_all_accounts": {
+    "auc": 0.9756206082514155,
+    "pr_auc_average_precision": 0.6361676347468106,
+    "top1pct_k": 111,
+    "top1pct_hits": 44,
+    "top1pct_precision": 0.3963963963963964,
+    "top1pct_recall": 0.7457627118644068,
+    "top5pct_k": 555,
+    "top5pct_hits": 56,
+    "top5pct_precision": 0.1009009009009009,
+    "top5pct_recall": 0.9491525423728814
+  },
+  "test_all_accounts": {
+    "auc": 0.9865596355655557,
+    "pr_auc_average_precision": 0.6937814869587354,
+    "top1pct_k": 111,
+    "top1pct_hits": 45,
+    "top1pct_precision": 0.40540540540540543,
+    "top1pct_recall": 0.7627118644067796,
+    "top5pct_k": 555,
+    "top5pct_hits": 57,
+    "top5pct_precision": 0.10270270270270271,
+    "top5pct_recall": 0.9661016949152542
+  }
+}

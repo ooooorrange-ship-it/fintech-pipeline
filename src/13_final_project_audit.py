@@ -27,7 +27,7 @@ def add_check(checks: list[dict], name: str, passed: bool, detail: str, severity
 
 
 def audit_prediction_coverage(checks: list[dict], accounts: pd.DataFrame, labels: pd.DataFrame) -> None:
-    path = PREDICTION_DIR / "model4_stack_v6_rolling_memory_dynamic_no_customer_type_strategy_A.csv"
+    path = PREDICTION_DIR / "model8_final_dynamic_fusion_v7_strategy_A.csv"
     if not path.exists():
         add_check(checks, "主模型预测文件", False, str(path))
         return
@@ -45,7 +45,7 @@ def audit_prediction_coverage(checks: list[dict], accounts: pd.DataFrame, labels
         add_check(
             checks,
             f"{split}全量指标存在",
-            (OUTPUT_DIR / "metrics" / "stack_experiment_metrics_v6_rolling_memory_dynamic_no_customer_type.json").exists(),
+            (OUTPUT_DIR / "metrics" / "final_dynamic_fusion_metrics_v7.json").exists(),
             "融合模型报告文件存在",
         )
     add_check(
@@ -110,7 +110,13 @@ def audit_deliverables(checks: list[dict]) -> None:
     add_check(checks, "任务2使用全量账户评估", task2.get("evaluation_scope") == "all_accounts", f"evaluation_scope={task2.get('evaluation_scope')}")
     add_check(checks, "任务2 AUC达标", bool(task2.get("auc_requirement_auc_ge_0_85")), f"AUC={task2.get('test_auc')}")
     add_check(checks, "任务2 Top5%召回达标", bool(task2.get("top5pct_recall_requirement_ge_50pct")), f"Top5%召回={task2.get('test_top5pct_recall')}")
-    add_check(checks, "任务2强基线PR-AUC提升20%", bool(task2.get("pr_auc_improvement_ge_20pct")), f"相对强XGB提升={task2.get('pr_auc_improvement_vs_xgb_ratio')}", severity="warning")
+    add_check(
+        checks,
+        "任务2最强传统基线PR-AUC提升20%",
+        bool(task2.get("pr_auc_improvement_ge_20pct")),
+        f"相对传统RF提升={task2.get('pr_auc_improvement_vs_strongest_traditional_ratio')}",
+        severity="warning",
+    )
     review_path = DELIVERABLE_DIR / "task3_manual_review_form.csv"
     review = pd.read_csv(review_path, keep_default_na=False) if review_path.exists() else pd.DataFrame()
     reviewed = review[review.get("manual_pass", pd.Series(dtype=str)).astype(str).str.strip().ne("")] if not review.empty else pd.DataFrame()
@@ -149,6 +155,11 @@ def audit_submission_assets(checks: list[dict]) -> None:
         MODEL_DIR / "model5_xgb_dynamic_graph_v6_rolling_memory_dynamic_no_customer_type_strategy_A.json",
         MODEL_DIR / "model3_hetero_prop_v3_no_customer_type_strategy_A.joblib",
         MODEL_DIR / "model4_stack_v6_rolling_memory_dynamic_no_customer_type_strategy_A.json",
+        MODEL_DIR / "model8_final_dynamic_fusion_v7_strategy_A.json",
+        MODEL_DIR / "baseline_logistic_regression_v1_no_customer_type_strategy_A.joblib",
+        MODEL_DIR / "baseline_random_forest_v1_no_customer_type_strategy_A.joblib",
+        MODEL_DIR / "model7_dynamic_graph_random_forest_v1_no_customer_type_strategy_A.joblib",
+        MODEL_DIR / "model6_graphsage_v1_no_customer_type_strategy_A.pt",
         MODEL_DIR / "model_manifest.json",
     ]
     missing_models = [path.name for path in required_models if not path.exists()]

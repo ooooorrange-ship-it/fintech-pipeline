@@ -1,0 +1,110 @@
+{
+  "_metadata": {
+    "model_family": "PyTorch Geometric GraphSAGE",
+    "experiment_suffix": "v1_txn_graph_dynamic_only",
+    "feature_policy": "stat + static graph + rolling dynamic graph; all static profile fields removed",
+    "drop_static_profile": true,
+    "feature_count": 381,
+    "graph_policy": "120-day rolling transaction graph; transaction edges made bidirectional for message passing",
+    "edge_attribute_policy": "time and amount are encoded in dyn_* node features; vanilla SAGEConv consumes topology",
+    "evaluation_policy": "Strategy A loss excludes victims; early stopping and formal metrics use all accounts",
+    "label_time_limitation": "Risk labels have no confirmation time; this is snapshot evaluation, not future-new-label validation.",
+    "random_seed": 2026,
+    "torch_version": "2.13.0"
+  },
+  "status": "ok",
+  "best_epoch": 39,
+  "best_valid_all_accounts_pr_auc": 0.01407182819695306,
+  "graph_snapshots": {
+    "train": {
+      "observation_start": "2025-07-03 23:59:59",
+      "observation_end": "2025-10-31 23:59:59",
+      "unique_directed_transaction_edges": 85561,
+      "message_passing_edges": 160748
+    },
+    "valid": {
+      "observation_start": "2025-08-02 23:59:59",
+      "observation_end": "2025-11-30 23:59:59",
+      "unique_directed_transaction_edges": 86186,
+      "message_passing_edges": 161818
+    },
+    "test": {
+      "observation_start": "2025-09-02 23:59:59",
+      "observation_end": "2025-12-31 23:59:59",
+      "unique_directed_transaction_edges": 88877,
+      "message_passing_edges": 166454
+    }
+  },
+  "train": {
+    "auc": 0.8565990130873202,
+    "pr_auc_average_precision": 0.03667704369883547,
+    "top1pct_k": 100,
+    "top1pct_hits": 2,
+    "top1pct_precision": 0.02,
+    "top1pct_recall": 0.03389830508474576,
+    "top5pct_k": 497,
+    "top5pct_hits": 3,
+    "top5pct_precision": 0.006036217303822937,
+    "top5pct_recall": 0.05084745762711865
+  },
+  "train_all_accounts": {
+    "auc": 0.8213153882567025,
+    "pr_auc_average_precision": 0.02273570240838831,
+    "top1pct_k": 111,
+    "top1pct_hits": 3,
+    "top1pct_precision": 0.02702702702702703,
+    "top1pct_recall": 0.05084745762711865,
+    "top5pct_k": 555,
+    "top5pct_hits": 9,
+    "top5pct_precision": 0.016216216216216217,
+    "top5pct_recall": 0.15254237288135594
+  },
+  "valid": {
+    "auc": 0.8492169062432955,
+    "pr_auc_average_precision": 0.019623124156812312,
+    "top1pct_k": 100,
+    "top1pct_hits": 1,
+    "top1pct_precision": 0.01,
+    "top1pct_recall": 0.01694915254237288,
+    "top5pct_k": 497,
+    "top5pct_hits": 2,
+    "top5pct_precision": 0.004024144869215292,
+    "top5pct_recall": 0.03389830508474576
+  },
+  "valid_all_accounts": {
+    "auc": 0.8113115766953763,
+    "pr_auc_average_precision": 0.01407182819695306,
+    "top1pct_k": 111,
+    "top1pct_hits": 2,
+    "top1pct_precision": 0.018018018018018018,
+    "top1pct_recall": 0.03389830508474576,
+    "top5pct_k": 555,
+    "top5pct_hits": 9,
+    "top5pct_precision": 0.016216216216216217,
+    "top5pct_recall": 0.15254237288135594
+  },
+  "test": {
+    "auc": 0.8622647500536366,
+    "pr_auc_average_precision": 0.021481708950354925,
+    "top1pct_k": 100,
+    "top1pct_hits": 1,
+    "top1pct_precision": 0.01,
+    "top1pct_recall": 0.01694915254237288,
+    "top5pct_k": 497,
+    "top5pct_hits": 2,
+    "top5pct_precision": 0.004024144869215292,
+    "top5pct_recall": 0.03389830508474576
+  },
+  "test_all_accounts": {
+    "auc": 0.8230044632153595,
+    "pr_auc_average_precision": 0.01500204906262269,
+    "top1pct_k": 111,
+    "top1pct_hits": 2,
+    "top1pct_precision": 0.018018018018018018,
+    "top1pct_recall": 0.03389830508474576,
+    "top5pct_k": 555,
+    "top5pct_hits": 9,
+    "top5pct_precision": 0.016216216216216217,
+    "top5pct_recall": 0.15254237288135594
+  }
+}

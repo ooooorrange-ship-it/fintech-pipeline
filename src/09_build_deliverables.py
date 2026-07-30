@@ -410,6 +410,11 @@ def build_metrics_summary() -> tuple[pd.DataFrame, dict]:
     gnn_txn_graph = json.load(open(METRIC_DIR / "gnn_experiment_metrics_v3_txn_graph_only.json", encoding="utf-8"))
     stack_no_customer = json.load(open(METRIC_DIR / "stack_experiment_metrics_v3_no_customer_type.json", encoding="utf-8"))
     stack_txn_graph = json.load(open(METRIC_DIR / "stack_experiment_metrics_v3_txn_graph_only.json", encoding="utf-8"))
+    traditional_no_customer = load_json_optional(METRIC_DIR / "traditional_baseline_metrics_v1_no_customer_type.json")
+    traditional_txn_graph = load_json_optional(METRIC_DIR / "traditional_baseline_metrics_v1_txn_graph_dynamic_only.json")
+    graphsage_no_customer = load_json_optional(METRIC_DIR / "graphsage_metrics_v1_no_customer_type.json")
+    graphsage_txn_graph = load_json_optional(METRIC_DIR / "graphsage_metrics_v1_txn_graph_dynamic_only.json")
+    final_fusion = load_json_optional(METRIC_DIR / "final_dynamic_fusion_metrics_v7.json")
     dynamic_no_customer = load_json_optional(
         first_existing(
             [
@@ -452,6 +457,23 @@ def build_metrics_summary() -> tuple[pd.DataFrame, dict]:
     add_metric_rows(rows, xgb_no_customer, "v2_no_customer_type", "model2_xgb_stat_graph_v2_no_customer_type_strategy_A", "XGB 统计+图特征", "删除 customer_type")
     add_metric_rows(rows, xgb_no_customer, "v2_no_customer_type", "model25_xgb_stat_graph_node2vec_v2_no_customer_type_strategy_A", "XGB 统计+图+Node2Vec", "删除 customer_type")
     add_metric_rows(rows, xgb_txn_graph, "v2_txn_graph_only", "model2_xgb_stat_graph_v2_txn_graph_only_strategy_A", "XGB 交易+图弱画像", "删除 customer_type、region_code、account_age_months")
+    for source, key, alias, experiment, policy in [
+        (traditional_no_customer, "logistic_regression", "逻辑回归统一基线", "v1_no_customer_type", "删除 customer_type"),
+        (traditional_no_customer, "random_forest", "随机森林统一基线", "v1_no_customer_type", "删除 customer_type"),
+        (traditional_no_customer, "dynamic_graph_random_forest", "动态资金图谱 RandomForest", "v1_no_customer_type", "删除 customer_type，使用完整滚动图特征"),
+        (graphsage_no_customer, "graphsage", "PyG GraphSAGE", "v1_no_customer_type", "删除 customer_type"),
+        (traditional_txn_graph, "logistic_regression", "逻辑回归弱画像", "v1_txn_graph_dynamic_only", "删除全部静态画像"),
+        (traditional_txn_graph, "random_forest", "随机森林弱画像", "v1_txn_graph_dynamic_only", "删除全部静态画像"),
+        (traditional_txn_graph, "dynamic_graph_random_forest", "动态资金图谱 RandomForest 弱画像", "v1_txn_graph_dynamic_only", "删除全部静态画像"),
+        (graphsage_txn_graph, "graphsage", "PyG GraphSAGE 弱画像", "v1_txn_graph_dynamic_only", "删除全部静态画像"),
+    ]:
+        if key == "graphsage" and source:
+            graph_block = dict(source)
+            graph_block["feature_count"] = source.get("_metadata", {}).get("feature_count", "")
+            wrapped = {key: graph_block}
+        else:
+            wrapped = source
+        add_metric_rows(rows, wrapped, experiment, key, alias, policy)
 
     for split in ["train", "valid", "test"]:
         if split in gnn_no_customer:
@@ -566,10 +588,23 @@ def build_metrics_summary() -> tuple[pd.DataFrame, dict]:
                 }
             )
 
+    if final_fusion:
+        add_metric_rows(
+            rows,
+            {"model8_final_dynamic_fusion_v7_strategy_A": final_fusion},
+            "v7_validation_selected_dynamic_fusion",
+            "model8_final_dynamic_fusion_v7_strategy_A",
+            "最终动态资金图谱融合模型",
+            "动态RandomForest + 旧动态融合 + GraphSAGE，验证集选择权重",
+        )
+
     summary = pd.DataFrame(rows)
     summary.to_csv(DELIVERABLE_DIR / "task2_model_metrics_summary.csv", index=False)
 
-    if dynamic_stack:
+    if final_fusion:
+        main_model = "model8_final_dynamic_fusion_v7_strategy_A"
+        main_test = final_fusion["test_all_accounts"]
+    elif dynamic_stack:
         main_model = stack_model_name(dynamic_stack)
         main_test = dynamic_stack.get("test_all_accounts", dynamic_stack["test"])
     else:
@@ -579,7 +614,8 @@ def build_metrics_summary() -> tuple[pd.DataFrame, dict]:
     xgb_block = xgb_no_customer["model2_xgb_stat_graph_v2_no_customer_type_strategy_A"]
     rule_test = rule_block.get("test_all_accounts", rule_block["test"])
     xgb_reference_test = xgb_block.get("test_all_accounts", xgb_block["test"])
-    pr_base = xgb_reference_test["pr_auc_average_precision"]
+    traditional_rf_test = traditional_no_customer["random_forest"]["test_all_accounts"]
+    pr_base = traditional_rf_test["pr_auc_average_precision"]
     rule_pr_base = rule_test["pr_auc_average_precision"]
     main_pr = main_test["pr_auc_average_precision"]
     audit = {
@@ -590,19 +626,23 @@ def build_metrics_summary() -> tuple[pd.DataFrame, dict]:
         "auc_requirement_auc_ge_0_85": bool(main_test["auc"] >= 0.85),
         "auc_improvement_vs_rule": main_test["auc"] - rule_test["auc"],
         "auc_improvement_ge_5pct_point": bool(main_test["auc"] - rule_test["auc"] >= 0.05),
-        "evaluation_scope": "all_accounts" if "test_all_accounts" in (dynamic_stack or {}) else "strategy_A_eligible",
-        "pr_auc_improvement_vs_xgb_ratio": safe_ratio(main_pr - pr_base, pr_base),
+        "evaluation_scope": "all_accounts" if "test_all_accounts" in (final_fusion or dynamic_stack or {}) else "strategy_A_eligible",
+        "pr_auc_improvement_vs_xgb_ratio": safe_ratio(main_pr - xgb_reference_test["pr_auc_average_precision"], xgb_reference_test["pr_auc_average_precision"]),
+        "pr_auc_improvement_vs_strongest_traditional_ratio": safe_ratio(main_pr - pr_base, pr_base),
         "pr_auc_improvement_ge_20pct": bool(pr_base > 0 and (main_pr - pr_base) / pr_base >= 0.2),
         "pr_auc_improvement_vs_rule_ratio": safe_ratio(main_pr - rule_pr_base, rule_pr_base),
         "pr_auc_improvement_vs_rule_ge_20pct": bool(rule_pr_base > 0 and (main_pr - rule_pr_base) / rule_pr_base >= 0.2),
         "top5pct_recall_requirement_ge_50pct": bool(main_test["top5pct_recall"] >= 0.5),
-        "baseline_auc": xgb_reference_test["auc"],
-        "baseline_pr_auc": xgb_reference_test["pr_auc_average_precision"],
-        "baseline_top5pct_recall": xgb_reference_test["top5pct_recall"],
+        "baseline_auc": traditional_rf_test["auc"],
+        "baseline_pr_auc": traditional_rf_test["pr_auc_average_precision"],
+        "baseline_top5pct_recall": traditional_rf_test["top5pct_recall"],
+        "strongest_traditional_baseline_model": "RandomForest(stat_only)",
+        "strongest_traditional_baseline_test": traditional_rf_test,
         "rule_baseline_test": rule_test,
         "xgb_reference_model": "model2_xgb_stat_graph_v2_no_customer_type_strategy_A",
         "xgb_reference_test": xgb_reference_test,
         "dynamic_stack_selected_weights": dynamic_stack.get("selected_weights", {}) if dynamic_stack else {},
+        "final_fusion_selected_weights": final_fusion.get("_metadata", {}).get("selected_weights", {}) if final_fusion else {},
     }
     json_dump(audit, DELIVERABLE_DIR / "task2_requirement_audit.json")
     return summary, audit
@@ -618,6 +658,7 @@ def load_explain_module():
 
 def preferred_prediction_path() -> Path:
     for dynamic_stack in [
+        PREDICTION_DIR / "model8_final_dynamic_fusion_v7_strategy_A.csv",
         PREDICTION_DIR / "model4_stack_v6_rolling_memory_dynamic_no_customer_type_strategy_A.csv",
         PREDICTION_DIR / "model4_stack_v5_memory_dynamic_no_customer_type_strategy_A.csv",
         PREDICTION_DIR / "model4_stack_v4_dynamic_no_customer_type_strategy_A.csv",

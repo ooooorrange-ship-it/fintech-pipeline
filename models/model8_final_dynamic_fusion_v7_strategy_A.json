@@ -1,0 +1,21 @@
+{
+  "artifact_type": "validation_selected_rank_ensemble",
+  "selected_weights": {
+    "dynamic_random_forest": 0.7,
+    "dynamic_stack": 0.3,
+    "graphsage": 0.0
+  },
+  "component_predictions": {
+    "dynamic_random_forest": "outputs/predictions/model7_dynamic_graph_random_forest_v1_no_customer_type_strategy_A.csv",
+    "dynamic_stack": "outputs/predictions/model4_stack_v6_rolling_memory_dynamic_no_customer_type_strategy_A.csv",
+    "graphsage": "outputs/predictions/model6_graphsage_v1_no_customer_type_strategy_A.csv"
+  },
+  "normalization": "within_split_average_percentile_rank",
+  "weight_grid_step": 0.05,
+  "selection_metric_order": [
+    "valid PR-AUC",
+    "valid Top5% recall",
+    "valid AUC"
+  ],
+  "random_seed": 2026
+}

@@ -21,7 +21,7 @@ conda env create -f environment.yml
 conda activate fintech09
 ```
 
-已测试的核心环境为 Python 3.12、pandas 2.2、scikit-learn 1.9 和 XGBoost 3.3。
+已测试的核心环境为 Python 3.12、pandas 2.2、scikit-learn 1.9、XGBoost 3.3、PyTorch 2.13 和 PyTorch Geometric 2.8。
 
 ## 3. 数据放置
 
@@ -59,25 +59,31 @@ python src/06_model_gnn.py --drop-customer-type --experiment-suffix v3_no_custom
 python src/10_features_dynamic_graph.py
 python src/11_model_dynamic_graph_xgb.py --drop-customer-type --experiment-suffix v6_rolling_memory_dynamic_no_customer_type
 
-# 6. 最终融合权重和预测
+# 6. 统一传统基线和真实 GraphSAGE 消融
+python src/15_model_traditional_baselines.py
+python src/16_model_graphsage.py
+
+# 7. 最终融合权重和预测
 python src/08_model_stack.py \
   --experiment-suffix v6_rolling_memory_dynamic_no_customer_type \
   --xgb-pred outputs/predictions/model2_xgb_stat_graph_v2_no_customer_type_strategy_A.csv \
-  --gnn-pred outputs/predictions/model3_hetero_prop_v3_no_customer_type_strategy_A.csv \
+  --graph-propagation-pred outputs/predictions/model3_hetero_prop_v3_no_customer_type_strategy_A.csv \
   --rule-pred outputs/predictions/model0_rule_v2_no_customer_type_strategy_A.csv \
   --dynamic-pred outputs/predictions/model5_xgb_dynamic_graph_v6_rolling_memory_dynamic_no_customer_type_strategy_A.csv
+python src/18_model_final_fusion.py
 
-# 7. 链路解释、页面和比赛交付物
+# 8. 统一模型对比、链路解释、页面和比赛交付物
+python src/17_compare_models.py
 python src/12_layered_explainability.py --split test --tx-scope history --top-risk-active 30 --top-k-counterparties 20
 python src/09_dynamic_graph_viz.py --split test --top-n 30 --top-k-counterparties 20 --window monthly
 python src/09_build_deliverables.py
 
-# 8. 最终审计
+# 9. 最终审计
 python src/14_submission_audit.py
 python src/13_final_project_audit.py
 ```
 
-注意：第 3 步的静态 XGBoost 和规则分支在最终融合中权重均为 0，但仍需运行该步以完整复现消融实验和融合权重搜索。实际产生最终风险分的非零权重分支为动态 XGBoost 和轻量图传播模型。
+注意：Model 8 最终权重为动态图 RandomForest 0.7、v6 动态融合 0.3、GraphSAGE 0。GraphSAGE 仍需运行以复现验证集权重搜索和 GNN 消融，但不直接贡献最终风险分。
 
 ## 5. 快速验证
 
@@ -96,7 +102,12 @@ python src/13_final_project_audit.py
 |---|---|
 | `models/model5_xgb_dynamic_graph_v6_rolling_memory_dynamic_no_customer_type_strategy_A.json` | 动态资金图谱 XGBoost 权重 |
 | `models/model3_hetero_prop_v3_no_customer_type_strategy_A.joblib` | 图传播分类器、标准化器、缺失值处理器和特征列 |
-| `models/model4_stack_v6_rolling_memory_dynamic_no_customer_type_strategy_A.json` | 最终融合权重与归一化规则 |
+| `models/model4_stack_v6_rolling_memory_dynamic_no_customer_type_strategy_A.json` | v6 动态融合组件权重与归一化规则 |
+| `models/baseline_logistic_regression_v1_no_customer_type_strategy_A.joblib` | 逻辑回归基线及特征定义 |
+| `models/baseline_random_forest_v1_no_customer_type_strategy_A.joblib` | 随机森林基线及特征定义 |
+| `models/model6_graphsage_v1_no_customer_type_strategy_A.pt` | PyTorch Geometric GraphSAGE 权重、结构参数和标准化参数 |
+| `models/model7_dynamic_graph_random_forest_v1_no_customer_type_strategy_A.joblib` | 动态图 RandomForest 模型和特征定义 |
+| `models/model8_final_dynamic_fusion_v7_strategy_A.json` | 最终验证集选权融合配置 |
 | `models/model_manifest.json` | 文件大小、SHA-256 和运行库版本 |
 
 ## 7. 结果查看

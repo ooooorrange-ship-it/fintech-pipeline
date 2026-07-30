@@ -1,5 +1,5 @@
 {
-  "final_model": "model4_stack_v6_rolling_memory_dynamic_no_customer_type_strategy_A",
+  "final_model": "model8_final_dynamic_fusion_v7_strategy_A",
   "artifacts": [
     {
       "role": "dynamic_xgboost",
@@ -16,8 +16,38 @@
     {
       "role": "stack_config",
       "path": "models/model4_stack_v6_rolling_memory_dynamic_no_customer_type_strategy_A.json",
-      "size_bytes": 929,
-      "sha256": "9d5a86fcc5a3ad44e76df38a58d2f832bbabd2a9be34f8affe784fc960a544ef"
+      "size_bytes": 971,
+      "sha256": "8da3206a8992e753dd0ba9c9c6e228a928f81a29a870ff55b9aac5026b0bc62c"
+    },
+    {
+      "role": "logistic_regression_baseline",
+      "path": "models/baseline_logistic_regression_v1_no_customer_type_strategy_A.joblib",
+      "size_bytes": 13470,
+      "sha256": "13c9def056cbedda7540995ca8e04c529d8bfd333abf007f51a12d1f31128e5e"
+    },
+    {
+      "role": "random_forest_baseline",
+      "path": "models/baseline_random_forest_v1_no_customer_type_strategy_A.joblib",
+      "size_bytes": 3031759,
+      "sha256": "1e85be2ddee6b3a3e5d2904a6e476bad14a57a67fc48e30b0247e6e37fc9c3b6"
+    },
+    {
+      "role": "dynamic_graph_random_forest",
+      "path": "models/model7_dynamic_graph_random_forest_v1_no_customer_type_strategy_A.joblib",
+      "size_bytes": 2830580,
+      "sha256": "46e225d700fba26d58f4dd4338c65855885cf2346272d79ec998c5c6ff955f5a"
+    },
+    {
+      "role": "graphsage",
+      "path": "models/model6_graphsage_v1_no_customer_type_strategy_A.pt",
+      "size_bytes": 238905,
+      "sha256": "775f227f4bad6cf8f5e27ecf88e90d42fb808c97ccd1f6c714d95ca54d2d9743"
+    },
+    {
+      "role": "final_dynamic_fusion",
+      "path": "models/model8_final_dynamic_fusion_v7_strategy_A.json",
+      "size_bytes": 737,
+      "sha256": "83fb547911599760afe51e2a19093f5bc7cf0d1fe622c42b409db28aaaae4b7b"
     }
   ],
   "package_versions": {
@@ -29,7 +59,9 @@
     "networkx": "3.6.1",
     "gensim": "4.4.0",
     "joblib": "1.5.3",
-    "node2vec": "0.5.0"
+    "node2vec": "0.5.0",
+    "torch": "2.13.0",
+    "torch-geometric": "2.8.0.post1"
   },
   "reproduction_document": "DEPLOYMENT.md"
 }

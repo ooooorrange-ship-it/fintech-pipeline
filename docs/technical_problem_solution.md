@@ -26,9 +26,9 @@
   - `task2_model_metrics_summary.csv`
   - `task2_requirement_audit.json`
   - `outputs/metrics/*feature_importance.csv`
-- 主模型：`model4_stack_v6_rolling_memory_dynamic_no_customer_type_strategy_A`
-- Test AUC：0.9880
-- Test PR-AUC：0.3616
+- 主模型：`model8_final_dynamic_fusion_v7_strategy_A`
+- Test AUC：0.9866
+- Test PR-AUC：0.6938
 - Test Top5% 召回：96.61%
 
 ## 问题3：可疑关联账户和资金链路解释
@@ -47,8 +47,8 @@
   - `docs/task3_link_visualization_samples.md`
   - `docs/task3_typical_cases.md`
 - 局限：当前脱敏交易边表中 56 个确认嫌疑账户没有任何入边或出边，因此无法在现有数据范围内恢复真实资金链路；项目已将其转为可执行的缺边恢复队列，而不是伪造路径。
-- Top20 关联账户行数：70
-- 多跳路径行数：144
+- Top20 关联账户行数：71
+- 多跳路径行数：186
 - 汇聚/分散结构行数：2
 - 缺边恢复队列行数：56
 - 当前真实链路覆盖率：3/59（5.08%）

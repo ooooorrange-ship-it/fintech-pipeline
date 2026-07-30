@@ -1,0 +1,13 @@
+{
+  "model_family": "PyTorch Geometric GraphSAGE",
+  "experiment_suffix": "v1_no_customer_type",
+  "feature_policy": "stat + static graph + rolling dynamic graph; customer_type removed",
+  "drop_static_profile": false,
+  "feature_count": 383,
+  "graph_policy": "120-day rolling transaction graph; transaction edges made bidirectional for message passing",
+  "edge_attribute_policy": "time and amount are encoded in dyn_* node features; vanilla SAGEConv consumes topology",
+  "evaluation_policy": "Strategy A loss excludes victims; early stopping and formal metrics use all accounts",
+  "label_time_limitation": "Risk labels have no confirmation time; this is snapshot evaluation, not future-new-label validation.",
+  "random_seed": 2026,
+  "torch_version": "2.13.0"
+}

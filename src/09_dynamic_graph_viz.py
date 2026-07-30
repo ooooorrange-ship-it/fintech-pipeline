@@ -70,6 +70,7 @@ def load_layered_data() -> dict:
 
 def find_prediction_file() -> Path:
     patterns = [
+        "model8_final_dynamic_fusion_v7_strategy_A.csv",
         "model4_stack_v6_rolling_memory_dynamic_no_customer_type_strategy_A.csv",
         "model5_xgb_dynamic_graph_v6_rolling_memory_dynamic_no_customer_type_strategy_A.csv",
         "model2_xgb_stat_graph_v2_no_customer_type_strategy_A.csv",

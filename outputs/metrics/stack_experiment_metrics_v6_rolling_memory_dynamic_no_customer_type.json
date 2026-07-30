@@ -2,7 +2,7 @@
   "_metadata": {
     "experiment_suffix": "v6_rolling_memory_dynamic_no_customer_type",
     "xgb_pred": "outputs/predictions/model2_xgb_stat_graph_v2_no_customer_type_strategy_A.csv",
-    "gnn_pred": "outputs/predictions/model3_hetero_prop_v3_no_customer_type_strategy_A.csv",
+    "graph_propagation_pred": "outputs/predictions/model3_hetero_prop_v3_no_customer_type_strategy_A.csv",
     "rule_pred": "outputs/predictions/model0_rule_v2_no_customer_type_strategy_A.csv",
     "dynamic_pred": "outputs/predictions/model5_xgb_dynamic_graph_v6_rolling_memory_dynamic_no_customer_type_strategy_A.csv",
     "random_seed": 2026
@@ -10,7 +10,7 @@
   "status": "ok",
   "selected_weights": {
     "xgb": 0.0,
-    "gnn": 0.1,
+    "graph_propagation": 0.1,
     "rule": 0.0,
     "dynamic": 0.9
   },

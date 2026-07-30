@@ -20,17 +20,17 @@
 | 缺边恢复队列账户可追溯 | pass | 恢复队列账户=56，审计缺边账户=56 |
 | Top30巡检队列完整 | pass | 巡检账户数=30 |
 | 分层覆盖统计与CSV一致 | pass | coverage JSON 与 CSV 行数一致 |
-| 关联账户节点ID可追溯 | pass | 记录数=70，未知账户=[] |
-| 可疑路径节点ID可追溯 | pass | 记录数=144，未知账户=[] |
+| 关联账户节点ID可追溯 | pass | 记录数=71，未知账户=[] |
+| 可疑路径节点ID可追溯 | pass | 记录数=186，未知账户=[] |
 | 资金结构节点ID可追溯 | pass | 记录数=2，未知账户=[] |
 | 任务2使用全量账户评估 | pass | evaluation_scope=all_accounts |
-| 任务2 AUC达标 | pass | AUC=0.9879674541844181 |
+| 任务2 AUC达标 | pass | AUC=0.9865596355655557 |
 | 任务2 Top5%召回达标 | pass | Top5%召回=0.9661016949152542 |
-| 任务2强基线PR-AUC提升20% | pass | 相对强XGB提升=0.24444788811646034 |
+| 任务2最强传统基线PR-AUC提升20% | pass | 相对传统RF提升=0.3508311701908748 |
 | 任务3关联命中或人工抽检指标 | warning | 关联命中率=0.00%，已抽检=0/5，人工通过率=0.00% |
 | 任务4典型案例不少于5个 | pass | 案例数=5 |
-| 交付物关联行数一致 | pass | layered=70，deliverable=70，audit=70 |
-| 交付物路径行数一致 | pass | layered=144，deliverable=144，audit=144 |
+| 交付物关联行数一致 | pass | layered=71，deliverable=71，audit=71 |
+| 交付物路径行数一致 | pass | layered=186，deliverable=186，audit=186 |
 | 交付物资金结构行数一致 | pass | layered=2，deliverable=2，audit=2 |
 | 交付物缺边恢复队列行数一致 | pass | layered=56，deliverable=56，audit=56 |
 | 最终模型权重与清单 | pass | 缺失=[] |

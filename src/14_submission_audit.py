@@ -23,6 +23,11 @@ MODEL_FILES = {
     "dynamic_xgboost": MODEL_DIR / f"model5_xgb_dynamic_graph_{MAIN_SUFFIX}_strategy_A.json",
     "heterophily_propagation": MODEL_DIR / "model3_hetero_prop_v3_no_customer_type_strategy_A.joblib",
     "stack_config": MODEL_DIR / f"model4_stack_{MAIN_SUFFIX}_strategy_A.json",
+    "logistic_regression_baseline": MODEL_DIR / "baseline_logistic_regression_v1_no_customer_type_strategy_A.joblib",
+    "random_forest_baseline": MODEL_DIR / "baseline_random_forest_v1_no_customer_type_strategy_A.joblib",
+    "dynamic_graph_random_forest": MODEL_DIR / "model7_dynamic_graph_random_forest_v1_no_customer_type_strategy_A.joblib",
+    "graphsage": MODEL_DIR / "model6_graphsage_v1_no_customer_type_strategy_A.pt",
+    "final_dynamic_fusion": MODEL_DIR / "model8_final_dynamic_fusion_v7_strategy_A.json",
 }
 
 REQUIRED_SOURCE_FILES = [
@@ -42,6 +47,10 @@ REQUIRED_SOURCE_FILES = [
     "src/12_layered_explainability.py",
     "src/13_final_project_audit.py",
     "src/14_submission_audit.py",
+    "src/15_model_traditional_baselines.py",
+    "src/16_model_graphsage.py",
+    "src/17_compare_models.py",
+    "src/18_model_final_fusion.py",
 ]
 
 REQUIRED_OUTPUTS = [
@@ -54,6 +63,10 @@ REQUIRED_OUTPUTS = [
     "outputs/deliverables/task3_manual_review_form.csv",
     "outputs/deliverables/task4_consistency_audit.csv",
     "outputs/dynamic_graph/index.html",
+    "outputs/metrics/adjusted_model_comparison.csv",
+    "outputs/metrics/graphsage_metrics_v1_no_customer_type.json",
+    "outputs/metrics/final_dynamic_fusion_metrics_v7.json",
+    "outputs/predictions/model8_final_dynamic_fusion_v7_strategy_A.csv",
 ]
 
 
@@ -105,6 +118,28 @@ def load_model_artifacts(checks: list[dict]) -> list[dict]:
         except Exception as exc:
             add_check(checks, "图传播模型包可加载", False, f"{type(exc).__name__}: {exc}")
 
+    for role in ["logistic_regression_baseline", "random_forest_baseline", "dynamic_graph_random_forest"]:
+        path = MODEL_FILES[role]
+        if path.exists():
+            try:
+                bundle = joblib.load(path)
+                missing = sorted({"model", "feature_columns", "metadata"} - set(bundle))
+                add_check(checks, f"传统基线 {role} 可加载", not missing, f"缺失键={missing}")
+            except Exception as exc:
+                add_check(checks, f"传统基线 {role} 可加载", False, f"{type(exc).__name__}: {exc}")
+
+    graphsage_path = MODEL_FILES["graphsage"]
+    if graphsage_path.exists():
+        try:
+            import torch
+
+            bundle = torch.load(graphsage_path, map_location="cpu", weights_only=True)
+            required = {"state_dict", "input_dim", "hidden_dim", "feature_columns", "scaler_mean", "scaler_scale"}
+            missing = sorted(required - set(bundle))
+            add_check(checks, "GraphSAGE 权重可加载", not missing, f"缺失键={missing}")
+        except Exception as exc:
+            add_check(checks, "GraphSAGE 权重可加载", False, f"{type(exc).__name__}: {exc}")
+
     stack_path = MODEL_FILES["stack_config"]
     if stack_path.exists():
         try:
@@ -114,6 +149,16 @@ def load_model_artifacts(checks: list[dict]) -> list[dict]:
             add_check(checks, "融合权重可加载", abs(weight_sum - 1.0) < 1e-9, f"weights={weights}")
         except Exception as exc:
             add_check(checks, "融合权重可加载", False, f"{type(exc).__name__}: {exc}")
+
+    final_fusion_path = MODEL_FILES["final_dynamic_fusion"]
+    if final_fusion_path.exists():
+        try:
+            fusion = json.loads(final_fusion_path.read_text(encoding="utf-8"))
+            weights = fusion.get("selected_weights", {})
+            weight_sum = sum(float(value) for value in weights.values())
+            add_check(checks, "最终动态融合权重可加载", abs(weight_sum - 1.0) < 1e-9, f"weights={weights}")
+        except Exception as exc:
+            add_check(checks, "最终动态融合权重可加载", False, f"{type(exc).__name__}: {exc}")
     return artifacts
 
 
@@ -183,7 +228,7 @@ def main() -> None:
     add_check(checks, "关键比赛输出", not missing_outputs, f"缺失={missing_outputs}")
 
     package_versions = {}
-    for package in ["numpy", "pandas", "scipy", "scikit-learn", "xgboost", "networkx", "gensim", "joblib", "node2vec"]:
+    for package in ["numpy", "pandas", "scipy", "scikit-learn", "xgboost", "networkx", "gensim", "joblib", "node2vec", "torch", "torch-geometric"]:
         try:
             package_versions[package] = importlib.metadata.version(package)
         except importlib.metadata.PackageNotFoundError:
@@ -193,7 +238,7 @@ def main() -> None:
 
     artifacts = load_model_artifacts(checks)
     model_manifest = {
-        "final_model": f"model4_stack_{MAIN_SUFFIX}_strategy_A",
+        "final_model": "model8_final_dynamic_fusion_v7_strategy_A",
         "artifacts": artifacts,
         "package_versions": package_versions,
         "reproduction_document": "DEPLOYMENT.md",

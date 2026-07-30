@@ -1,20 +1,34 @@
 {
-  "main_model": "model4_stack_v6_rolling_memory_dynamic_no_customer_type_strategy_A",
-  "test_auc": 0.9879674541844181,
-  "test_pr_auc": 0.36155310295978255,
+  "main_model": "model8_final_dynamic_fusion_v7_strategy_A",
+  "test_auc": 0.9865596355655557,
+  "test_pr_auc": 0.6937814869587354,
   "test_top5pct_recall": 0.9661016949152542,
   "auc_requirement_auc_ge_0_85": true,
-  "auc_improvement_vs_rule": 0.7796809969077172,
+  "auc_improvement_vs_rule": 0.7782731782888548,
   "auc_improvement_ge_5pct_point": true,
   "evaluation_scope": "all_accounts",
-  "pr_auc_improvement_vs_xgb_ratio": 0.24444788811646034,
+  "pr_auc_improvement_vs_xgb_ratio": 1.3879615447696312,
+  "pr_auc_improvement_vs_strongest_traditional_ratio": 0.3508311701908748,
   "pr_auc_improvement_ge_20pct": true,
-  "pr_auc_improvement_vs_rule_ratio": 101.1720728785912,
+  "pr_auc_improvement_vs_rule_ratio": 195.05721003935128,
   "pr_auc_improvement_vs_rule_ge_20pct": true,
   "top5pct_recall_requirement_ge_50pct": true,
-  "baseline_auc": 0.985529899239532,
-  "baseline_pr_auc": 0.29053293947648773,
-  "baseline_top5pct_recall": 0.9661016949152542,
+  "baseline_auc": 0.9860393881829304,
+  "baseline_pr_auc": 0.5135960009426662,
+  "baseline_top5pct_recall": 0.9830508474576272,
+  "strongest_traditional_baseline_model": "RandomForest(stat_only)",
+  "strongest_traditional_baseline_test": {
+    "auc": 0.9860393881829304,
+    "pr_auc_average_precision": 0.5135960009426662,
+    "top1pct_k": 111,
+    "top1pct_hits": 40,
+    "top1pct_precision": 0.36036036036036034,
+    "top1pct_recall": 0.6779661016949152,
+    "top5pct_k": 555,
+    "top5pct_hits": 58,
+    "top5pct_precision": 0.1045045045045045,
+    "top5pct_recall": 0.9830508474576272
+  },
   "rule_baseline_test": {
     "auc": 0.20828645727670092,
     "pr_auc_average_precision": 0.003538668569339961,
@@ -42,8 +56,13 @@
   },
   "dynamic_stack_selected_weights": {
     "xgb": 0.0,
-    "gnn": 0.1,
+    "graph_propagation": 0.1,
     "rule": 0.0,
     "dynamic": 0.9
+  },
+  "final_fusion_selected_weights": {
+    "dynamic_random_forest": 0.7,
+    "dynamic_stack": 0.3,
+    "graphsage": 0.0
   }
 }

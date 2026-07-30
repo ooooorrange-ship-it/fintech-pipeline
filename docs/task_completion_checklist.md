@@ -10,9 +10,9 @@
 | 任务1 | 字段字典 | 已完成 | task1_field_dictionary.csv |
 | 任务1 | 节点/边/标签样例 | 已完成 | task1_graph_samples/*.csv |
 | 任务1 | 图统计报告 | 已完成 | task1_graph_statistics_by_split.csv |
-| 任务2 | 测试集 AUC >= 0.85 | 已完成 | 0.9880 |
-| 任务2 | PR-AUC 较强XGB基线提升 >=20% | 已完成 | 24.44% |
-| 任务2 | PR-AUC 较规则基线提升 >=20% | 已完成 | 10117.21% |
+| 任务2 | 测试集 AUC >= 0.85 | 已完成 | 0.9866 |
+| 任务2 | PR-AUC 较强XGB基线提升 >=20% | 已完成 | 138.80% |
+| 任务2 | PR-AUC 较规则基线提升 >=20% | 已完成 | 19505.72% |
 | 任务2 | Top5% 覆盖确认风险账户 >=50% | 已完成 | 96.61% |
 | 任务2 | 模型代码、特征说明、基线对比、指标报告 | 已完成 | src/10_features_dynamic_graph.py + src/11_model_dynamic_graph_xgb.py + task2_model_metrics_summary.csv |
 | 任务3 | Top20 关联账户 | 已完成 | task3_top20_associations.csv |

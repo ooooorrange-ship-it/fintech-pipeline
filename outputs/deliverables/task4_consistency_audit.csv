@@ -2,5 +2,5 @@ case_id,account_id,cites_model_score,cites_account_features,cites_link_or_struct
 case_1,4379,True,True,True,3,True,True
 case_2,1740,True,True,True,3,True,True
 case_3,7265,True,True,True,3,True,True
-case_4,9544,True,True,True,3,True,True
-case_5,10083,True,True,True,3,True,True
+case_4,6625,True,True,True,3,True,True
+case_5,9928,True,True,True,3,True,True

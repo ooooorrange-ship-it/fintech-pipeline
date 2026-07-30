@@ -41,6 +41,7 @@ def load_explain_module():
 
 def find_prediction_file() -> Path:
     preferred = [
+        PREDICTION_DIR / "model8_final_dynamic_fusion_v7_strategy_A.csv",
         PREDICTION_DIR / "model4_stack_v6_rolling_memory_dynamic_no_customer_type_strategy_A.csv",
         PREDICTION_DIR / "model5_xgb_dynamic_graph_v6_rolling_memory_dynamic_no_customer_type_strategy_A.csv",
         PREDICTION_DIR / "model2_xgb_stat_graph_v2_no_customer_type_strategy_A.csv",

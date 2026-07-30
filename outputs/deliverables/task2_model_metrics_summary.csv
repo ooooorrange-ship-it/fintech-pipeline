@@ -19,6 +19,38 @@ v2_txn_graph_only,model2_xgb_stat_graph_v2_txn_graph_only_strategy_A,XGB 交易+
 v2_txn_graph_only,model2_xgb_stat_graph_v2_txn_graph_only_strategy_A,XGB 交易+图弱画像,删除 customer_type、region_code、account_age_months,test,strategy_A_eligible,201,0.742173782450118,0.029625373380016147,1,0.01694915254237288,1,0.01694915254237288
 v2_txn_graph_only,model2_xgb_stat_graph_v2_txn_graph_only_strategy_A,XGB 交易+图弱画像,删除 customer_type、region_code、account_age_months,valid_all_accounts,all_accounts,201,0.6895529407425167,0.021015277557640762,4,0.06779661016949153,12,0.2033898305084746
 v2_txn_graph_only,model2_xgb_stat_graph_v2_txn_graph_only_strategy_A,XGB 交易+图弱画像,删除 customer_type、region_code、account_age_months,test_all_accounts,all_accounts,201,0.7198010610894918,0.021186397359716294,4,0.06779661016949153,9,0.15254237288135594
+v1_no_customer_type,logistic_regression,逻辑回归统一基线,删除 customer_type,valid,strategy_A_eligible,117,0.8306114567689338,0.04371911775151949,7,0.11864406779661017,17,0.288135593220339
+v1_no_customer_type,logistic_regression,逻辑回归统一基线,删除 customer_type,test,strategy_A_eligible,117,0.8658536794679254,0.05406469320289327,8,0.13559322033898305,19,0.3220338983050847
+v1_no_customer_type,logistic_regression,逻辑回归统一基线,删除 customer_type,valid_all_accounts,all_accounts,117,0.8154505019580359,0.03669000254580262,7,0.11864406779661017,17,0.288135593220339
+v1_no_customer_type,logistic_regression,逻辑回归统一基线,删除 customer_type,test_all_accounts,all_accounts,117,0.8495332374295322,0.044393045023720455,8,0.13559322033898305,19,0.3220338983050847
+v1_no_customer_type,random_forest,随机森林统一基线,删除 customer_type,valid,strategy_A_eligible,117,0.9737275262819137,0.5515370362061591,39,0.6610169491525424,57,0.9661016949152542
+v1_no_customer_type,random_forest,随机森林统一基线,删除 customer_type,test,strategy_A_eligible,117,0.988919116069513,0.6234344295246864,44,0.7457627118644068,58,0.9830508474576272
+v1_no_customer_type,random_forest,随机森林统一基线,删除 customer_type,valid_all_accounts,all_accounts,117,0.9707316660826371,0.46855104572108,39,0.6610169491525424,56,0.9491525423728814
+v1_no_customer_type,random_forest,随机森林统一基线,删除 customer_type,test_all_accounts,all_accounts,117,0.9860393881829304,0.5135960009426662,40,0.6779661016949152,58,0.9830508474576272
+v1_no_customer_type,dynamic_graph_random_forest,动态资金图谱 RandomForest,删除 customer_type，使用完整滚动图特征,valid,strategy_A_eligible,383,0.976748337266681,0.6550383106328683,44,0.7457627118644068,56,0.9491525423728814
+v1_no_customer_type,dynamic_graph_random_forest,动态资金图谱 RandomForest,删除 customer_type，使用完整滚动图特征,test,strategy_A_eligible,383,0.9860544947436172,0.6851028729353149,46,0.7796610169491526,57,0.9661016949152542
+v1_no_customer_type,dynamic_graph_random_forest,动态资金图谱 RandomForest,删除 customer_type，使用完整滚动图特征,valid_all_accounts,all_accounts,383,0.9723285258479187,0.5336003103404614,39,0.6610169491525424,56,0.9491525423728814
+v1_no_customer_type,dynamic_graph_random_forest,动态资金图谱 RandomForest,删除 customer_type，使用完整滚动图特征,test_all_accounts,all_accounts,383,0.9822616390943238,0.5481413714152193,40,0.6779661016949152,57,0.9661016949152542
+v1_no_customer_type,graphsage,PyG GraphSAGE,删除 customer_type,valid,strategy_A_eligible,383,0.8997828792104698,0.07091781763879129,8,0.13559322033898305,21,0.3559322033898305
+v1_no_customer_type,graphsage,PyG GraphSAGE,删除 customer_type,test,strategy_A_eligible,383,0.9082368590431238,0.09060574009258547,11,0.1864406779661017,21,0.3559322033898305
+v1_no_customer_type,graphsage,PyG GraphSAGE,删除 customer_type,valid_all_accounts,all_accounts,383,0.8778678925139707,0.06005060890351392,7,0.11864406779661017,20,0.3389830508474576
+v1_no_customer_type,graphsage,PyG GraphSAGE,删除 customer_type,test_all_accounts,all_accounts,383,0.8853665246552689,0.07265677131774023,9,0.15254237288135594,20,0.3389830508474576
+v1_txn_graph_dynamic_only,logistic_regression,逻辑回归弱画像,删除全部静态画像,valid,strategy_A_eligible,115,0.7555631838661231,0.01253751229538985,1,0.01694915254237288,1,0.01694915254237288
+v1_txn_graph_dynamic_only,logistic_regression,逻辑回归弱画像,删除全部静态画像,test,strategy_A_eligible,115,0.7933799613816778,0.014267739518325918,1,0.01694915254237288,1,0.01694915254237288
+v1_txn_graph_dynamic_only,logistic_regression,逻辑回归弱画像,删除全部静态画像,valid_all_accounts,all_accounts,115,0.7268624395222024,0.009981670577128387,4,0.06779661016949153,12,0.2033898305084746
+v1_txn_graph_dynamic_only,logistic_regression,逻辑回归弱画像,删除全部静态画像,test_all_accounts,all_accounts,115,0.7619587736608817,0.011121602378804498,4,0.06779661016949153,9,0.15254237288135594
+v1_txn_graph_dynamic_only,random_forest,随机森林弱画像,删除全部静态画像,valid,strategy_A_eligible,115,0.7622810555674748,0.012606593341274468,1,0.01694915254237288,1,0.01694915254237288
+v1_txn_graph_dynamic_only,random_forest,随机森林弱画像,删除全部静态画像,test,strategy_A_eligible,115,0.7924119287706501,0.014221417714347677,1,0.01694915254237288,1,0.01694915254237288
+v1_txn_graph_dynamic_only,random_forest,随机森林弱画像,删除全部静态画像,valid_all_accounts,all_accounts,115,0.7328933131689443,0.010028808672414293,4,0.06779661016949153,12,0.2033898305084746
+v1_txn_graph_dynamic_only,random_forest,随机森林弱画像,删除全部静态画像,test_all_accounts,all_accounts,115,0.761088877003375,0.011091072605974599,4,0.06779661016949153,9,0.15254237288135594
+v1_txn_graph_dynamic_only,dynamic_graph_random_forest,动态资金图谱 RandomForest 弱画像,删除全部静态画像,valid,strategy_A_eligible,381,0.8429195451619824,0.019371786224448136,1,0.01694915254237288,2,0.03389830508474576
+v1_txn_graph_dynamic_only,dynamic_graph_random_forest,动态资金图谱 RandomForest 弱画像,删除全部静态画像,test,strategy_A_eligible,381,0.8581128513194594,0.021272544571846973,1,0.01694915254237288,2,0.03389830508474576
+v1_txn_graph_dynamic_only,dynamic_graph_random_forest,动态资金图谱 RandomForest 弱画像,删除全部静态画像,valid_all_accounts,all_accounts,381,0.8056295838635708,0.013923471537066285,2,0.03389830508474576,9,0.15254237288135594
+v1_txn_graph_dynamic_only,dynamic_graph_random_forest,动态资金图谱 RandomForest 弱画像,删除全部静态画像,test_all_accounts,all_accounts,381,0.8192728217234406,0.014885299246357132,2,0.03389830508474576,9,0.15254237288135594
+v1_txn_graph_dynamic_only,graphsage,PyG GraphSAGE 弱画像,删除全部静态画像,valid,strategy_A_eligible,381,0.8492169062432955,0.019623124156812312,1,0.01694915254237288,2,0.03389830508474576
+v1_txn_graph_dynamic_only,graphsage,PyG GraphSAGE 弱画像,删除全部静态画像,test,strategy_A_eligible,381,0.8622647500536366,0.021481708950354925,1,0.01694915254237288,2,0.03389830508474576
+v1_txn_graph_dynamic_only,graphsage,PyG GraphSAGE 弱画像,删除全部静态画像,valid_all_accounts,all_accounts,381,0.8113115766953763,0.01407182819695306,2,0.03389830508474576,9,0.15254237288135594
+v1_txn_graph_dynamic_only,graphsage,PyG GraphSAGE 弱画像,删除全部静态画像,test_all_accounts,all_accounts,381,0.8230044632153595,0.01500204906262269,2,0.03389830508474576,9,0.15254237288135594
 v3_no_customer_type,model3_hetero_prop_v3_no_customer_type_strategy_A,轻量异配图传播,删除 customer_type,train,strategy_A_eligible,819,0.9096537223771723,0.055097731950844754,4,0.06779661016949153,22,0.3728813559322034
 v3_no_customer_type,model3_hetero_prop_v3_no_customer_type_strategy_A,轻量异配图传播,删除 customer_type,valid,strategy_A_eligible,819,0.8456090967603519,0.04240611636077264,4,0.06779661016949153,18,0.3050847457627119
 v3_no_customer_type,model3_hetero_prop_v3_no_customer_type_strategy_A,轻量异配图传播,删除 customer_type,test,strategy_A_eligible,819,0.87128084102124,0.04778210639194184,4,0.06779661016949153,21,0.3559322033898305
@@ -44,3 +76,5 @@ v6_rolling_memory_dynamic_no_customer_type,model4_stack_v6_rolling_memory_dynami
 v6_rolling_memory_dynamic_no_customer_type,model4_stack_v6_rolling_memory_dynamic_no_customer_type_strategy_A,动态资金图谱融合模型,XGB 主模型 + 动态资金图谱分支，验证集选择权重,test,strategy_A_eligible,,0.9862484445397983,0.33847227642572886,27,0.4576271186440678,57,0.9661016949152542
 v6_rolling_memory_dynamic_no_customer_type,model4_stack_v6_rolling_memory_dynamic_no_customer_type_strategy_A,动态资金图谱融合模型,XGB 主模型 + 动态资金图谱分支，验证集选择权重,valid_all_accounts,all_accounts,,0.9756505781892625,0.33305514454750074,32,0.5423728813559322,56,0.9491525423728814
 v6_rolling_memory_dynamic_no_customer_type,model4_stack_v6_rolling_memory_dynamic_no_customer_type_strategy_A,动态资金图谱融合模型,XGB 主模型 + 动态资金图谱分支，验证集选择权重,test_all_accounts,all_accounts,,0.9879674541844181,0.36155310295978255,33,0.559322033898305,57,0.9661016949152542
+v7_validation_selected_dynamic_fusion,model8_final_dynamic_fusion_v7_strategy_A,最终动态资金图谱融合模型,动态RandomForest + 旧动态融合 + GraphSAGE，验证集选择权重,valid_all_accounts,all_accounts,,0.9756206082514155,0.6361676347468106,44,0.7457627118644068,56,0.9491525423728814
+v7_validation_selected_dynamic_fusion,model8_final_dynamic_fusion_v7_strategy_A,最终动态资金图谱融合模型,动态RandomForest + 旧动态融合 + GraphSAGE，验证集选择权重,test_all_accounts,all_accounts,,0.9865596355655557,0.6937814869587354,45,0.7627118644067796,57,0.9661016949152542

@@ -4,7 +4,7 @@
 
 | 检查项 | 状态 | 详情 |
 |---|---|---|
-| 完整源代码 | pass | 脚本数=16，缺失=[] |
+| 完整源代码 | pass | 脚本数=20，缺失=[] |
 | Conda 环境文件 | pass | environment.yml |
 | 部署文档 | pass | DEPLOYMENT.md |
 | 项目说明 | pass | readme.md |
@@ -16,9 +16,19 @@
 | 模型文件 dynamic_xgboost | pass | models/model5_xgb_dynamic_graph_v6_rolling_memory_dynamic_no_customer_type_strategy_A.json |
 | 模型文件 heterophily_propagation | pass | models/model3_hetero_prop_v3_no_customer_type_strategy_A.joblib |
 | 模型文件 stack_config | pass | models/model4_stack_v6_rolling_memory_dynamic_no_customer_type_strategy_A.json |
+| 模型文件 logistic_regression_baseline | pass | models/baseline_logistic_regression_v1_no_customer_type_strategy_A.joblib |
+| 模型文件 random_forest_baseline | pass | models/baseline_random_forest_v1_no_customer_type_strategy_A.joblib |
+| 模型文件 dynamic_graph_random_forest | pass | models/model7_dynamic_graph_random_forest_v1_no_customer_type_strategy_A.joblib |
+| 模型文件 graphsage | pass | models/model6_graphsage_v1_no_customer_type_strategy_A.pt |
+| 模型文件 final_dynamic_fusion | pass | models/model8_final_dynamic_fusion_v7_strategy_A.json |
 | 动态 XGBoost 权重可加载 | pass | 特征数=383 |
 | 图传播模型包可加载 | pass | 缺失键=[] |
-| 融合权重可加载 | pass | weights={'xgb': 0.0, 'gnn': 0.1, 'rule': 0.0, 'dynamic': 0.9} |
+| 传统基线 logistic_regression_baseline 可加载 | pass | 缺失键=[] |
+| 传统基线 random_forest_baseline 可加载 | pass | 缺失键=[] |
+| 传统基线 dynamic_graph_random_forest 可加载 | pass | 缺失键=[] |
+| GraphSAGE 权重可加载 | pass | 缺失键=[] |
+| 融合权重可加载 | pass | weights={'xgb': 0.0, 'graph_propagation': 0.1, 'rule': 0.0, 'dynamic': 0.9} |
+| 最终动态融合权重可加载 | pass | weights={'dynamic_random_forest': 0.7, 'dynamic_stack': 0.3, 'graphsage': 0.0} |
 | 模型校验清单 | pass | models/model_manifest.json |
 
 ## 数据边界

@@ -75,14 +75,18 @@ def load_pred(path: Path, split: str) -> pd.DataFrame:
 def assemble_all_account_components(
     dynamic_frame: pd.DataFrame,
     xgb_frame: pd.DataFrame,
-    gnn_frame: pd.DataFrame,
+    graph_propagation_frame: pd.DataFrame,
     rule_frame: pd.DataFrame,
 ) -> pd.DataFrame:
     """以动态分支的全量账户作为主键，保留缺失的辅助分支分数。"""
     out = dynamic_frame[[ID_COL, "target", "score"]].rename(columns={"score": "dynamic_score"}).copy()
-    for frame, name in [(xgb_frame, "xgb_score"), (gnn_frame, "gnn_score"), (rule_frame, "rule_score")]:
+    for frame, name in [
+        (xgb_frame, "xgb_score"),
+        (graph_propagation_frame, "graph_propagation_score"),
+        (rule_frame, "rule_score"),
+    ]:
         out = out.merge(frame[[ID_COL, "score"]].rename(columns={"score": name}), on=ID_COL, how="left")
-    for col in ["xgb_score", "gnn_score", "rule_score", "dynamic_score"]:
+    for col in ["xgb_score", "graph_propagation_score", "rule_score", "dynamic_score"]:
         out[col] = out[col].fillna(0.0)
     return out
 
@@ -139,7 +143,13 @@ def find_latest(pattern: str) -> Path:
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="XGB + 图分支 + 规则分支 stacking。")
     parser.add_argument("--xgb-pred", default="", help="XGB 预测文件，默认自动寻找最新文件。")
-    parser.add_argument("--gnn-pred", default="", help="GNN 预测文件，默认自动寻找最新文件。")
+    parser.add_argument(
+        "--graph-propagation-pred",
+        "--gnn-pred",
+        dest="graph_propagation_pred",
+        default="",
+        help="轻量图传播预测文件；--gnn-pred 仅作为旧参数别名保留。",
+    )
     parser.add_argument("--rule-pred", default="", help="规则预测文件，默认自动寻找最新文件。")
     parser.add_argument("--dynamic-pred", default="", help="动态资金图谱模型预测文件，可选。")
     parser.add_argument("--experiment-suffix", default="v3_no_customer_type", help="输出后缀。")
@@ -152,18 +162,26 @@ def main() -> None:
     suffix = args.experiment_suffix.strip()
 
     xgb_path = Path(args.xgb_pred) if args.xgb_pred else find_latest("model2_xgb_stat_graph_*no_customer_type_strategy_A.csv")
-    gnn_path = Path(args.gnn_pred) if args.gnn_pred else find_latest("model3_hetero_prop_*no_customer_type_strategy_A.csv")
+    graph_propagation_path = (
+        Path(args.graph_propagation_pred)
+        if args.graph_propagation_pred
+        else find_latest("model3_hetero_prop_*no_customer_type_strategy_A.csv")
+    )
     rule_path = Path(args.rule_pred) if args.rule_pred else find_latest("model0_rule_*no_customer_type_strategy_A.csv")
 
     valid_xgb = load_pred(xgb_path, "valid")
     test_xgb = load_pred(xgb_path, "test")
-    valid_gnn = load_pred(gnn_path, "valid")
-    test_gnn = load_pred(gnn_path, "test")
+    valid_graph_propagation = load_pred(graph_propagation_path, "valid")
+    test_graph_propagation = load_pred(graph_propagation_path, "test")
     valid_rule = load_pred(rule_path, "valid")
     test_rule = load_pred(rule_path, "test")
 
     valid = valid_xgb[[ID_COL, "target", "score"]].rename(columns={"score": "xgb_score"})
-    valid = valid.merge(valid_gnn[[ID_COL, "score"]].rename(columns={"score": "gnn_score"}), on=ID_COL, how="inner")
+    valid = valid.merge(
+        valid_graph_propagation[[ID_COL, "score"]].rename(columns={"score": "graph_propagation_score"}),
+        on=ID_COL,
+        how="inner",
+    )
     valid = valid.merge(valid_rule[[ID_COL, "score"]].rename(columns={"score": "rule_score"}), on=ID_COL, how="inner")
     dynamic_path = Path(args.dynamic_pred) if args.dynamic_pred else None
     valid_dynamic = None
@@ -176,7 +194,7 @@ def main() -> None:
 
     components_valid = {
         "xgb": normalize_score(valid["xgb_score"].to_numpy()),
-        "gnn": normalize_score(valid["gnn_score"].to_numpy()),
+        "graph_propagation": normalize_score(valid["graph_propagation_score"].to_numpy()),
         "rule": normalize_score(valid["rule_score"].to_numpy()),
     }
     if dynamic_path:
@@ -184,14 +202,18 @@ def main() -> None:
     weights, valid_score, valid_metrics = grid_search_weights(y_valid, components_valid)
 
     test = test_xgb[[ID_COL, "target", "score"]].rename(columns={"score": "xgb_score"})
-    test = test.merge(test_gnn[[ID_COL, "score"]].rename(columns={"score": "gnn_score"}), on=ID_COL, how="inner")
+    test = test.merge(
+        test_graph_propagation[[ID_COL, "score"]].rename(columns={"score": "graph_propagation_score"}),
+        on=ID_COL,
+        how="inner",
+    )
     test = test.merge(test_rule[[ID_COL, "score"]].rename(columns={"score": "rule_score"}), on=ID_COL, how="inner")
     if dynamic_path and test_dynamic is not None:
         test = test.merge(test_dynamic[[ID_COL, "score"]].rename(columns={"score": "dynamic_score"}), on=ID_COL, how="inner")
     y_test = test["target"].to_numpy(dtype=int)
     components_test = {
         "xgb": normalize_score(test["xgb_score"].to_numpy()),
-        "gnn": normalize_score(test["gnn_score"].to_numpy()),
+        "graph_propagation": normalize_score(test["graph_propagation_score"].to_numpy()),
         "rule": normalize_score(test["rule_score"].to_numpy()),
     }
     if dynamic_path:
@@ -203,17 +225,17 @@ def main() -> None:
     full_valid_score = None
     full_test_score = None
     if dynamic_path and valid_dynamic is not None and test_dynamic is not None:
-        full_valid = assemble_all_account_components(valid_dynamic, valid_xgb, valid_gnn, valid_rule)
-        full_test = assemble_all_account_components(test_dynamic, test_xgb, test_gnn, test_rule)
+        full_valid = assemble_all_account_components(valid_dynamic, valid_xgb, valid_graph_propagation, valid_rule)
+        full_test = assemble_all_account_components(test_dynamic, test_xgb, test_graph_propagation, test_rule)
         full_valid_components = {
             "xgb": normalize_score(full_valid["xgb_score"].to_numpy()),
-            "gnn": normalize_score(full_valid["gnn_score"].to_numpy()),
+            "graph_propagation": normalize_score(full_valid["graph_propagation_score"].to_numpy()),
             "rule": normalize_score(full_valid["rule_score"].to_numpy()),
             "dynamic": normalize_score(full_valid["dynamic_score"].to_numpy()),
         }
         full_test_components = {
             "xgb": normalize_score(full_test["xgb_score"].to_numpy()),
-            "gnn": normalize_score(full_test["gnn_score"].to_numpy()),
+            "graph_propagation": normalize_score(full_test["graph_propagation_score"].to_numpy()),
             "rule": normalize_score(full_test["rule_score"].to_numpy()),
             "dynamic": normalize_score(full_test["dynamic_score"].to_numpy()),
         }
@@ -259,7 +281,7 @@ def main() -> None:
         "_metadata": {
             "experiment_suffix": suffix,
             "xgb_pred": str(xgb_path),
-            "gnn_pred": str(gnn_path),
+            "graph_propagation_pred": str(graph_propagation_path),
             "rule_pred": str(rule_path),
             "dynamic_pred": str(dynamic_path) if dynamic_path else "",
             "random_seed": RANDOM_SEED,
@@ -280,12 +302,12 @@ def main() -> None:
         "normalization": "within_split_ordinal_rank_divided_by_n_minus_1",
         "component_predictions": {
             "xgb": str(xgb_path),
-            "gnn": str(gnn_path),
+            "graph_propagation": str(graph_propagation_path),
             "rule": str(rule_path),
             "dynamic": str(dynamic_path) if dynamic_path else "",
         },
         "required_model_artifacts": {
-            "gnn": f"{Path(gnn_path).stem}.joblib",
+            "graph_propagation": f"{Path(graph_propagation_path).stem}.joblib",
             "dynamic": f"{Path(dynamic_path).stem}.json" if dynamic_path else "",
         },
         "random_seed": RANDOM_SEED,
