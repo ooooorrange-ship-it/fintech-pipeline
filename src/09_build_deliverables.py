@@ -419,6 +419,7 @@ def build_metrics_summary() -> tuple[pd.DataFrame, dict]:
     tgn_no_customer = load_json_optional(METRIC_DIR / "tgn_metrics_v1_no_customer_type.json")
     final_selection = load_json_optional(METRIC_DIR / "final_model_selection_metrics_v8.json")
     cv_bagging = load_json_optional(METRIC_DIR / "cv_bagging_metrics_v1_no_customer_type.json")
+    guardrail = load_json_optional(METRIC_DIR / "model_overfit_guardrail_audit_v1.json")
     dynamic_no_customer = load_json_optional(
         first_existing(
             [
@@ -636,6 +637,15 @@ def build_metrics_summary() -> tuple[pd.DataFrame, dict]:
             "model12_cv_bagged_dynamic_v1_no_customer_type_strategy_A",
             "五折正则化 Bagging 对照模型",
             "五折账户级 Bagging：正则化 RandomForest + CatBoost，用于过拟合审计和鲁棒性对照",
+        )
+    if guardrail.get("guardrailed_selection"):
+        add_metric_rows(
+            rows,
+            {"model13_guardrailed_final_strategy_A": guardrail["guardrailed_selection"]},
+            "v1_overfit_guardrail",
+            "model13_guardrailed_final_strategy_A",
+            "过拟合护栏最终模型",
+            "只用验证集检查 Model11 与正则化 Model12；若 Model12 无增益，则保持 Model11",
         )
 
     summary = pd.DataFrame(rows)

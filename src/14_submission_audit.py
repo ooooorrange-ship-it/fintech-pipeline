@@ -30,6 +30,7 @@ MODEL_FILES = {
     "catboost_dynamic": MODEL_DIR / "model9_catboost_dynamic_v1_no_customer_type_strategy_A.joblib",
     "tgn_temporal_memory": MODEL_DIR / "model10_tgn_v1_no_customer_type_strategy_A.pt",
     "cv_bagging_experiment": MODEL_DIR / "model12_cv_bagged_dynamic_v1_no_customer_type_strategy_A.joblib",
+    "overfit_guardrailed_final": MODEL_DIR / "model13_guardrailed_final_strategy_A.json",
     "previous_final_dynamic_fusion": MODEL_DIR / "model8_final_dynamic_fusion_v7_strategy_A.json",
     "final_selected_model": MODEL_DIR / "model11_validation_selected_best_strategy_A.json",
 }
@@ -60,6 +61,7 @@ REQUIRED_SOURCE_FILES = [
     "src/21_select_best_model.py",
     "src/22_cross_validation_overfit_audit.py",
     "src/23_model_cv_bagging.py",
+    "src/24_model_overfit_guardrails.py",
 ]
 
 REQUIRED_OUTPUTS = [
@@ -83,6 +85,8 @@ REQUIRED_OUTPUTS = [
     "outputs/metrics/five_fold_overfit_audit_v1.json",
     "outputs/metrics/cv_bagging_metrics_v1_no_customer_type.json",
     "outputs/predictions/model12_cv_bagged_dynamic_v1_no_customer_type_strategy_A.csv",
+    "outputs/metrics/model_overfit_guardrail_audit_v1.json",
+    "outputs/predictions/model13_guardrailed_final_strategy_A.csv",
 ]
 
 
@@ -170,6 +174,7 @@ def load_model_artifacts(checks: list[dict]) -> list[dict]:
     for role, label in [
         ("previous_final_dynamic_fusion", "上一版最终动态融合权重可加载"),
         ("final_selected_model", "最终验证集选择权重可加载"),
+        ("overfit_guardrailed_final", "过拟合护栏最终权重可加载"),
     ]:
         final_fusion_path = MODEL_FILES[role]
         if not final_fusion_path.exists():

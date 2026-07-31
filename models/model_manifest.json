@@ -62,6 +62,12 @@
       "sha256": "7661346ae2be0d8bdaed66f4140b6458d6ffe5add6e1ca6caf6350c986c5dd40"
     },
     {
+      "role": "overfit_guardrailed_final",
+      "path": "models/model13_guardrailed_final_strategy_A.json",
+      "size_bytes": 674,
+      "sha256": "594f5bf0772fa800f64c38d6a6caa7c64f5f2be76ba344aa29ef42e7715df7f4"
+    },
+    {
       "role": "previous_final_dynamic_fusion",
       "path": "models/model8_final_dynamic_fusion_v7_strategy_A.json",
       "size_bytes": 737,

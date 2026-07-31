@@ -34,6 +34,8 @@ CatBoost动态资金图谱,catboost_dynamic_graph,drop_customer_type,test,all_ac
 最终验证集选择模型v8,validation_selected_best_ensemble,drop_customer_type,test,all_accounts,0.9857850279412036,0.8048550057410236,51,0.864406779661017,56,0.9491525423728814
 五折正则化Bagging,five_fold_bagging,drop_customer_type,valid,all_accounts,0.9339316562463499,0.3300875595712133,25,0.423728813559322,42,0.711864406779661
 五折正则化Bagging,five_fold_bagging,drop_customer_type,test,all_accounts,0.9449559826143623,0.33838214924840654,25,0.423728813559322,43,0.7288135593220338
+过拟合护栏最终模型,overfit_guardrailed_final,drop_customer_type,valid,all_accounts,0.9757020650055637,0.7940291820855534,50,0.847457627118644,56,0.9491525423728814
+过拟合护栏最终模型,overfit_guardrailed_final,drop_customer_type,test,all_accounts,0.9857842594812588,0.8048535458921688,51,0.864406779661017,56,0.9491525423728814
 LogisticRegression弱画像,traditional_baseline,transaction_graph_dynamic_only,train,all_accounts,0.8151461918198976,0.014268323307381925,3,0.05084745762711865,8,0.13559322033898305
 LogisticRegression弱画像,traditional_baseline,transaction_graph_dynamic_only,valid,all_accounts,0.7268624395222024,0.009981670577128387,4,0.06779661016949153,12,0.2033898305084746
 LogisticRegression弱画像,traditional_baseline,transaction_graph_dynamic_only,test,all_accounts,0.7619587736608817,0.011121602378804498,4,0.06779661016949153,9,0.15254237288135594

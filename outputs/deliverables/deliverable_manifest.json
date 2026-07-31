@@ -2,7 +2,7 @@
   "deliverable_dir": "/Users/orange/Documents/study/金融科技大赛/outputs/deliverables",
   "field_dictionary_rows": 404,
   "graph_stat_rows": 3,
-  "metrics_summary_rows": 91,
+  "metrics_summary_rows": 93,
   "task2_audit": {
     "main_model": "model11_validation_selected_best_strategy_A",
     "test_auc": 0.9857850279412036,

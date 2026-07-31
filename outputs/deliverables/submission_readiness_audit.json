@@ -6,7 +6,7 @@
     {
       "name": "完整源代码",
       "status": "pass",
-      "detail": "脚本数=25，缺失=[]"
+      "detail": "脚本数=26，缺失=[]"
     },
     {
       "name": "Conda 环境文件",
@@ -99,6 +99,11 @@
       "detail": "models/model12_cv_bagged_dynamic_v1_no_customer_type_strategy_A.joblib"
     },
     {
+      "name": "模型文件 overfit_guardrailed_final",
+      "status": "pass",
+      "detail": "models/model13_guardrailed_final_strategy_A.json"
+    },
+    {
       "name": "模型文件 previous_final_dynamic_fusion",
       "status": "pass",
       "detail": "models/model8_final_dynamic_fusion_v7_strategy_A.json"
@@ -162,6 +167,11 @@
       "name": "最终验证集选择权重可加载",
       "status": "pass",
       "detail": "weights={'model8_current_best': 0.75, 'model9_catboost': 0.2, 'model10_tgn': 0.05}"
+    },
+    {
+      "name": "过拟合护栏最终权重可加载",
+      "status": "pass",
+      "detail": "weights={'Model11': 1.0, 'Model12': 0.0}"
     },
     {
       "name": "模型校验清单",
@@ -229,6 +239,12 @@
       "path": "models/model12_cv_bagged_dynamic_v1_no_customer_type_strategy_A.joblib",
       "size_bytes": 6427502,
       "sha256": "7661346ae2be0d8bdaed66f4140b6458d6ffe5add6e1ca6caf6350c986c5dd40"
+    },
+    {
+      "role": "overfit_guardrailed_final",
+      "path": "models/model13_guardrailed_final_strategy_A.json",
+      "size_bytes": 674,
+      "sha256": "594f5bf0772fa800f64c38d6a6caa7c64f5f2be76ba344aa29ef42e7715df7f4"
     },
     {
       "role": "previous_final_dynamic_fusion",

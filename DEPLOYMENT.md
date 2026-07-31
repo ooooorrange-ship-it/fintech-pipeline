@@ -82,6 +82,7 @@ python src/21_select_best_model.py
 # 10. 五折账户级过拟合审计和正则化 Bagging 对照
 python src/22_cross_validation_overfit_audit.py
 python src/23_model_cv_bagging.py
+python src/24_model_overfit_guardrails.py
 
 # 11. 统一模型对比、链路解释、页面和比赛交付物
 python src/17_compare_models.py
@@ -94,7 +95,7 @@ python src/14_submission_audit.py
 python src/13_final_project_audit.py
 ```
 
-注意：当前 Model11 由验证集选择 `Model8=0.75、CatBoost=0.20、TGN=0.05`。Model8 内部为动态图 RandomForest 0.7、v6 动态融合 0.3、GraphSAGE 0。TGN 和 GraphSAGE 都保留为可复现的动态图模型对照分支。Model12 是五折正则化 Bagging 对照模型，用于检查过拟合和账户级泛化风险，不替代当前最佳 Model11。
+注意：当前 Model11 由验证集选择 `Model8=0.75、CatBoost=0.20、TGN=0.05`。Model8 内部为动态图 RandomForest 0.7、v6 动态融合 0.3、GraphSAGE 0。TGN 和 GraphSAGE 都保留为可复现的动态图模型对照分支。Model12 是五折正则化 Bagging 对照模型，用于检查过拟合和账户级泛化风险，不替代当前最佳 Model11。Model13 是过拟合护栏配置，验证集结果选择 `Model11=1.0、Model12=0.0`，因此主模型保持 Model11。
 
 ## 5. 快速验证
 
@@ -123,6 +124,7 @@ python src/13_final_project_audit.py
 | `models/model10_tgn_v1_no_customer_type_strategy_A.pt` | 轻量 TGN 时间事件流模型 |
 | `models/model11_validation_selected_best_strategy_A.json` | 最终 Model8/CatBoost/TGN 验证集选择配置 |
 | `models/model12_cv_bagged_dynamic_v1_no_customer_type_strategy_A.joblib` | 五折正则化 Bagging 对照模型 |
+| `models/model13_guardrailed_final_strategy_A.json` | 过拟合护栏最终配置 |
 | `models/model_manifest.json` | 文件大小、SHA-256 和运行库版本 |
 
 ## 7. 结果查看

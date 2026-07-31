@@ -18,6 +18,19 @@
       "top5pct_recall": 0.9491525423728814
     },
     {
+      "model": "过拟合护栏最终模型",
+      "model_family": "overfit_guardrailed_final",
+      "profile_policy": "drop_customer_type",
+      "split": "test",
+      "evaluation_scope": "all_accounts",
+      "auc": 0.9857842594812588,
+      "pr_auc": 0.8048535458921688,
+      "top1pct_hits": 51,
+      "top1pct_recall": 0.864406779661017,
+      "top5pct_hits": 56,
+      "top5pct_recall": 0.9491525423728814
+    },
+    {
       "model": "最终动态融合模型v7",
       "model_family": "validation_selected_dynamic_ensemble",
       "profile_policy": "drop_customer_type",

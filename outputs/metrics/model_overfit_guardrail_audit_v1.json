@@ -1,0 +1,179 @@
+{
+  "status": "ok",
+  "artifact_type": "overfit_guardrailed_final_model",
+  "random_seed": 2026,
+  "final_recommendation": "Model11 remains final model; Model13 is a guardrail alias with audited selection.",
+  "label_time_limitation": "风险标签表没有标签确认时间，不能严格声称预测未来新增风险标签。",
+  "temporal_holdout_overfit_audit": [
+    {
+      "model": "Model8",
+      "valid_auc": 0.9756206082514155,
+      "test_auc": 0.9865596355655557,
+      "valid_pr_auc": 0.6361676347468106,
+      "test_pr_auc": 0.6937814869587354,
+      "valid_top5_recall": 0.9491525423728814,
+      "test_top5_recall": 0.9661016949152542,
+      "valid_minus_test_pr_auc": -0.05761385221192483,
+      "valid_minus_test_top5_recall": -0.016949152542372836,
+      "temporal_overfit_flag": false
+    },
+    {
+      "model": "Model11",
+      "valid_auc": 0.9757020650055637,
+      "test_auc": 0.9857850279412036,
+      "valid_pr_auc": 0.7940291820855534,
+      "test_pr_auc": 0.8048550057410236,
+      "valid_top5_recall": 0.9491525423728814,
+      "test_top5_recall": 0.9491525423728814,
+      "valid_minus_test_pr_auc": -0.010825823655470246,
+      "valid_minus_test_top5_recall": 0.0,
+      "temporal_overfit_flag": false
+    },
+    {
+      "model": "Model12",
+      "valid_auc": 0.9339316562463499,
+      "test_auc": 0.9449559826143623,
+      "valid_pr_auc": 0.3300875595712133,
+      "test_pr_auc": 0.33838214924840654,
+      "valid_top5_recall": 0.711864406779661,
+      "test_top5_recall": 0.7288135593220338,
+      "valid_minus_test_pr_auc": -0.008294589677193265,
+      "valid_minus_test_top5_recall": -0.016949152542372836,
+      "temporal_overfit_flag": false
+    }
+  ],
+  "account_level_cv_audit": [
+    {
+      "model": "dynamic_random_forest",
+      "fold_count": 5,
+      "positive_count_per_fold": [
+        12,
+        12,
+        12,
+        12,
+        11
+      ],
+      "train_pr_auc_mean": 0.7676752139414817,
+      "train_pr_auc_std": 0.03488700079413052,
+      "validation_pr_auc_mean": 0.10518281087411815,
+      "validation_pr_auc_std": 0.06419556353876663,
+      "train_auc_mean": 0.997944642696831,
+      "train_auc_std": 0.0007515634362046382,
+      "validation_auc_mean": 0.9117537399309551,
+      "validation_auc_std": 0.020936909997885958,
+      "validation_top5pct_recall_mean": 0.48636363636363633,
+      "validation_top5pct_recall_std": 0.18044939310253824,
+      "pr_auc_train_validation_gap_mean": 0.6624924030673636,
+      "auc_train_validation_gap_mean": 0.08619090276587582,
+      "overfit_flag": true,
+      "stability_conclusion": "需要关注训练-验证差距或折间波动"
+    },
+    {
+      "model": "catboost",
+      "fold_count": 5,
+      "positive_count_per_fold": [
+        12,
+        12,
+        12,
+        12,
+        11
+      ],
+      "train_pr_auc_mean": 0.33292000382781284,
+      "train_pr_auc_std": 0.10484905278807037,
+      "validation_pr_auc_mean": 0.10563032539691486,
+      "validation_pr_auc_std": 0.05351308563355602,
+      "train_auc_mean": 0.9592575242391597,
+      "train_auc_std": 0.004922160780158187,
+      "validation_auc_mean": 0.9279677790563866,
+      "validation_auc_std": 0.02624819741961702,
+      "validation_top5pct_recall_mean": 0.5742424242424243,
+      "validation_top5pct_recall_std": 0.10089134433082723,
+      "pr_auc_train_validation_gap_mean": 0.22728967843089803,
+      "auc_train_validation_gap_mean": 0.03128974518277301,
+      "overfit_flag": true,
+      "stability_conclusion": "需要关注训练-验证差距或折间波动"
+    }
+  ],
+  "account_level_cv_note": "五折账户级审计暴露底层模型存在账户级泛化风险；该结果用于风险披露，不替代比赛时间切分。",
+  "guardrailed_selection": {
+    "selected_weights": {
+      "Model11": 1.0,
+      "Model12": 0.0
+    },
+    "selection_data": "valid_all_accounts",
+    "selection_metric_order": [
+      "valid PR-AUC",
+      "valid Top5% recall",
+      "valid AUC"
+    ],
+    "valid_all_accounts": {
+      "auc": 0.9757020650055637,
+      "pr_auc_average_precision": 0.7940291820855534,
+      "top1pct_k": 111,
+      "top1pct_hits": 50,
+      "top1pct_precision": 0.45045045045045046,
+      "top1pct_recall": 0.847457627118644,
+      "top5pct_k": 555,
+      "top5pct_hits": 56,
+      "top5pct_precision": 0.1009009009009009,
+      "top5pct_recall": 0.9491525423728814
+    },
+    "test_all_accounts": {
+      "auc": 0.9857842594812588,
+      "pr_auc_average_precision": 0.8048535458921688,
+      "top1pct_k": 111,
+      "top1pct_hits": 51,
+      "top1pct_precision": 0.4594594594594595,
+      "top1pct_recall": 0.864406779661017,
+      "top5pct_k": 555,
+      "top5pct_hits": 56,
+      "top5pct_precision": 0.1009009009009009,
+      "top5pct_recall": 0.9491525423728814
+    },
+    "candidate_count": 21,
+    "candidate_top5": [
+      {
+        "weight_model11": 1.0,
+        "weight_model12": 0.0,
+        "valid_auc": 0.9757020650055637,
+        "valid_pr_auc": 0.7940291820855534,
+        "valid_top5_recall": 0.9491525423728814,
+        "valid_top5_hits": 56
+      },
+      {
+        "weight_model11": 0.95,
+        "weight_model12": 0.050000000000000044,
+        "valid_auc": 0.9742212426919459,
+        "valid_pr_auc": 0.7131683872964255,
+        "valid_top5_recall": 0.9491525423728814,
+        "valid_top5_hits": 56
+      },
+      {
+        "weight_model11": 0.9,
+        "weight_model12": 0.09999999999999998,
+        "valid_auc": 0.9725874968493142,
+        "valid_pr_auc": 0.6603951829642912,
+        "valid_top5_recall": 0.9491525423728814,
+        "valid_top5_hits": 56
+      },
+      {
+        "weight_model11": 0.85,
+        "weight_model12": 0.15000000000000002,
+        "valid_auc": 0.9709245495287804,
+        "valid_pr_auc": 0.6216910203848235,
+        "valid_top5_recall": 0.9322033898305084,
+        "valid_top5_hits": 55
+      },
+      {
+        "weight_model11": 0.8,
+        "weight_model12": 0.19999999999999996,
+        "valid_auc": 0.9692347061101787,
+        "valid_pr_auc": 0.5912039601863651,
+        "valid_top5_recall": 0.9152542372881356,
+        "valid_top5_hits": 54
+      }
+    ],
+    "decision": "keep_model11",
+    "decision_note": "正则化 Model12 未提升验证集 PR-AUC，因此不强行加入最终主模型。"
+  }
+}

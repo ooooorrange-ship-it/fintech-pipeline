@@ -160,6 +160,7 @@ def audit_submission_assets(checks: list[dict]) -> None:
         MODEL_DIR / "model10_tgn_v1_no_customer_type_strategy_A.pt",
         MODEL_DIR / "model11_validation_selected_best_strategy_A.json",
         MODEL_DIR / "model12_cv_bagged_dynamic_v1_no_customer_type_strategy_A.joblib",
+        MODEL_DIR / "model13_guardrailed_final_strategy_A.json",
         MODEL_DIR / "baseline_logistic_regression_v1_no_customer_type_strategy_A.joblib",
         MODEL_DIR / "baseline_random_forest_v1_no_customer_type_strategy_A.joblib",
         MODEL_DIR / "model7_dynamic_graph_random_forest_v1_no_customer_type_strategy_A.joblib",
