@@ -415,6 +415,9 @@ def build_metrics_summary() -> tuple[pd.DataFrame, dict]:
     graphsage_no_customer = load_json_optional(METRIC_DIR / "graphsage_metrics_v1_no_customer_type.json")
     graphsage_txn_graph = load_json_optional(METRIC_DIR / "graphsage_metrics_v1_txn_graph_dynamic_only.json")
     final_fusion = load_json_optional(METRIC_DIR / "final_dynamic_fusion_metrics_v7.json")
+    catboost_no_customer = load_json_optional(METRIC_DIR / "catboost_metrics_v1_no_customer_type.json")
+    tgn_no_customer = load_json_optional(METRIC_DIR / "tgn_metrics_v1_no_customer_type.json")
+    final_selection = load_json_optional(METRIC_DIR / "final_model_selection_metrics_v8.json")
     dynamic_no_customer = load_json_optional(
         first_existing(
             [
@@ -597,11 +600,41 @@ def build_metrics_summary() -> tuple[pd.DataFrame, dict]:
             "最终动态资金图谱融合模型",
             "动态RandomForest + 旧动态融合 + GraphSAGE，验证集选择权重",
         )
+    if catboost_no_customer:
+        add_metric_rows(
+            rows,
+            {"model9_catboost_dynamic_v1_no_customer_type_strategy_A": catboost_no_customer},
+            "v1_no_customer_type",
+            "model9_catboost_dynamic_v1_no_customer_type_strategy_A",
+            "CatBoost 动态资金图谱模型",
+            "统计+图结构+滚动动态特征，region_code 按类别特征处理",
+        )
+    if tgn_no_customer:
+        add_metric_rows(
+            rows,
+            {"model10_tgn_v1_no_customer_type_strategy_A": tgn_no_customer},
+            "v1_no_customer_type",
+            "model10_tgn_v1_no_customer_type_strategy_A",
+            "轻量 TGN 时间事件流模型",
+            "日级交易事件流 + 节点记忆 + 滚动动态特征",
+        )
+    if final_selection:
+        add_metric_rows(
+            rows,
+            {"model11_validation_selected_best_strategy_A": final_selection},
+            "v8_validation_selected_best",
+            "model11_validation_selected_best_strategy_A",
+            "最终验证集选择冠军模型",
+            "Model8 + CatBoost + TGN，验证集选择权重",
+        )
 
     summary = pd.DataFrame(rows)
     summary.to_csv(DELIVERABLE_DIR / "task2_model_metrics_summary.csv", index=False)
 
-    if final_fusion:
+    if final_selection:
+        main_model = "model11_validation_selected_best_strategy_A"
+        main_test = final_selection["test_all_accounts"]
+    elif final_fusion:
         main_model = "model8_final_dynamic_fusion_v7_strategy_A"
         main_test = final_fusion["test_all_accounts"]
     elif dynamic_stack:
@@ -643,6 +676,7 @@ def build_metrics_summary() -> tuple[pd.DataFrame, dict]:
         "xgb_reference_test": xgb_reference_test,
         "dynamic_stack_selected_weights": dynamic_stack.get("selected_weights", {}) if dynamic_stack else {},
         "final_fusion_selected_weights": final_fusion.get("_metadata", {}).get("selected_weights", {}) if final_fusion else {},
+        "final_selection_selected_weights": final_selection.get("_metadata", {}).get("selected_weights", {}) if final_selection else {},
     }
     json_dump(audit, DELIVERABLE_DIR / "task2_requirement_audit.json")
     return summary, audit
@@ -658,6 +692,7 @@ def load_explain_module():
 
 def preferred_prediction_path() -> Path:
     for dynamic_stack in [
+        PREDICTION_DIR / "model11_validation_selected_best_strategy_A.csv",
         PREDICTION_DIR / "model8_final_dynamic_fusion_v7_strategy_A.csv",
         PREDICTION_DIR / "model4_stack_v6_rolling_memory_dynamic_no_customer_type_strategy_A.csv",
         PREDICTION_DIR / "model4_stack_v5_memory_dynamic_no_customer_type_strategy_A.csv",

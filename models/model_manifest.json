@@ -1,5 +1,5 @@
 {
-  "final_model": "model8_final_dynamic_fusion_v7_strategy_A",
+  "final_model": "model11_validation_selected_best_strategy_A",
   "artifacts": [
     {
       "role": "dynamic_xgboost",
@@ -44,10 +44,28 @@
       "sha256": "775f227f4bad6cf8f5e27ecf88e90d42fb808c97ccd1f6c714d95ca54d2d9743"
     },
     {
-      "role": "final_dynamic_fusion",
+      "role": "catboost_dynamic",
+      "path": "models/model9_catboost_dynamic_v1_no_customer_type_strategy_A.joblib",
+      "size_bytes": 3975112,
+      "sha256": "bf3570371505a6ca882f01b32427262772e29103953960488867bf49236a5de9"
+    },
+    {
+      "role": "tgn_temporal_memory",
+      "path": "models/model10_tgn_v1_no_customer_type_strategy_A.pt",
+      "size_bytes": 112173,
+      "sha256": "5528918d848e1b7393083a497e1c418be96cf1b822c6b8bf62eb349b0839c35e"
+    },
+    {
+      "role": "previous_final_dynamic_fusion",
       "path": "models/model8_final_dynamic_fusion_v7_strategy_A.json",
       "size_bytes": 737,
       "sha256": "83fb547911599760afe51e2a19093f5bc7cf0d1fe622c42b409db28aaaae4b7b"
+    },
+    {
+      "role": "final_selected_model",
+      "path": "models/model11_validation_selected_best_strategy_A.json",
+      "size_bytes": 710,
+      "sha256": "bebe723c5c3d5c2e07a807d3faee5b1e7871c062c497c8203a4ddf9f5f70e104"
     }
   ],
   "package_versions": {
@@ -56,6 +74,7 @@
     "scipy": "1.17.1",
     "scikit-learn": "1.9.0",
     "xgboost": "3.3.0",
+    "catboost": "1.2.10",
     "networkx": "3.6.1",
     "gensim": "4.4.0",
     "joblib": "1.5.3",

@@ -50,6 +50,9 @@ def main() -> None:
     xgb_weak = read_json("xgb_experiment_metrics_v2_txn_graph_only.json")
     dynamic_weak = read_json("dynamic_graph_experiment_metrics_v6_rolling_memory_dynamic_txn_graph_only.json")
     final_fusion = read_json("final_dynamic_fusion_metrics_v7.json")
+    catboost = read_json("catboost_metrics_v1_no_customer_type.json")
+    tgn = read_json("tgn_metrics_v1_no_customer_type.json")
+    final_selection = read_json("final_model_selection_metrics_v8.json")
 
     rows: list[dict] = []
     main_profile = "drop_customer_type"
@@ -63,6 +66,9 @@ def main() -> None:
     add_rows(rows, "滚动动态资金图谱XGBoost", "dynamic_graph_xgboost", main_profile, dynamic["model5_xgb_dynamic_graph_strategy_A"])
     add_rows(rows, "最终融合模型", "rank_weighted_ensemble", main_profile, stack)
     add_rows(rows, "最终动态融合模型v7", "validation_selected_dynamic_ensemble", main_profile, final_fusion)
+    add_rows(rows, "CatBoost动态资金图谱", "catboost_dynamic_graph", main_profile, catboost)
+    add_rows(rows, "轻量TGN时间事件流", "temporal_graph_memory", main_profile, tgn)
+    add_rows(rows, "最终验证集选择模型v8", "validation_selected_best_ensemble", main_profile, final_selection)
     add_rows(rows, "LogisticRegression弱画像", "traditional_baseline", weak_profile, traditional_weak["logistic_regression"])
     add_rows(rows, "RandomForest弱画像", "traditional_baseline", weak_profile, traditional_weak["random_forest"])
     add_rows(rows, "动态资金图谱RandomForest弱画像", "dynamic_graph_random_forest", weak_profile, traditional_weak["dynamic_graph_random_forest"])

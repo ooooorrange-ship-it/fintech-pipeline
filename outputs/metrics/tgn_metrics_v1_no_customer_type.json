@@ -1,0 +1,110 @@
+{
+  "_metadata": {
+    "model_family": "lightweight TGN-style temporal node memory",
+    "experiment_suffix": "v1_no_customer_type",
+    "feature_policy": "daily transaction event stream + rolling dynamic node features",
+    "event_policy": "daily src-dst aggregation; events processed chronologically",
+    "rolling_history_days": 120,
+    "side_feature_count": 180,
+    "memory_dim": 32,
+    "hidden_dim": 48,
+    "evaluation_policy": "Strategy A training excludes victims; formal metrics use all accounts.",
+    "label_time_limitation": "Risk labels have no confirmation time; this is snapshot evaluation, not future-new-label validation.",
+    "random_seed": 2026
+  },
+  "status": "ok",
+  "best_epoch": 1,
+  "best_valid_all_accounts_pr_auc": 0.013913670148772593,
+  "event_streams": {
+    "train": {
+      "observation_start": "2025-07-03 23:59:59",
+      "observation_end": "2025-10-31 23:59:59",
+      "event_count": 389174,
+      "active_day_count": 120
+    },
+    "valid": {
+      "observation_start": "2025-08-02 23:59:59",
+      "observation_end": "2025-11-30 23:59:59",
+      "event_count": 393086,
+      "active_day_count": 120
+    },
+    "test": {
+      "observation_start": "2025-09-02 23:59:59",
+      "observation_end": "2025-12-31 23:59:59",
+      "event_count": 406787,
+      "active_day_count": 120
+    }
+  },
+  "train": {
+    "auc": 0.8498622613173139,
+    "pr_auc_average_precision": 0.019511809707348574,
+    "top1pct_k": 100,
+    "top1pct_hits": 1,
+    "top1pct_precision": 0.01,
+    "top1pct_recall": 0.01694915254237288,
+    "top5pct_k": 497,
+    "top5pct_hits": 2,
+    "top5pct_precision": 0.004024144869215292,
+    "top5pct_recall": 0.03389830508474576
+  },
+  "train_all_accounts": {
+    "auc": 0.8136415472479912,
+    "pr_auc_average_precision": 0.014152389881004963,
+    "top1pct_k": 111,
+    "top1pct_hits": 3,
+    "top1pct_precision": 0.02702702702702703,
+    "top1pct_recall": 0.05084745762711865,
+    "top5pct_k": 555,
+    "top5pct_hits": 8,
+    "top5pct_precision": 0.014414414414414415,
+    "top5pct_recall": 0.13559322033898305
+  },
+  "valid": {
+    "auc": 0.8414640635056854,
+    "pr_auc_average_precision": 0.0193619426400663,
+    "top1pct_k": 100,
+    "top1pct_hits": 1,
+    "top1pct_precision": 0.01,
+    "top1pct_recall": 0.01694915254237288,
+    "top5pct_k": 497,
+    "top5pct_hits": 2,
+    "top5pct_precision": 0.004024144869215292,
+    "top5pct_recall": 0.03389830508474576
+  },
+  "valid_all_accounts": {
+    "auc": 0.8043508665154337,
+    "pr_auc_average_precision": 0.013913670148772593,
+    "top1pct_k": 111,
+    "top1pct_hits": 2,
+    "top1pct_precision": 0.018018018018018018,
+    "top1pct_recall": 0.03389830508474576,
+    "top5pct_k": 555,
+    "top5pct_hits": 9,
+    "top5pct_precision": 0.016216216216216217,
+    "top5pct_recall": 0.15254237288135594
+  },
+  "test": {
+    "auc": 0.8539489379961381,
+    "pr_auc_average_precision": 0.021193936513600242,
+    "top1pct_k": 100,
+    "top1pct_hits": 1,
+    "top1pct_precision": 0.01,
+    "top1pct_recall": 0.01694915254237288,
+    "top5pct_k": 497,
+    "top5pct_hits": 2,
+    "top5pct_precision": 0.004024144869215292,
+    "top5pct_recall": 0.03389830508474576
+  },
+  "test_all_accounts": {
+    "auc": 0.8155273479525155,
+    "pr_auc_average_precision": 0.01482935308864198,
+    "top1pct_k": 111,
+    "top1pct_hits": 2,
+    "top1pct_precision": 0.018018018018018018,
+    "top1pct_recall": 0.03389830508474576,
+    "top5pct_k": 555,
+    "top5pct_hits": 9,
+    "top5pct_precision": 0.016216216216216217,
+    "top5pct_recall": 0.15254237288135594
+  }
+}

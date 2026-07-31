@@ -6,7 +6,7 @@
 |---|---|---|
 | 源代码 | `config.py`、`src/` | 清洗、特征、建模、融合、解释、展示和审计代码 |
 | 环境 | `environment.yml` | Conda 依赖和版本约束 |
-| 模型 | `models/` | 动态 XGBoost 权重、图传播模型包、融合权重及 SHA-256 清单 |
+| 模型 | `models/` | 动态树模型、CatBoost、TGN、融合权重及 SHA-256 清单 |
 | 中间数据 | `outputs/clean/`、`outputs/features/` | 可直接用于复现建模的清洗数据和特征 |
 | 评估结果 | `outputs/metrics/`、`outputs/predictions/` | 指标、特征重要性和账户风险分 |
 | 比赛交付物 | `outputs/deliverables/` | 四项任务对应的结构化证据 |
@@ -21,7 +21,7 @@ conda env create -f environment.yml
 conda activate fintech09
 ```
 
-已测试的核心环境为 Python 3.12、pandas 2.2、scikit-learn 1.9、XGBoost 3.3、PyTorch 2.13 和 PyTorch Geometric 2.8。
+已测试的核心环境为 Python 3.12、pandas 2.2、scikit-learn 1.9、XGBoost 3.3、CatBoost 1.2.10、PyTorch 2.13 和 PyTorch Geometric 2.8。
 
 ## 3. 数据放置
 
@@ -63,7 +63,7 @@ python src/11_model_dynamic_graph_xgb.py --drop-customer-type --experiment-suffi
 python src/15_model_traditional_baselines.py
 python src/16_model_graphsage.py
 
-# 7. 最终融合权重和预测
+# 7. Model8 旧版动态融合权重和预测
 python src/08_model_stack.py \
   --experiment-suffix v6_rolling_memory_dynamic_no_customer_type \
   --xgb-pred outputs/predictions/model2_xgb_stat_graph_v2_no_customer_type_strategy_A.csv \
@@ -72,18 +72,25 @@ python src/08_model_stack.py \
   --dynamic-pred outputs/predictions/model5_xgb_dynamic_graph_v6_rolling_memory_dynamic_no_customer_type_strategy_A.csv
 python src/18_model_final_fusion.py
 
-# 8. 统一模型对比、链路解释、页面和比赛交付物
+# 8. 新模型对照：CatBoost 和轻量 TGN
+python src/19_model_catboost.py
+python src/20_model_tgn.py
+
+# 9. 只用验证集选择最终冠军模型
+python src/21_select_best_model.py
+
+# 10. 统一模型对比、链路解释、页面和比赛交付物
 python src/17_compare_models.py
 python src/12_layered_explainability.py --split test --tx-scope history --top-risk-active 30 --top-k-counterparties 20
 python src/09_dynamic_graph_viz.py --split test --top-n 30 --top-k-counterparties 20 --window monthly
 python src/09_build_deliverables.py
 
-# 9. 最终审计
+# 11. 最终审计
 python src/14_submission_audit.py
 python src/13_final_project_audit.py
 ```
 
-注意：Model 8 最终权重为动态图 RandomForest 0.7、v6 动态融合 0.3、GraphSAGE 0。GraphSAGE 仍需运行以复现验证集权重搜索和 GNN 消融，但不直接贡献最终风险分。
+注意：当前 Model11 由验证集选择 `Model8=0.75、CatBoost=0.20、TGN=0.05`。Model8 内部为动态图 RandomForest 0.7、v6 动态融合 0.3、GraphSAGE 0。TGN 和 GraphSAGE 都保留为可复现的动态图模型对照分支。
 
 ## 5. 快速验证
 
@@ -108,6 +115,9 @@ python src/13_final_project_audit.py
 | `models/model6_graphsage_v1_no_customer_type_strategy_A.pt` | PyTorch Geometric GraphSAGE 权重、结构参数和标准化参数 |
 | `models/model7_dynamic_graph_random_forest_v1_no_customer_type_strategy_A.joblib` | 动态图 RandomForest 模型和特征定义 |
 | `models/model8_final_dynamic_fusion_v7_strategy_A.json` | 最终验证集选权融合配置 |
+| `models/model9_catboost_dynamic_v1_no_customer_type_strategy_A.joblib` | CatBoost 动态特征模型 |
+| `models/model10_tgn_v1_no_customer_type_strategy_A.pt` | 轻量 TGN 时间事件流模型 |
+| `models/model11_validation_selected_best_strategy_A.json` | 最终 Model8/CatBoost/TGN 验证集选择配置 |
 | `models/model_manifest.json` | 文件大小、SHA-256 和运行库版本 |
 
 ## 7. 结果查看

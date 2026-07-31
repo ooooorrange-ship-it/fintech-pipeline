@@ -27,7 +27,10 @@ MODEL_FILES = {
     "random_forest_baseline": MODEL_DIR / "baseline_random_forest_v1_no_customer_type_strategy_A.joblib",
     "dynamic_graph_random_forest": MODEL_DIR / "model7_dynamic_graph_random_forest_v1_no_customer_type_strategy_A.joblib",
     "graphsage": MODEL_DIR / "model6_graphsage_v1_no_customer_type_strategy_A.pt",
-    "final_dynamic_fusion": MODEL_DIR / "model8_final_dynamic_fusion_v7_strategy_A.json",
+    "catboost_dynamic": MODEL_DIR / "model9_catboost_dynamic_v1_no_customer_type_strategy_A.joblib",
+    "tgn_temporal_memory": MODEL_DIR / "model10_tgn_v1_no_customer_type_strategy_A.pt",
+    "previous_final_dynamic_fusion": MODEL_DIR / "model8_final_dynamic_fusion_v7_strategy_A.json",
+    "final_selected_model": MODEL_DIR / "model11_validation_selected_best_strategy_A.json",
 }
 
 REQUIRED_SOURCE_FILES = [
@@ -51,6 +54,9 @@ REQUIRED_SOURCE_FILES = [
     "src/16_model_graphsage.py",
     "src/17_compare_models.py",
     "src/18_model_final_fusion.py",
+    "src/19_model_catboost.py",
+    "src/20_model_tgn.py",
+    "src/21_select_best_model.py",
 ]
 
 REQUIRED_OUTPUTS = [
@@ -67,6 +73,10 @@ REQUIRED_OUTPUTS = [
     "outputs/metrics/graphsage_metrics_v1_no_customer_type.json",
     "outputs/metrics/final_dynamic_fusion_metrics_v7.json",
     "outputs/predictions/model8_final_dynamic_fusion_v7_strategy_A.csv",
+    "outputs/metrics/catboost_metrics_v1_no_customer_type.json",
+    "outputs/metrics/tgn_metrics_v1_no_customer_type.json",
+    "outputs/metrics/final_model_selection_metrics_v8.json",
+    "outputs/predictions/model11_validation_selected_best_strategy_A.csv",
 ]
 
 
@@ -118,7 +128,7 @@ def load_model_artifacts(checks: list[dict]) -> list[dict]:
         except Exception as exc:
             add_check(checks, "图传播模型包可加载", False, f"{type(exc).__name__}: {exc}")
 
-    for role in ["logistic_regression_baseline", "random_forest_baseline", "dynamic_graph_random_forest"]:
+    for role in ["logistic_regression_baseline", "random_forest_baseline", "dynamic_graph_random_forest", "catboost_dynamic"]:
         path = MODEL_FILES[role]
         if path.exists():
             try:
@@ -150,15 +160,20 @@ def load_model_artifacts(checks: list[dict]) -> list[dict]:
         except Exception as exc:
             add_check(checks, "融合权重可加载", False, f"{type(exc).__name__}: {exc}")
 
-    final_fusion_path = MODEL_FILES["final_dynamic_fusion"]
-    if final_fusion_path.exists():
+    for role, label in [
+        ("previous_final_dynamic_fusion", "上一版最终动态融合权重可加载"),
+        ("final_selected_model", "最终验证集选择权重可加载"),
+    ]:
+        final_fusion_path = MODEL_FILES[role]
+        if not final_fusion_path.exists():
+            continue
         try:
             fusion = json.loads(final_fusion_path.read_text(encoding="utf-8"))
             weights = fusion.get("selected_weights", {})
             weight_sum = sum(float(value) for value in weights.values())
-            add_check(checks, "最终动态融合权重可加载", abs(weight_sum - 1.0) < 1e-9, f"weights={weights}")
+            add_check(checks, label, abs(weight_sum - 1.0) < 1e-9, f"weights={weights}")
         except Exception as exc:
-            add_check(checks, "最终动态融合权重可加载", False, f"{type(exc).__name__}: {exc}")
+            add_check(checks, label, False, f"{type(exc).__name__}: {exc}")
     return artifacts
 
 
@@ -228,7 +243,7 @@ def main() -> None:
     add_check(checks, "关键比赛输出", not missing_outputs, f"缺失={missing_outputs}")
 
     package_versions = {}
-    for package in ["numpy", "pandas", "scipy", "scikit-learn", "xgboost", "networkx", "gensim", "joblib", "node2vec", "torch", "torch-geometric"]:
+    for package in ["numpy", "pandas", "scipy", "scikit-learn", "xgboost", "catboost", "networkx", "gensim", "joblib", "node2vec", "torch", "torch-geometric"]:
         try:
             package_versions[package] = importlib.metadata.version(package)
         except importlib.metadata.PackageNotFoundError:
@@ -238,7 +253,7 @@ def main() -> None:
 
     artifacts = load_model_artifacts(checks)
     model_manifest = {
-        "final_model": "model8_final_dynamic_fusion_v7_strategy_A",
+        "final_model": "model11_validation_selected_best_strategy_A",
         "artifacts": artifacts,
         "package_versions": package_versions,
         "reproduction_document": "DEPLOYMENT.md",

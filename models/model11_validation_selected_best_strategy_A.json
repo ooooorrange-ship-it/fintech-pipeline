@@ -1,0 +1,21 @@
+{
+  "artifact_type": "validation_selected_best_or_rank_ensemble",
+  "selected_weights": {
+    "model8_current_best": 0.75,
+    "model9_catboost": 0.2,
+    "model10_tgn": 0.05
+  },
+  "component_predictions": {
+    "model8_current_best": "outputs/predictions/model8_final_dynamic_fusion_v7_strategy_A.csv",
+    "model9_catboost": "outputs/predictions/model9_catboost_dynamic_v1_no_customer_type_strategy_A.csv",
+    "model10_tgn": "outputs/predictions/model10_tgn_v1_no_customer_type_strategy_A.csv"
+  },
+  "normalization": "within_split_average_percentile_rank",
+  "weight_grid_step": 0.05,
+  "selection_metric_order": [
+    "valid PR-AUC",
+    "valid Top5% recall",
+    "valid AUC"
+  ],
+  "random_seed": 2026
+}

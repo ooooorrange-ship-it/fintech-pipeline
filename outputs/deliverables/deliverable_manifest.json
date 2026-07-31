@@ -2,20 +2,20 @@
   "deliverable_dir": "/Users/orange/Documents/study/金融科技大赛/outputs/deliverables",
   "field_dictionary_rows": 404,
   "graph_stat_rows": 3,
-  "metrics_summary_rows": 79,
+  "metrics_summary_rows": 89,
   "task2_audit": {
-    "main_model": "model8_final_dynamic_fusion_v7_strategy_A",
-    "test_auc": 0.9865596355655557,
-    "test_pr_auc": 0.6937814869587354,
-    "test_top5pct_recall": 0.9661016949152542,
+    "main_model": "model11_validation_selected_best_strategy_A",
+    "test_auc": 0.9857850279412036,
+    "test_pr_auc": 0.8048550057410236,
+    "test_top5pct_recall": 0.9491525423728814,
     "auc_requirement_auc_ge_0_85": true,
-    "auc_improvement_vs_rule": 0.7782731782888548,
+    "auc_improvement_vs_rule": 0.7774985706645027,
     "auc_improvement_ge_5pct_point": true,
     "evaluation_scope": "all_accounts",
-    "pr_auc_improvement_vs_xgb_ratio": 1.3879615447696312,
-    "pr_auc_improvement_vs_strongest_traditional_ratio": 0.3508311701908748,
+    "pr_auc_improvement_vs_xgb_ratio": 1.7702710996945632,
+    "pr_auc_improvement_vs_strongest_traditional_ratio": 0.5670974934847113,
     "pr_auc_improvement_ge_20pct": true,
-    "pr_auc_improvement_vs_rule_ratio": 195.05721003935128,
+    "pr_auc_improvement_vs_rule_ratio": 226.4457158024117,
     "pr_auc_improvement_vs_rule_ge_20pct": true,
     "top5pct_recall_requirement_ge_50pct": true,
     "baseline_auc": 0.9860393881829304,
@@ -69,13 +69,18 @@
       "dynamic_random_forest": 0.7,
       "dynamic_stack": 0.3,
       "graphsage": 0.0
+    },
+    "final_selection_selected_weights": {
+      "model8_current_best": 0.75,
+      "model9_catboost": 0.2,
+      "model10_tgn": 0.05
     }
   },
   "task3_task4_audit": {
     "top_high_risk_account_count": 30,
-    "top20_association_rows": 71,
-    "suspicious_path_rows": 186,
-    "fund_flow_structure_rows": 2,
+    "top20_association_rows": 72,
+    "suspicious_path_rows": 154,
+    "fund_flow_structure_rows": 4,
     "fund_flow_structure_types": [
       "closed_loop_return_24h"
     ],
@@ -121,6 +126,7 @@
   ],
   "documentation_files": [
     "confirmed_suspect_explainability_audit.md",
+    "double_layer_judgement_architecture.md",
     "final_project_audit.md",
     "layered_judgement_report_samples.md",
     "submission_readiness_audit.md",

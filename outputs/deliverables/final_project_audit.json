@@ -11,7 +11,7 @@
     {
       "name": "valid全量指标存在",
       "status": "pass",
-      "detail": "融合模型报告文件存在"
+      "detail": "最终验证集选择模型报告文件存在"
     },
     {
       "name": "test全量账户预测覆盖",
@@ -21,7 +21,7 @@
     {
       "name": "test全量指标存在",
       "status": "pass",
-      "detail": "融合模型报告文件存在"
+      "detail": "最终验证集选择模型报告文件存在"
     },
     {
       "name": "主模型标签覆盖",
@@ -86,17 +86,17 @@
     {
       "name": "关联账户节点ID可追溯",
       "status": "pass",
-      "detail": "记录数=71，未知账户=[]"
+      "detail": "记录数=72，未知账户=[]"
     },
     {
       "name": "可疑路径节点ID可追溯",
       "status": "pass",
-      "detail": "记录数=186，未知账户=[]"
+      "detail": "记录数=154，未知账户=[]"
     },
     {
       "name": "资金结构节点ID可追溯",
       "status": "pass",
-      "detail": "记录数=2，未知账户=[]"
+      "detail": "记录数=4，未知账户=[]"
     },
     {
       "name": "任务2使用全量账户评估",
@@ -106,17 +106,17 @@
     {
       "name": "任务2 AUC达标",
       "status": "pass",
-      "detail": "AUC=0.9865596355655557"
+      "detail": "AUC=0.9857850279412036"
     },
     {
       "name": "任务2 Top5%召回达标",
       "status": "pass",
-      "detail": "Top5%召回=0.9661016949152542"
+      "detail": "Top5%召回=0.9491525423728814"
     },
     {
       "name": "任务2最强传统基线PR-AUC提升20%",
       "status": "pass",
-      "detail": "相对传统RF提升=0.3508311701908748"
+      "detail": "相对传统RF提升=0.5670974934847113"
     },
     {
       "name": "任务3关联命中或人工抽检指标",
@@ -131,17 +131,17 @@
     {
       "name": "交付物关联行数一致",
       "status": "pass",
-      "detail": "layered=71，deliverable=71，audit=71"
+      "detail": "layered=72，deliverable=72，audit=72"
     },
     {
       "name": "交付物路径行数一致",
       "status": "pass",
-      "detail": "layered=186，deliverable=186，audit=186"
+      "detail": "layered=154，deliverable=154，audit=154"
     },
     {
       "name": "交付物资金结构行数一致",
       "status": "pass",
-      "detail": "layered=2，deliverable=2，audit=2"
+      "detail": "layered=4，deliverable=4，audit=4"
     },
     {
       "name": "交付物缺边恢复队列行数一致",

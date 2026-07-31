@@ -49,9 +49,11 @@ python src/13_final_project_audit.py
         ↓
 滚动动态资金图谱特征：时间分桶 + 金额分箱 + 时序模体 + 节点记忆
         ↓
-动态资金图谱 XGBoost 识别模型
+动态资金图谱树模型 + 时间事件流模型
         ↓
 轻量图传播模型和融合模型做消融验证
+        ↓
+验证集选择冠军模型
         ↓
 高风险账户、关联账户、可疑链路解释
 ```
@@ -60,13 +62,13 @@ python src/13_final_project_audit.py
 
 当前最终主模型是：
 
-> 最终动态资金图谱模型 = 0.7 × 动态图 RandomForest + 0.3 × v6 动态融合分支
+> Model11 = 0.75 × Model8 + 0.20 × CatBoost + 0.05 × TGN
 
-它不是纯规则模型，也不是生产级智能体，而是围绕“账户节点、转账边、时间分桶、金额分箱、风险标签”构建的动态图谱识别模型。模型按 split end 形成当前时点的资金图状态，使用 120 天滚动历史窗口，不使用 cutoff 之后的未来交易。
+它不是单独依赖某一个算法，而是围绕“账户节点、转账边、时间分桶、金额分箱、风险标签”构建的验证集选择融合模型。所有候选模型都按 split end 形成当前时点的资金图状态，使用 120 天滚动历史窗口，不使用 cutoff 之后的未来交易。
 
-原因是当前确认嫌疑人只有 59 个，正样本非常少。项目同时验证 XGBoost、RandomForest 和真实 GraphSAGE，并只在全量验证集上选择最终融合权重；GraphSAGE 最终权重为 0，避免为了技术名称牺牲实际效果。
+原因是当前确认嫌疑人只有 59 个，正样本非常少。项目保留原 Model8 作为最佳基线，并新增 CatBoost 动态特征分支和轻量 TGN 时间事件流分支，最后只根据验证集 PR-AUC、Top5% 召回和 AUC 选择最终模型。
 
-最终 v7 融合评估器在全量验证集上自动选择：
+Model8 内部权重为：
 
 ```text
 dynamic_random_forest = 0.7
@@ -75,6 +77,16 @@ graphsage = 0.0
 ```
 
 其中 `dynamic_stack` 内部仍由 0.9 动态 XGBoost和0.1轻量图传播组成。所有权重仅由验证集 PR-AUC、Top5%召回和 AUC 依次选择。
+
+Model11 最终选择权重为：
+
+```text
+model8_current_best = 0.75
+model9_catboost = 0.20
+model10_tgn = 0.05
+```
+
+CatBoost 负责验证类别特征和非线性表格特征的增量；TGN 负责验证按时间顺序更新节点记忆是否有效。两者都没有被强行当作主模型，最终权重完全由验证集决定。
 
 当前项目里还额外实现了一个轻量图传播模型：
 
@@ -273,7 +285,7 @@ v6 主模型新增的动态特征包括：
 
 ## 6. 模型结构
 
-当前模型与对照实验分成 9 个层次：
+当前模型与对照实验分成 12 个层次：
 
 | 模型 | 作用 |
 |---|---|
@@ -286,14 +298,17 @@ v6 主模型新增的动态特征包括：
 | Model 6：PyG GraphSAGE | 真实端到端消息传递 GNN，用作图神经网络消融 |
 | Model 7：动态图 RandomForest | 使用完整滚动动态图特征的树模型分支 |
 | Model 8：最终动态融合 | 验证集选择 Model 7、旧动态融合与 GraphSAGE 权重 |
+| Model 9：CatBoost 动态特征 | 验证 CatBoost 对统计、图和动态图特征的增量 |
+| Model 10：轻量 TGN | 按日聚合交易事件，顺序更新账户节点记忆 |
+| Model 11：最终冠军模型 | 验证集选择 Model8、CatBoost、TGN 的融合权重 |
 
-最终主模型选择动态资金图谱融合模型：
+最终主模型选择验证集冠军模型：
 
 ```text
-model8_final_dynamic_fusion_v7_strategy_A
+model11_validation_selected_best_strategy_A
 ```
 
-该模型由全量账户验证集自动选择权重：`dynamic_random_forest=0.7、dynamic_stack=0.3、graphsage=0.0`。它删除 `customer_type`，显式使用滚动时间窗口、金额分箱、动态交易关系、时序资金流模体和时间衰减节点记忆。
+该模型由全量账户验证集自动选择权重：`Model8=0.75、CatBoost=0.20、TGN=0.05`。它删除 `customer_type`，显式使用滚动时间窗口、金额分箱、动态交易关系、时序资金流模体和时间衰减节点记忆。
 
 ## 7. 当前结果
 
@@ -311,27 +326,27 @@ model8_final_dynamic_fusion_v7_strategy_A
 
 | 指标 | 结果 |
 |---|---:|
-| AUC | 0.9866 |
-| PR-AUC | 0.6938 |
-| Top1% 命中 | 45/59 |
-| Top1% 召回率 | 76.27% |
-| Top5% 命中 | 57/59 |
-| Top5% 确认风险覆盖率（召回） | 96.61% |
-| Top5% 精确率 | 57/555 = 10.27% |
+| AUC | 0.9858 |
+| PR-AUC | 0.8049 |
+| Top1% 命中 | 51/59 |
+| Top1% 召回率 | 86.44% |
+| Top5% 命中 | 56/59 |
+| Top5% 确认风险覆盖率（召回） | 94.92% |
+| Top5% 精确率 | 56/555 = 10.09% |
 
 以上是全量 11087 个账户的正式评估口径。训练阶段使用 Strategy A 排除受害人，但比赛排名和测试指标保留全量账户；候选池指标不能替代正式全量指标。
 
 这个结果说明：
 
-> 如果银行只人工复核风险分最高的前 5% 账户，动态资金图谱模型可以覆盖 59 个嫌疑人中的 57 个。
+> 如果银行只人工复核风险分最高的前 5% 账户，Model11 可以覆盖 59 个嫌疑人中的 56 个。
 
 在正样本只有 59 个的极端不平衡场景下，Top5% 召回率是最重要的业务指标之一。
 
 本项目严格区分两个容易混淆的口径：
 
 ```text
-Top5% 确认风险覆盖率 = Top5% 中命中的嫌疑人数 / 全部嫌疑人数 = 57/59
-Top5% 精确率         = Top5% 中命中的嫌疑人数 / Top5% 账户数 = 57/555
+Top5% 确认风险覆盖率 = Top5% 中命中的嫌疑人数 / 全部嫌疑人数 = 56/59
+Top5% 精确率         = Top5% 中命中的嫌疑人数 / Top5% 账户数 = 56/555
 ```
 
 赛题“Top5% 高风险账户覆盖确认风险账户比例”按第一个口径评估，即召回/覆盖，不是精确率。
@@ -347,10 +362,13 @@ Top5% 精确率         = Top5% 中命中的嫌疑人数 / Top5% 账户数 = 57/
 | 传统 RandomForest（统计特征） | 0.9860 | 0.5136 | 58/59 |
 | v6 滚动动态资金图谱融合模型 | 0.9880 | 0.3616 | 57/59 |
 | v7 最终动态融合模型 | 0.9866 | 0.6938 | 57/59 |
+| CatBoost 动态资金图谱 | 0.9711 | 0.3718 | 50/59 |
+| 轻量 TGN 时间事件流 | 0.8155 | 0.0148 | 9/59 |
+| v8 Model11 最终冠军模型 | 0.9858 | 0.8049 | 56/59 |
 
 结论：
 
-> 全量账户口径下，v7 主模型较最强传统 RandomForest 基线的 PR-AUC 提升约 35.08%，达到赛题“提升不低于 20%”的要求；Top5% 召回为 57/59。
+> 全量账户口径下，Model11 较最强传统 RandomForest 基线的 PR-AUC 提升约 56.71%，达到赛题“提升不低于 20%”的要求；Top5% 召回为 56/59。
 
 消融实验 2：去掉 `customer_type + region_code + account_age_months`
 
@@ -374,6 +392,7 @@ Top5% 精确率         = Top5% 中命中的嫌疑人数 / Top5% 账户数 = 57/
 | 动态图 RandomForest | 0.9823 | 0.5481 | 57/59 |
 | GraphSAGE | 0.8854 | 0.0727 | 20/59 |
 | 最终动态融合模型 v7 | 0.9866 | 0.6938 | 57/59 |
+| Model11 最终冠军模型 | 0.9858 | 0.8049 | 56/59 |
 
 随机森林的高 PR-AUC 不能孤立解读。删除 `customer_type + region_code + account_age_months` 后，动态图 RandomForest 的 Test PR-AUC 降至 0.0149，GraphSAGE 降至 0.0150，说明稳定静态画像对当前数据有很强影响。最终模型仍保留这一限制说明，并通过验证集选择把动态图 RandomForest 与旧动态融合组合，而不是根据测试集手工定权。
 
@@ -383,8 +402,8 @@ Top5% 精确率         = Top5% 中命中的嫌疑人数 / Top5% 账户数 = 57/
 
 | 数据集 | AUC | PR-AUC | Top5% 命中 |
 |---|---:|---:|---:|
-| valid | 0.9756 | 0.6362 | 56/59 |
-| test | 0.9866 | 0.6938 | 57/59 |
+| valid | 0.9757 | 0.7940 | 56/59 |
+| test | 0.9858 | 0.8049 | 56/59 |
 
 但这不能严格证明“没有过拟合”。train/valid/test 包含相同的 11087 个账户，只是交易观察窗口不同；同时标签表没有确认时间，三个分片使用的是同一份最终标签。因此，当前结果只能说明不同交易时点下的指标稳定，不能等价为对未见账户或未来新增标签的泛化证明。
 
@@ -410,7 +429,7 @@ python src/12_layered_explainability.py --split test --tx-scope history --top-ri
 
 因此报告中应该诚实表述：
 
-> 动态资金图谱识别层在全量账户 Top5% 中覆盖 57/59 个嫌疑人；统计+图 XGBoost 强基线同样覆盖 57/59 个嫌疑人；路径解释层只能对存在历史交易边的账户生成真实链路证据。
+> Model11 动态资金图谱识别层在全量账户 Top5% 中覆盖 56/59 个嫌疑人；路径解释层只能对存在历史交易边的账户生成真实链路证据。
 
 已经整理出的 3 个典型案例：
 
@@ -426,7 +445,7 @@ python src/12_layered_explainability.py --split test --tx-scope history --top-ri
 
 可以这样讲：
 
-> 我这边搭了一条完整的动态图谱风控建模管线。先清洗账户、交易和标签三张表，然后按时间 cutoff 构建 120 天滚动历史资金图，再提取交易统计、时序资金流、图结构、时间分桶、金额分箱、时序模体和节点记忆特征。最终主模型在全量账户测试口径下 AUC 为 0.9866、PR-AUC 为 0.6938，Top5% 命中 59 个嫌疑人中的 57 个；相对最强传统 RandomForest 基线的 PR-AUC 提升约 35.08%。
+> 我这边搭了一条完整的动态图谱风控建模管线。先清洗账户、交易和标签三张表，然后按时间 cutoff 构建 120 天滚动历史资金图，再提取交易统计、时序资金流、图结构、时间分桶、金额分箱、时序模体和节点记忆特征。最终通过验证集选择 Model8、CatBoost 和 TGN 的融合权重，Model11 在全量账户测试口径下 AUC 为 0.9858、PR-AUC 为 0.8049，Top5% 命中 59 个嫌疑人中的 56 个；相对最强传统 RandomForest 基线的 PR-AUC 提升约 56.71%。
 
 ### 9.2 会议展示版本
 
@@ -465,10 +484,10 @@ python src/12_layered_explainability.py --split test --tx-scope history --top-ri
 第 4 页：模型结果
 
 ```text
-Test AUC：0.9866
-Test PR-AUC：0.6938
-Top1% 命中：45/59
-Top5% 命中：57/59
+Test AUC：0.9858
+Test PR-AUC：0.8049
+Top1% 命中：51/59
+Top5% 命中：56/59
 ```
 
 第 5 页：消融和解释
@@ -498,7 +517,7 @@ Top5% 命中：57/59
 
 ```text
 在当前正样本极少的真实金融反诈数据中，重型端到端 GNN 容易过拟合；为了严格贴合赛题要求，最终采用滚动动态资金图谱识别模型。
-该模型显式使用账户节点、转账边、时间分桶、金额分箱、时序资金流模体和时间衰减节点记忆；全量验证集选择动态图 RandomForest=0.7、v6动态融合=0.3、GraphSAGE=0。v6组件内部为动态XGBoost=0.9、轻量图传播=0.1；真实 GraphSAGE 作为独立消融，不冒充图传播分支。
+该模型显式使用账户节点、转账边、时间分桶、金额分箱、时序资金流模体和时间衰减节点记忆；全量验证集选择 Model8=0.75、CatBoost=0.20、TGN=0.05。Model8 内部为动态图 RandomForest=0.7、v6动态融合=0.3、GraphSAGE=0；真实 GraphSAGE、CatBoost 和 TGN 都作为独立对照分支。
 ```
 
 这个表述更严谨，也更适合答辩。
@@ -544,6 +563,9 @@ python src/15_model_traditional_baselines.py --drop-static-profile --experiment-
 python src/16_model_graphsage.py
 python src/16_model_graphsage.py --drop-static-profile --experiment-suffix v1_txn_graph_dynamic_only
 python src/18_model_final_fusion.py
+python src/19_model_catboost.py
+python src/20_model_tgn.py
+python src/21_select_best_model.py
 python src/17_compare_models.py
 
 # 11. 可疑链路解释
@@ -585,7 +607,10 @@ python src/13_final_project_audit.py
 | `src/16_model_graphsage.py` | PyTorch Geometric 两层 GraphSAGE |
 | `src/17_compare_models.py` | 全量账户统一模型对比和弱画像消融汇总 |
 | `src/18_model_final_fusion.py` | 验证集选择最终动态融合权重并输出全量账户风险分 |
-| `models/` | 最终动态 XGBoost、图传播模型包、融合权重和校验清单 |
+| `src/19_model_catboost.py` | CatBoost 动态资金图谱特征模型 |
+| `src/20_model_tgn.py` | 轻量 TGN 风格时间事件流和节点记忆模型 |
+| `src/21_select_best_model.py` | 只用验证集选择 Model8、CatBoost、TGN 的最终冠军 |
+| `models/` | 动态模型权重、CatBoost、TGN、最终选择配置和校验清单 |
 | `DEPLOYMENT.md` | Conda 环境、数据放置、完整运行顺序和快速审计 |
 | `outputs/features/` | 特征宽表 |
 | `outputs/metrics/` | 模型评估指标 |
@@ -597,15 +622,15 @@ python src/13_final_project_audit.py
 当前最贴合赛题要求的最终模型是：
 
 ```text
-model8_final_dynamic_fusion_v7_strategy_A
+model11_validation_selected_best_strategy_A
 ```
 
 核心结论：
 
 1. 滚动动态资金图谱模型显式使用账户节点、转账关系、时间分桶、金额分箱、时序资金流模体和节点记忆；风险标签只用作监督目标，不进入模型特征。
-2. 最终动态资金图谱融合模型全量账户 Test AUC 为 0.9866，PR-AUC 为 0.6938，Top5% 命中 57/59 个嫌疑人。
+2. Model11 全量账户 Test AUC 为 0.9858，PR-AUC 为 0.8049，Top5% 命中 56/59 个嫌疑人。
 3. 弱画像消融显示模型确实存在静态画像依赖。
-4. 最强传统 RandomForest 基线 PR-AUC 为 0.5136；主模型相对提升约 35.08%，达到严格的 20% 提升要求。
+4. 最强传统 RandomForest 基线 PR-AUC 为 0.5136；Model11 相对提升约 56.71%，达到严格的 20% 提升要求。
 5. 由于标签表没有标签时间，当前实验应表述为“按交易时间窗口构建风险识别模型”，不要严格说成“预测未来新增风险标签”。
 
 ## 14. 比赛任务目标交付物

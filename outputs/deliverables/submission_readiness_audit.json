@@ -6,7 +6,7 @@
     {
       "name": "完整源代码",
       "status": "pass",
-      "detail": "脚本数=20，缺失=[]"
+      "detail": "脚本数=23，缺失=[]"
     },
     {
       "name": "Conda 环境文件",
@@ -84,9 +84,24 @@
       "detail": "models/model6_graphsage_v1_no_customer_type_strategy_A.pt"
     },
     {
-      "name": "模型文件 final_dynamic_fusion",
+      "name": "模型文件 catboost_dynamic",
+      "status": "pass",
+      "detail": "models/model9_catboost_dynamic_v1_no_customer_type_strategy_A.joblib"
+    },
+    {
+      "name": "模型文件 tgn_temporal_memory",
+      "status": "pass",
+      "detail": "models/model10_tgn_v1_no_customer_type_strategy_A.pt"
+    },
+    {
+      "name": "模型文件 previous_final_dynamic_fusion",
       "status": "pass",
       "detail": "models/model8_final_dynamic_fusion_v7_strategy_A.json"
+    },
+    {
+      "name": "模型文件 final_selected_model",
+      "status": "pass",
+      "detail": "models/model11_validation_selected_best_strategy_A.json"
     },
     {
       "name": "动态 XGBoost 权重可加载",
@@ -114,6 +129,11 @@
       "detail": "缺失键=[]"
     },
     {
+      "name": "传统基线 catboost_dynamic 可加载",
+      "status": "pass",
+      "detail": "缺失键=[]"
+    },
+    {
       "name": "GraphSAGE 权重可加载",
       "status": "pass",
       "detail": "缺失键=[]"
@@ -124,9 +144,14 @@
       "detail": "weights={'xgb': 0.0, 'graph_propagation': 0.1, 'rule': 0.0, 'dynamic': 0.9}"
     },
     {
-      "name": "最终动态融合权重可加载",
+      "name": "上一版最终动态融合权重可加载",
       "status": "pass",
       "detail": "weights={'dynamic_random_forest': 0.7, 'dynamic_stack': 0.3, 'graphsage': 0.0}"
+    },
+    {
+      "name": "最终验证集选择权重可加载",
+      "status": "pass",
+      "detail": "weights={'model8_current_best': 0.75, 'model9_catboost': 0.2, 'model10_tgn': 0.05}"
     },
     {
       "name": "模型校验清单",
@@ -178,10 +203,28 @@
       "sha256": "775f227f4bad6cf8f5e27ecf88e90d42fb808c97ccd1f6c714d95ca54d2d9743"
     },
     {
-      "role": "final_dynamic_fusion",
+      "role": "catboost_dynamic",
+      "path": "models/model9_catboost_dynamic_v1_no_customer_type_strategy_A.joblib",
+      "size_bytes": 3975112,
+      "sha256": "bf3570371505a6ca882f01b32427262772e29103953960488867bf49236a5de9"
+    },
+    {
+      "role": "tgn_temporal_memory",
+      "path": "models/model10_tgn_v1_no_customer_type_strategy_A.pt",
+      "size_bytes": 112173,
+      "sha256": "5528918d848e1b7393083a497e1c418be96cf1b822c6b8bf62eb349b0839c35e"
+    },
+    {
+      "role": "previous_final_dynamic_fusion",
       "path": "models/model8_final_dynamic_fusion_v7_strategy_A.json",
       "size_bytes": 737,
       "sha256": "83fb547911599760afe51e2a19093f5bc7cf0d1fe622c42b409db28aaaae4b7b"
+    },
+    {
+      "role": "final_selected_model",
+      "path": "models/model11_validation_selected_best_strategy_A.json",
+      "size_bytes": 710,
+      "sha256": "bebe723c5c3d5c2e07a807d3faee5b1e7871c062c497c8203a4ddf9f5f70e104"
     }
   ],
   "known_data_limitations": [

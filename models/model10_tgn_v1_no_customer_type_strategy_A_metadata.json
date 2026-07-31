@@ -1,0 +1,13 @@
+{
+  "model_family": "lightweight TGN-style temporal node memory",
+  "experiment_suffix": "v1_no_customer_type",
+  "feature_policy": "daily transaction event stream + rolling dynamic node features",
+  "event_policy": "daily src-dst aggregation; events processed chronologically",
+  "rolling_history_days": 120,
+  "side_feature_count": 180,
+  "memory_dim": 32,
+  "hidden_dim": 48,
+  "evaluation_policy": "Strategy A training excludes victims; formal metrics use all accounts.",
+  "label_time_limitation": "Risk labels have no confirmation time; this is snapshot evaluation, not future-new-label validation.",
+  "random_seed": 2026
+}

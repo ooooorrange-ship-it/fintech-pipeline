@@ -22,10 +22,10 @@
       "XGBoost 使用类别权重处理 59 个嫌疑人导致的极端不平衡。",
       "构造滚动动态图快照、时间桶、金额分箱、时序资金流模体和时间衰减节点记忆，并补充轻量异配图传播和融合消融。"
     ],
-    "main_model": "model8_final_dynamic_fusion_v7_strategy_A",
-    "test_auc": 0.9865596355655557,
-    "test_pr_auc": 0.6937814869587354,
-    "test_top5pct_recall": 0.9661016949152542,
+    "main_model": "model11_validation_selected_best_strategy_A",
+    "test_auc": 0.9857850279412036,
+    "test_pr_auc": 0.8048550057410236,
+    "test_top5pct_recall": 0.9491525423728814,
     "requirement_pass": {
       "auc_ge_0_85": true,
       "pr_auc_improvement_ge_20pct_vs_strong_xgb": true,
@@ -46,9 +46,9 @@
       "支持输出多入一出、一入多出、闭环回流等资金结构；当前数据实际命中闭环回流结构。",
       "对没有任何入边或出边的确认嫌疑账户生成缺边恢复队列，记录模型分、节点画像、补数查询和补数后应重建的链路类型。"
     ],
-    "top20_association_rows": 71,
-    "suspicious_path_rows": 186,
-    "fund_flow_structure_rows": 2,
+    "top20_association_rows": 72,
+    "suspicious_path_rows": 154,
+    "fund_flow_structure_rows": 4,
     "missing_edge_recovery_queue_rows": 56,
     "confirmed_suspect_with_history_transaction": 3,
     "limitation": "当前脱敏交易边表中 56 个确认嫌疑账户没有任何入边或出边，因此无法在现有数据范围内恢复真实资金链路；项目已将其转为可执行的缺边恢复队列，而不是伪造路径。",

@@ -2,8 +2,21 @@
   "evaluation_scope": "all 11087 accounts",
   "selection_policy": "validation metrics select/tune models; test metrics are reported once",
   "label_time_limitation": "Risk labels have no confirmation time; no model is described as predicting future-new labels.",
-  "best_test_by_pr_auc": "最终动态融合模型v7",
+  "best_test_by_pr_auc": "最终验证集选择模型v8",
   "test_ranking": [
+    {
+      "model": "最终验证集选择模型v8",
+      "model_family": "validation_selected_best_ensemble",
+      "profile_policy": "drop_customer_type",
+      "split": "test",
+      "evaluation_scope": "all_accounts",
+      "auc": 0.9857850279412036,
+      "pr_auc": 0.8048550057410236,
+      "top1pct_hits": 51,
+      "top1pct_recall": 0.864406779661017,
+      "top5pct_hits": 56,
+      "top5pct_recall": 0.9491525423728814
+    },
     {
       "model": "最终动态融合模型v7",
       "model_family": "validation_selected_dynamic_ensemble",
@@ -42,6 +55,19 @@
       "top1pct_recall": 0.6779661016949152,
       "top5pct_hits": 58,
       "top5pct_recall": 0.9830508474576272
+    },
+    {
+      "model": "CatBoost动态资金图谱",
+      "model_family": "catboost_dynamic_graph",
+      "profile_policy": "drop_customer_type",
+      "split": "test",
+      "evaluation_scope": "all_accounts",
+      "auc": 0.9710505769597264,
+      "pr_auc": 0.37177406732331364,
+      "top1pct_hits": 37,
+      "top1pct_recall": 0.6271186440677966,
+      "top5pct_hits": 50,
+      "top5pct_recall": 0.847457627118644
     },
     {
       "model": "最终融合模型",
@@ -120,6 +146,19 @@
       "top1pct_recall": 0.13559322033898305,
       "top5pct_hits": 19,
       "top5pct_recall": 0.3220338983050847
+    },
+    {
+      "model": "轻量TGN时间事件流",
+      "model_family": "temporal_graph_memory",
+      "profile_policy": "drop_customer_type",
+      "split": "test",
+      "evaluation_scope": "all_accounts",
+      "auc": 0.8155273479525155,
+      "pr_auc": 0.01482935308864198,
+      "top1pct_hits": 2,
+      "top1pct_recall": 0.03389830508474576,
+      "top5pct_hits": 9,
+      "top5pct_recall": 0.15254237288135594
     }
   ],
   "weak_profile_test": [

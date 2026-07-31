@@ -11,6 +11,7 @@ dependencies:
   - scipy=1.17
   - scikit-learn=1.9
   - xgboost=3.3
+  - catboost=1.2
   - networkx=3.6
   - gensim=4.4
   - tqdm=4.69

@@ -1,3 +1,5 @@
 root_account_id,structure_type,anchor_time,source_count,destination_count,in_txn_count,out_txn_count,in_amount_sum,out_amount_sum,counterparty_examples,delay_seconds,business_meaning
 4379,closed_loop_return_24h,2025-11-19 15:37:53,1,1,1,1,3000.0,3000.0,10662,21.0,根账户转出后短时间从同一对手回流，属于强时序闭环。
 4379,closed_loop_return_24h,2025-11-19 15:37:53,1,1,1,1,3000.0,3000.0,10949,21.0,根账户转出后短时间从同一对手回流，属于强时序闭环。
+5093,closed_loop_return_24h,2025-08-15 17:30:31,1,1,1,1,70000000.0,1400000.0,4577,1433.0,根账户转出后短时间从同一对手回流，属于强时序闭环。
+5093,closed_loop_return_24h,2025-08-15 17:30:31,1,1,1,1,70000000.0,1400000.0,9429,1433.0,根账户转出后短时间从同一对手回流，属于强时序闭环。

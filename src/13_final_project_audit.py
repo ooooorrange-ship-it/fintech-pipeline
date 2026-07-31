@@ -27,7 +27,7 @@ def add_check(checks: list[dict], name: str, passed: bool, detail: str, severity
 
 
 def audit_prediction_coverage(checks: list[dict], accounts: pd.DataFrame, labels: pd.DataFrame) -> None:
-    path = PREDICTION_DIR / "model8_final_dynamic_fusion_v7_strategy_A.csv"
+    path = PREDICTION_DIR / "model11_validation_selected_best_strategy_A.csv"
     if not path.exists():
         add_check(checks, "主模型预测文件", False, str(path))
         return
@@ -45,8 +45,8 @@ def audit_prediction_coverage(checks: list[dict], accounts: pd.DataFrame, labels
         add_check(
             checks,
             f"{split}全量指标存在",
-            (OUTPUT_DIR / "metrics" / "final_dynamic_fusion_metrics_v7.json").exists(),
-            "融合模型报告文件存在",
+            (OUTPUT_DIR / "metrics" / "final_model_selection_metrics_v8.json").exists(),
+            "最终验证集选择模型报告文件存在",
         )
     add_check(
         checks,
@@ -156,6 +156,9 @@ def audit_submission_assets(checks: list[dict]) -> None:
         MODEL_DIR / "model3_hetero_prop_v3_no_customer_type_strategy_A.joblib",
         MODEL_DIR / "model4_stack_v6_rolling_memory_dynamic_no_customer_type_strategy_A.json",
         MODEL_DIR / "model8_final_dynamic_fusion_v7_strategy_A.json",
+        MODEL_DIR / "model9_catboost_dynamic_v1_no_customer_type_strategy_A.joblib",
+        MODEL_DIR / "model10_tgn_v1_no_customer_type_strategy_A.pt",
+        MODEL_DIR / "model11_validation_selected_best_strategy_A.json",
         MODEL_DIR / "baseline_logistic_regression_v1_no_customer_type_strategy_A.joblib",
         MODEL_DIR / "baseline_random_forest_v1_no_customer_type_strategy_A.joblib",
         MODEL_DIR / "model7_dynamic_graph_random_forest_v1_no_customer_type_strategy_A.joblib",

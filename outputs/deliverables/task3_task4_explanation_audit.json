@@ -1,8 +1,8 @@
 {
   "top_high_risk_account_count": 30,
-  "top20_association_rows": 71,
-  "suspicious_path_rows": 186,
-  "fund_flow_structure_rows": 2,
+  "top20_association_rows": 72,
+  "suspicious_path_rows": 154,
+  "fund_flow_structure_rows": 4,
   "fund_flow_structure_types": [
     "closed_loop_return_24h"
   ],
