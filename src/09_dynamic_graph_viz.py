@@ -507,48 +507,71 @@ def css() -> str:
     return """
     :root {
       color-scheme: light;
-      --ink:#202733; --muted:#667085; --line:#d7dde6; --risk:#c9352b; --victim:#c97818;
-      --normal:#2563a6; --bg:#f4f6f8; --panel:#ffffff; --soft:#eef2f6; --green:#17724c;
-      --shadow:0 1px 2px rgba(16, 24, 40, .06), 0 8px 24px rgba(16, 24, 40, .05);
+      --ink:#17202a; --muted:#667085; --line:#d7dde6; --risk:#c9352b; --victim:#c97818;
+      --normal:#2563a6; --bg:#eef3f7; --panel:#ffffff; --soft:#eef2f6; --green:#17724c;
+      --cyan:#1aa6a6; --steel:#2f5f8f; --deep:#111a24;
+      --shadow:0 1px 2px rgba(16, 24, 40, .06), 0 16px 34px rgba(16, 24, 40, .08);
     }
     * { box-sizing: border-box; }
     body {
       margin:0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
-      color:var(--ink); background:var(--bg); letter-spacing:0;
+      color:var(--ink);
+      background:
+        linear-gradient(180deg, rgba(238,243,247,.88), rgba(244,247,250,.95)),
+        repeating-linear-gradient(90deg, rgba(47,95,143,.05) 0, rgba(47,95,143,.05) 1px, transparent 1px, transparent 36px),
+        repeating-linear-gradient(0deg, rgba(47,95,143,.04) 0, rgba(47,95,143,.04) 1px, transparent 1px, transparent 36px);
+      letter-spacing:0;
     }
     header {
       position:sticky; top:0; z-index:5; padding:18px 28px 14px;
-      background:rgba(255,255,255,.96); border-bottom:1px solid var(--line);
+      color:#fff;
+      background:
+        linear-gradient(135deg, rgba(17,26,36,.98) 0%, rgba(25,49,61,.98) 55%, rgba(28,57,48,.98) 100%),
+        repeating-linear-gradient(90deg, rgba(255,255,255,.05) 0, rgba(255,255,255,.05) 1px, transparent 1px, transparent 42px);
+      border-bottom:1px solid rgba(255,255,255,.12);
+      box-shadow:0 14px 34px rgba(16,24,40,.18);
       backdrop-filter:saturate(120%) blur(8px);
     }
-    h1 { margin:0; font-size:24px; line-height:1.2; letter-spacing:0; }
+    header::after {
+      content:""; position:absolute; left:0; right:0; bottom:0; height:2px;
+      background:linear-gradient(90deg, var(--cyan), rgba(255,255,255,.15), var(--risk));
+    }
+    h1 { margin:0; font-size:25px; line-height:1.2; letter-spacing:0; color:inherit; }
     h2 { margin:0 0 6px; font-size:20px; line-height:1.25; letter-spacing:0; }
     h3 { letter-spacing:0; }
     p { margin:6px 0; color:var(--muted); line-height:1.55; }
     .topline { display:flex; justify-content:space-between; gap:18px; align-items:flex-start; }
-    .eyebrow { margin-bottom:6px; color:var(--green); font-size:12px; font-weight:700; letter-spacing:0; }
+    header p { color:#c9d6e1; }
+    .eyebrow { margin-bottom:6px; color:#59d8c6; font-size:12px; font-weight:750; letter-spacing:0; }
     .header-meta { display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end; min-width:250px; }
     .meta-pill {
-      border:1px solid var(--line); background:#f8fafc; color:#344054;
+      border:1px solid rgba(255,255,255,.18); background:rgba(255,255,255,.08); color:#e9f1f7;
       border-radius:6px; padding:6px 9px; font-size:12px; font-weight:650;
     }
-    #subtitle { margin-top:8px; font-weight:650; color:#344054; }
+    #subtitle { margin-top:8px; font-weight:650; color:#e8f0f7; }
     .nav { display:flex; gap:8px; flex-wrap:wrap; margin-top:14px; }
     .nav-btn {
-      border:1px solid var(--line); background:#fff; color:#344054; padding:8px 12px;
+      border:1px solid rgba(255,255,255,.18); background:rgba(255,255,255,.08); color:#e8f0f7; padding:8px 12px;
       border-radius:6px; cursor:pointer; font-size:13px; font-weight:650;
     }
-    .nav-btn:hover { border-color:#8da2bd; background:#f8fafc; }
-    .nav-btn.active { color:#fff; border-color:#2f5f8f; background:#2f5f8f; }
+    .nav-btn:hover { border-color:rgba(89,216,198,.65); background:rgba(255,255,255,.13); }
+    .nav-btn.active { color:#0b1720; border-color:#59d8c6; background:#59d8c6; box-shadow:0 0 0 3px rgba(89,216,198,.16); }
     .overview {
       display:grid; grid-template-columns:repeat(7, minmax(128px, 1fr)); gap:10px;
-      padding:14px 28px; background:#fff; border-bottom:1px solid var(--line);
+      padding:14px 28px; background:rgba(255,255,255,.86); border-bottom:1px solid var(--line);
+      backdrop-filter:saturate(120%) blur(8px);
     }
     .overview-metric {
-      padding:10px 12px; background:#fbfcfd; border:1px solid #e5eaf0; border-left:3px solid #8293a8;
-      border-radius:8px; min-height:66px;
+      position:relative; overflow:hidden; padding:11px 12px; background:#fbfcfd;
+      border:1px solid #e5eaf0; border-left:3px solid var(--metric-color, #8293a8);
+      border-radius:8px; min-height:72px; box-shadow:0 6px 18px rgba(16,24,40,.04);
     }
-    .overview-metric strong { display:block; font-size:21px; line-height:1.1; margin-top:7px; font-variant-numeric:tabular-nums; }
+    .overview-metric::after {
+      content:""; position:absolute; left:0; right:0; top:0; height:3px;
+      background:linear-gradient(90deg, var(--metric-color, #8293a8), transparent);
+      opacity:.9;
+    }
+    .overview-metric strong { display:block; font-size:23px; line-height:1.1; margin-top:8px; font-variant-numeric:tabular-nums; }
     .overview-metric span { color:var(--muted); font-size:12px; font-weight:650; }
     .view { display:none; }
     .view.active { display:block; }
@@ -558,16 +581,26 @@ def css() -> str:
       background:var(--panel); border:1px solid var(--line); border-radius:8px; box-shadow:var(--shadow);
     }
     .side-panel { padding:14px; max-height:calc(100vh - 228px); overflow:auto; }
-    .graph-panel { padding:16px; }
+    .graph-panel { position:relative; padding:16px; overflow:hidden; }
+    .graph-panel::before {
+      content:""; position:absolute; left:0; right:0; top:0; height:4px;
+      background:linear-gradient(90deg, var(--cyan), #6c86a6, var(--risk));
+    }
     .right { padding:16px; overflow:auto; max-height:calc(100vh - 228px); }
     .btn {
       width:100%; border:1px solid var(--line); background:#fff; color:var(--ink); padding:10px 12px;
       margin:6px 0; text-align:left; border-radius:7px; cursor:pointer; font-size:13px; line-height:1.35;
     }
     .btn:hover { border-color:#9aacbf; background:#f8fafc; }
-    .btn.active { border-color:#2f5f8f; background:#edf5ff; box-shadow:inset 3px 0 0 #2f5f8f; }
+    .btn.active { border-color:var(--steel); background:#edf5ff; box-shadow:inset 3px 0 0 var(--steel), 0 8px 18px rgba(47,95,143,.12); }
     .btn b { display:block; margin-bottom:2px; }
     .btn small { color:var(--muted); }
+    .account-btn { position:relative; overflow:hidden; }
+    .account-top { display:flex; justify-content:space-between; gap:8px; align-items:center; }
+    .account-top em { font-style:normal; color:var(--steel); font-weight:750; font-variant-numeric:tabular-nums; }
+    .account-meta { display:block; color:var(--muted); font-size:12px; margin-top:2px; }
+    .score-track { display:block; height:4px; margin-top:9px; background:#e6edf4; border-radius:99px; overflow:hidden; }
+    .score-track i { display:block; height:100%; background:linear-gradient(90deg, var(--cyan), var(--risk)); border-radius:99px; }
     .window-row { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:12px; }
     .window-row .btn { width:auto; min-width:84px; text-align:center; margin:0; }
     .panel-title { font-weight:750; margin:0 0 10px; color:#2a3441; }
@@ -579,16 +612,26 @@ def css() -> str:
     .filter-btn { border:1px solid var(--line); background:#fff; padding:7px 10px; border-radius:6px; cursor:pointer; font-weight:650; }
     .filter-btn:hover { border-color:#9aacbf; background:#f8fafc; }
     .filter-btn.active { color:#fff; background:#2f5f8f; border-color:#2f5f8f; }
-    .metric { display:grid; grid-template-columns: 1fr auto; gap:10px; padding:9px 0; border-bottom:1px solid #edf1f6; font-size:14px; }
+    #evidence { display:grid; grid-template-columns:repeat(2, minmax(0, 1fr)); gap:8px; margin-bottom:14px; }
+    .metric { min-width:0; padding:10px; border:1px solid #e5eaf0; border-radius:8px; background:#fbfcfd; font-size:13px; }
     .metric span:first-child { color:var(--muted); }
-    .metric b { font-variant-numeric:tabular-nums; }
-    #graph { width:100%; height:590px; background:#fbfcfd; border:1px solid var(--line); border-radius:8px; }
+    .metric b { display:block; margin-top:4px; font-size:15px; font-variant-numeric:tabular-nums; word-break:break-word; }
+    #graph {
+      width:100%; height:590px;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.94), rgba(247,250,253,.98)),
+        repeating-linear-gradient(90deg, rgba(47,95,143,.08) 0, rgba(47,95,143,.08) 1px, transparent 1px, transparent 34px),
+        repeating-linear-gradient(0deg, rgba(47,95,143,.06) 0, rgba(47,95,143,.06) 1px, transparent 1px, transparent 34px);
+      border:1px solid var(--line); border-radius:8px;
+      box-shadow:inset 0 0 0 1px rgba(255,255,255,.7);
+    }
     .legend { display:flex; gap:14px; flex-wrap:wrap; font-size:13px; color:var(--muted); margin:8px 0 14px; }
     .dot { display:inline-block; width:10px; height:10px; border-radius:50%; margin-right:5px; }
     .table-wrap { overflow:auto; border:1px solid var(--line); background:#fff; border-radius:8px; }
     table { border-collapse:collapse; width:100%; background:#fff; font-size:13px; }
     th, td { padding:9px 10px; border-bottom:1px solid #edf1f6; text-align:left; vertical-align:top; }
     th { position:sticky; top:0; z-index:1; color:#5d6b7c; background:#f8fafc; font-weight:700; white-space:nowrap; }
+    tbody tr:nth-child(even) { background:#fcfdff; }
     tr:last-child td { border-bottom:0; }
     tbody tr[data-account], tbody tr[data-queue-account], tbody tr[data-recovery-account] { cursor:pointer; }
     tbody tr[data-account]:hover, tbody tr[data-queue-account]:hover, tbody tr[data-recovery-account]:hover { background:#f3f7fb; }
@@ -802,8 +845,22 @@ def render_html(data: dict) -> str:
 def js_v2() -> str:
     return """
     const DATA = __DATA__;
-    let currentAccount = DATA.accounts.length ? DATA.accounts[0].id : null;
-    let currentWindow = DATA.windows.length ? DATA.windows[DATA.windows.length - 1].name : null;
+    function bestAccountId() {
+      return DATA.accounts.reduce((best, account) => {
+        if (!best) return account;
+        return Number(account.counterparty_count || 0) > Number(best.counterparty_count || 0) ? account : best;
+      }, null)?.id || null;
+    }
+    function bestWindowName(accountId) {
+      return DATA.windows.reduce((best, window) => {
+        const summary = (DATA.snapshots[`${accountId}|${window.name}`] || {summary:{}}).summary || {};
+        const score = Number(summary.txn_count || 0) * 1000 + Number(summary.risk_signal_score || 0);
+        if (!best || score > best.score) return {name: window.name, score};
+        return best;
+      }, null)?.name || (DATA.windows.length ? DATA.windows[DATA.windows.length - 1].name : null);
+    }
+    let currentAccount = bestAccountId();
+    let currentWindow = bestWindowName(currentAccount);
     let auditGrade = "all";
     let auditQuery = "";
     let queueAccount = DATA.layered.queue.length ? DATA.layered.queue[0].account_id : null;
@@ -848,11 +905,14 @@ def js_v2() -> str:
         ["巡检A/B级", `${qGrades.A || 0} / ${qGrades.B || 0}`, "#345d9d"],
         ["路径/结构证据", `${c.suspicious_path_rows || 0} / ${c.fund_flow_structure_rows || 0}`, "#8b5a00"]
       ];
-      document.getElementById("overviewMetrics").innerHTML = items.map(x => `<div class="overview-metric" style="border-left-color:${x[2]}"><span>${esc(x[0])}</span><strong>${esc(x[1])}</strong></div>`).join("");
+      document.getElementById("overviewMetrics").innerHTML = items.map(x => `<div class="overview-metric" style="--metric-color:${x[2]}; border-left-color:${x[2]}"><span>${esc(x[0])}</span><strong>${esc(x[1])}</strong></div>`).join("");
     }
     function renderSelectors() {
       const accounts = document.getElementById("accounts");
-      accounts.innerHTML = DATA.accounts.map(a => `<button class="btn" data-account="${a.id}"><b>账户 ${a.id}</b><small>风险分 ${num(a.score)} · ${esc(a.label_text)}</small></button>`).join("");
+      accounts.innerHTML = DATA.accounts.map(a => {
+        const pct = Math.max(0, Math.min(100, Number(a.score || 0) * 100));
+        return `<button class="btn account-btn" data-account="${a.id}"><span class="account-top"><b>账户 ${a.id}</b><em>${num(a.score)}</em></span><span class="account-meta">${esc(a.label_text)} · 关联对手 ${a.counterparty_count || 0}</span><span class="score-track"><i style="width:${pct.toFixed(1)}%"></i></span></button>`;
+      }).join("");
       accounts.querySelectorAll("button").forEach(btn => btn.onclick = () => { currentAccount = Number(btn.dataset.account); renderGraphView(); });
       const windows = document.getElementById("windows");
       windows.innerHTML = DATA.windows.map(w => `<button class="btn" data-window="${w.name}">${esc(w.name)}</button>`).join("");
@@ -872,17 +932,26 @@ def js_v2() -> str:
     }
     function renderGraph(snapshot) {
       const svg = document.getElementById("graph"), nodes = snapshot.nodes || [], edges = snapshot.edges || [];
-      if (!nodes.length) { svg.innerHTML = `<text x="490" y="295" class="svg-label" text-anchor="middle">当前窗口没有可展示交易边</text>`; return; }
+      const gridSvg = `<rect x="0" y="0" width="980" height="590" fill="rgba(255,255,255,.28)"/>
+        <g opacity=".34">${Array.from({length:11}, (_,i) => `<line x1="${i*98}" y1="0" x2="${i*98}" y2="590" stroke="#cbd7e4" stroke-width="1"/>`).join("")}${Array.from({length:7}, (_,i) => `<line x1="0" y1="${i*98}" x2="980" y2="${i*98}" stroke="#d7e1eb" stroke-width="1"/>`).join("")}</g>
+        <rect x="18" y="18" width="944" height="554" rx="10" fill="none" stroke="#d9e3ed" stroke-width="1" stroke-dasharray="5 7"/>`;
+      if (!nodes.length) { svg.innerHTML = `${gridSvg}<text x="490" y="295" class="svg-label" text-anchor="middle">当前窗口没有可展示交易边</text>`; return; }
       const pos = layout(nodes), maxAmount = Math.max(1, ...edges.map(e => Number(e.amount_sum || 0)));
       const edgeSvg = edges.map(e => {
         const s = pos[e.src], t = pos[e.dst]; if (!s || !t) return "";
         const dx = t.x-s.x, dy = t.y-s.y, len = Math.sqrt(dx*dx + dy*dy) || 1;
         const sx = s.x + dx / len * 20, sy = s.y + dy / len * 20, tx = t.x - dx / len * 24, ty = t.y - dy / len * 24;
         const width = 1.2 + 4.5 * Math.log1p(Number(e.amount_sum || 0)) / Math.log1p(maxAmount), midx=(sx+tx)/2, midy=(sy+ty)/2;
-        return `<g><line x1="${sx}" y1="${sy}" x2="${tx}" y2="${ty}" stroke="#8293a8" stroke-width="${width.toFixed(2)}" marker-end="url(#arrow)" opacity="0.72"/><text x="${midx}" y="${midy-5}" class="edge-label" text-anchor="middle">${esc(e.amount_bin)} · ${e.txn_count}笔</text></g>`;
+        const stroke = Number(e.amount_sum || 0) >= maxAmount * .7 ? "#c9352b" : "#6f86a3";
+        return `<g filter="url(#edgeShadow)"><line x1="${sx}" y1="${sy}" x2="${tx}" y2="${ty}" stroke="${stroke}" stroke-width="${width.toFixed(2)}" marker-end="url(#arrow)" opacity="0.78"/><text x="${midx}" y="${midy-5}" class="edge-label" text-anchor="middle">${esc(e.amount_bin)} · ${e.txn_count}笔</text></g>`;
       }).join("");
-      const nodeSvg = nodes.map(n => { const p=pos[n.id], r=n.is_root ? 20 : 12 + Math.min(10, Math.log1p(Number(n.txn_count || 0))*2); return `<g><circle cx="${p.x}" cy="${p.y}" r="${r}" fill="${labelColor(n)}" stroke="#fff" stroke-width="2"/><text x="${p.x}" y="${p.y+r+15}" class="svg-label" text-anchor="middle">${n.id}</text></g>`; }).join("");
-      svg.innerHTML = `<defs><marker id="arrow" markerWidth="9" markerHeight="9" refX="8" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L0,6 L8,3 z" fill="#8293a8"></path></marker></defs>${edgeSvg}${nodeSvg}`;
+      const nodeSvg = nodes.map(n => {
+        const p=pos[n.id], r=n.is_root ? 21 : 12 + Math.min(10, Math.log1p(Number(n.txn_count || 0))*2);
+        const color = labelColor(n);
+        const halo = n.is_root ? `<circle cx="${p.x}" cy="${p.y}" r="${r+16}" fill="${color}" opacity=".10"/><circle cx="${p.x}" cy="${p.y}" r="${r+8}" fill="none" stroke="${color}" stroke-width="2" opacity=".28"/>` : "";
+        return `<g filter="url(#nodeShadow)">${halo}<circle cx="${p.x}" cy="${p.y}" r="${r}" fill="${color}" stroke="#fff" stroke-width="2.5"/><text x="${p.x}" y="${p.y+r+16}" class="svg-label" text-anchor="middle">${n.id}</text></g>`;
+      }).join("");
+      svg.innerHTML = `<defs><filter id="nodeShadow" x="-40%" y="-40%" width="180%" height="180%"><feDropShadow dx="0" dy="5" stdDeviation="5" flood-color="#1d2b3a" flood-opacity=".18"/></filter><filter id="edgeShadow" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#1d2b3a" flood-opacity=".12"/></filter><marker id="arrow" markerWidth="9" markerHeight="9" refX="8" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L0,6 L8,3 z" fill="#6f86a3"></path></marker></defs>${gridSvg}${edgeSvg}${nodeSvg}`;
     }
     function renderEvidence(snapshot) {
       const s = snapshot.summary || {}, metrics = [["模型风险分", num(s.model_score)], ["窗口交易数", s.txn_count || 0], ["入账/出账", `${s.in_txn_count || 0} / ${s.out_txn_count || 0}`], ["窗口总金额", fmt(s.amount_sum)], ["交易对手数", s.counterparty_count || 0], ["快进快出 24h", s.fast_in_out_24h_count || 0], ["短时闭环 24h", s.temporal_closed_loop_24h_count || 0], ["闭环最短延迟", `${num(s.temporal_closed_loop_min_delay_sec, 0)} 秒`], ["多入一出 24h", s.multi_in_one_out_24h_count || 0], ["一入多出 24h", s.one_in_multi_out_24h_count || 0], ["互惠对手数", s.reciprocal_counterparty_count || 0], ["窗口风险信号", num(s.risk_signal_score, 3)]];
@@ -941,7 +1010,7 @@ def js_v2() -> str:
       document.getElementById("reportGrid").innerHTML = uniqueIds.map(id => { const row=DATA.layered.audit.find(x => Number(x.account_id) === id) || DATA.layered.queue.find(x => Number(x.account_id) === id); if (!row) return ""; const paths=DATA.layered.paths.filter(x => Number(x.root_account_id) === id).slice(0,2), structures=DATA.layered.structures.filter(x => Number(x.root_account_id) === id).slice(0,2), assoc=DATA.layered.associations.filter(x => Number(x.root_account_id) === id).slice(0,5); return `<article class="report-card"><h3>账户 ${id} · ${badge(row.explanation_grade)} · 风险分 ${num(row.score)}</h3><p><b>标签：</b>${esc(row.label_text)}　<b>风险排名：</b>${esc(row.risk_rank || "-")}</p><p><b>解释结论：</b>${esc(row.explanation_reason)}</p><p><b>交易证据：</b>历史交易 ${row.history_txn_count || 0} 笔，直接对手 ${row.direct_counterparty_count || 0} 个，历史金额 ${fmt(row.history_amount_sum)}</p><p><b>特征证据：</b>${esc(row.feature_evidence || "-")}</p>${paths.length ? `<p><b>可疑路径：</b>${paths.map(x => `${x.account_1} → ${x.account_2} → ${x.account_3}，间隔 ${num(Number(x.delay_hours) * 60, 2)} 分钟，金额比 ${num(x.amount_ratio, 4)}`).join("；")}</p>` : ""}${structures.length ? `<p><b>资金流结构：</b>${structures.map(x => `${esc(x.structure_type)}，${esc(x.business_meaning)}`).join("；")}</p>` : ""}${assoc.length ? `<p><b>关联账户：</b>${assoc.map(x => `${x.counterparty_id}（${esc(x.label_text)}，${x.direct_txn_count} 笔）`).join("；")}</p>` : ""}<p><b>处置建议：</b>进入人工复核队列，核验上下游账户、关键时间和金额比例。</p></article>`; }).join("") || `<p class="empty">暂无结构化研判报告</p>`;
       document.getElementById("rawReport").textContent = md || "暂无报告原文";
     }
-    function openGraph(id) { currentAccount=Number(id); currentWindow=DATA.windows.length ? DATA.windows[DATA.windows.length-1].name : null; setView("graph"); }
+    function openGraph(id) { currentAccount=Number(id); currentWindow=bestWindowName(currentAccount); setView("graph"); }
     document.addEventListener("DOMContentLoaded", () => { renderOverview(); renderSelectors(); document.querySelectorAll("[data-view]").forEach(btn => btn.onclick=() => setView(btn.dataset.view)); document.querySelectorAll("[data-grade]").forEach(btn => btn.onclick=() => { auditGrade=btn.dataset.grade; document.querySelectorAll("[data-grade]").forEach(x => x.classList.toggle("active", x===btn)); renderAudit(); }); document.getElementById("auditSearch").oninput=e => { auditQuery=e.target.value; renderAudit(); }; renderGraphView(); renderAudit(); renderRecovery(); renderQueue(); renderReports(); });
     """
 
