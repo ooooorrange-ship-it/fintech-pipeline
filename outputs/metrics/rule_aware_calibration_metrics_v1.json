@@ -1,0 +1,383 @@
+{
+  "status": "ok",
+  "artifact_type": "rule_aware_guardrailed_calibration",
+  "random_seed": 2026,
+  "base_model": "model11_validation_selected_best_strategy_A",
+  "selection_data": "valid_all_accounts",
+  "selection_metric_order": [
+    "valid PR-AUC",
+    "valid Top5% recall",
+    "valid AUC"
+  ],
+  "selected_weights": {
+    "Model11": 1.0,
+    "rule_score": 0.0
+  },
+  "decision": "keep_model11",
+  "decision_note": "规则层未提升验证集 PR-AUC，因此仅作为解释锚点，不改变最终风险分。",
+  "rule_groups": {
+    "fast_flow": {
+      "weight": 1.4,
+      "features": [
+        "fast_in_out_count_24h",
+        "fast_in_out_balance_ratio_24h",
+        "prior_in_before_out_count_24h",
+        "dyn_motif_fast_in_out_count_24h",
+        "dyn_motif_fast_in_out_balance_ratio_24h",
+        "dyn_motif_prior_in_before_out_count_24h"
+      ],
+      "description": "24小时快进快出或出账前存在短窗口入账来源"
+    },
+    "fan_motif": {
+      "weight": 1.2,
+      "features": [
+        "one_in_multi_out_count_24h",
+        "multi_in_one_out_count_24h",
+        "max_prior_in_count_before_out_24h",
+        "max_next_out_count_after_in_24h",
+        "dyn_motif_one_in_multi_out_count_24h",
+        "dyn_motif_multi_in_one_out_count_24h",
+        "dyn_motif_max_prior_in_count_before_out_24h",
+        "dyn_motif_max_next_out_count_after_in_24h"
+      ],
+      "description": "多入一出、一入多出或短时资金归集/分散"
+    },
+    "closed_loop_or_dirty_edge": {
+      "weight": 1.3,
+      "features": [
+        "total_self_loop_count",
+        "total_non_positive_amount_count",
+        "graph_reciprocal_neighbor_count",
+        "graph_reciprocal_ratio",
+        "graph_cycle3_proxy_count",
+        "graph_path_through_proxy"
+      ],
+      "description": "自环、非正金额、互惠边或闭环代理结构"
+    },
+    "burst_velocity": {
+      "weight": 1.0,
+      "features": [
+        "burst_day_txn_ratio",
+        "burst_day_amount_ratio",
+        "txn_count_growth",
+        "daily_txn_count_cv",
+        "monthly_txn_count_cv",
+        "dyn_total_week_txn_burst_ratio",
+        "dyn_total_week_amount_burst_ratio",
+        "dyn_total_last_prev_week_txn_growth"
+      ],
+      "description": "交易频次或金额在短时间内突增"
+    },
+    "counterparty_concentration": {
+      "weight": 0.9,
+      "features": [
+        "counterparty_amount_top_ratio",
+        "counterparty_txn_top_ratio",
+        "out_counterparty_nunique",
+        "in_counterparty_nunique",
+        "dyn_cp_new_second_half_ratio",
+        "dyn_cp_lost_second_half_count",
+        "dyn_cp_jaccard_first_second"
+      ],
+      "description": "交易对手集中、新增/流失异常或关系稳定性异常"
+    },
+    "graph_neighbor_risk_proxy": {
+      "weight": 1.1,
+      "features": [
+        "graph_two_hop_neighbor_count",
+        "graph_low_degree_neighbor_ratio",
+        "graph_nb_fast_in_out_count_24h_max",
+        "graph_nb_multi_in_one_out_count_24h_max",
+        "graph_nb_total_self_loop_count_max",
+        "graph_nb_total_non_positive_amount_count_max",
+        "graph_out_nb_fast_in_out_count_24h_mean",
+        "graph_in_nb_fast_in_out_count_24h_mean"
+      ],
+      "description": "邻居节点存在快进快出、自环、非正金额或低度异常关系"
+    }
+  },
+  "threshold_policy": "规则阈值仅由 train 窗口正值分布的75%/95%分位数生成。",
+  "thresholds": {
+    "burst_day_amount_ratio": {
+      "mode": "quantile_from_train",
+      "threshold": 0.6619408082786518,
+      "scale": 1.0
+    },
+    "burst_day_txn_ratio": {
+      "mode": "quantile_from_train",
+      "threshold": 0.5,
+      "scale": 1.0
+    },
+    "counterparty_amount_top_ratio": {
+      "mode": "quantile_from_train",
+      "threshold": 0.5,
+      "scale": 0.6311548193175421
+    },
+    "counterparty_txn_top_ratio": {
+      "mode": "quantile_from_train",
+      "threshold": 0.5,
+      "scale": 1.0
+    },
+    "daily_txn_count_cv": {
+      "mode": "quantile_from_train",
+      "threshold": 0.5839216358626685,
+      "scale": 0.8256340420220328
+    },
+    "dyn_cp_jaccard_first_second": {
+      "mode": "quantile_from_train",
+      "threshold": 1.0,
+      "scale": 1.0
+    },
+    "dyn_cp_lost_second_half_count": {
+      "mode": "quantile_from_train",
+      "threshold": 8.0,
+      "scale": 20.0
+    },
+    "dyn_cp_new_second_half_ratio": {
+      "mode": "quantile_from_train",
+      "threshold": 1.0,
+      "scale": 1.0
+    },
+    "dyn_motif_fast_in_out_balance_ratio_24h": {
+      "mode": "quantile_from_train",
+      "threshold": 0.8715669851511767,
+      "scale": 1.0
+    },
+    "dyn_motif_fast_in_out_count_24h": {
+      "mode": "quantile_from_train",
+      "threshold": 45.0,
+      "scale": 2406.0
+    },
+    "dyn_motif_max_next_out_count_after_in_24h": {
+      "mode": "quantile_from_train",
+      "threshold": 8.0,
+      "scale": 22.0
+    },
+    "dyn_motif_max_prior_in_count_before_out_24h": {
+      "mode": "quantile_from_train",
+      "threshold": 6.0,
+      "scale": 65.79999999999995
+    },
+    "dyn_motif_multi_in_one_out_count_24h": {
+      "mode": "quantile_from_train",
+      "threshold": 36.25,
+      "scale": 74.0
+    },
+    "dyn_motif_one_in_multi_out_count_24h": {
+      "mode": "quantile_from_train",
+      "threshold": 74.0,
+      "scale": 2865.2999999999975
+    },
+    "dyn_motif_prior_in_before_out_count_24h": {
+      "mode": "quantile_from_train",
+      "threshold": 46.0,
+      "scale": 530.0
+    },
+    "dyn_total_last_prev_week_txn_growth": {
+      "mode": "quantile_from_train",
+      "threshold": 2.0,
+      "scale": 6.0
+    },
+    "dyn_total_week_amount_burst_ratio": {
+      "mode": "quantile_from_train",
+      "threshold": 0.7425775829725856,
+      "scale": 1.0
+    },
+    "dyn_total_week_txn_burst_ratio": {
+      "mode": "quantile_from_train",
+      "threshold": 0.5,
+      "scale": 1.0
+    },
+    "fast_in_out_balance_ratio_24h": {
+      "mode": "quantile_from_train",
+      "threshold": 0.8732952938322449,
+      "scale": 1.0
+    },
+    "fast_in_out_count_24h": {
+      "mode": "quantile_from_train",
+      "threshold": 46.0,
+      "scale": 2447.100000000003
+    },
+    "graph_cycle3_proxy_count": {
+      "mode": "quantile_from_train",
+      "threshold": 4.0,
+      "scale": 30.0
+    },
+    "graph_in_nb_fast_in_out_count_24h_mean": {
+      "mode": "quantile_from_train",
+      "threshold": 2501.125,
+      "scale": 5591.0
+    },
+    "graph_low_degree_neighbor_ratio": {
+      "mode": "quantile_from_train",
+      "threshold": 0.5,
+      "scale": 1.0
+    },
+    "graph_nb_fast_in_out_count_24h_max": {
+      "mode": "quantile_from_train",
+      "threshold": 6935.0,
+      "scale": 8044.0
+    },
+    "graph_nb_multi_in_one_out_count_24h_max": {
+      "mode": "quantile_from_train",
+      "threshold": 102.0,
+      "scale": 146.0
+    },
+    "graph_nb_total_non_positive_amount_count_max": {
+      "mode": "quantile_from_train",
+      "threshold": 1.0,
+      "scale": 1.0
+    },
+    "graph_nb_total_self_loop_count_max": {
+      "mode": "quantile_from_train",
+      "threshold": 170.0,
+      "scale": 170.0
+    },
+    "graph_out_nb_fast_in_out_count_24h_mean": {
+      "mode": "quantile_from_train",
+      "threshold": 3734.0,
+      "scale": 4948.0
+    },
+    "graph_path_through_proxy": {
+      "mode": "quantile_from_train",
+      "threshold": 120.0,
+      "scale": 3061.7999999999656
+    },
+    "graph_reciprocal_neighbor_count": {
+      "mode": "quantile_from_train",
+      "threshold": 4.0,
+      "scale": 30.0
+    },
+    "graph_reciprocal_ratio": {
+      "mode": "quantile_from_train",
+      "threshold": 0.3,
+      "scale": 0.5
+    },
+    "graph_two_hop_neighbor_count": {
+      "mode": "quantile_from_train",
+      "threshold": 2592.0,
+      "scale": 3235.2
+    },
+    "in_counterparty_nunique": {
+      "mode": "quantile_from_train",
+      "threshold": 4.0,
+      "scale": 30.0
+    },
+    "max_next_out_count_after_in_24h": {
+      "mode": "quantile_from_train",
+      "threshold": 8.0,
+      "scale": 22.0
+    },
+    "max_prior_in_count_before_out_24h": {
+      "mode": "quantile_from_train",
+      "threshold": 6.0,
+      "scale": 64.70000000000005
+    },
+    "monthly_txn_count_cv": {
+      "mode": "quantile_from_train",
+      "threshold": 1.1547005383792517,
+      "scale": 2.0
+    },
+    "multi_in_one_out_count_24h": {
+      "mode": "quantile_from_train",
+      "threshold": 38.0,
+      "scale": 74.0
+    },
+    "one_in_multi_out_count_24h": {
+      "mode": "quantile_from_train",
+      "threshold": 75.0,
+      "scale": 2911.0
+    },
+    "out_counterparty_nunique": {
+      "mode": "quantile_from_train",
+      "threshold": 21.0,
+      "scale": 54.0
+    },
+    "prior_in_before_out_count_24h": {
+      "mode": "quantile_from_train",
+      "threshold": 46.0,
+      "scale": 545.4000000000001
+    },
+    "total_non_positive_amount_count": {
+      "mode": "quantile_from_train",
+      "threshold": 1.5,
+      "scale": 1.9
+    },
+    "total_self_loop_count": {
+      "mode": "quantile_from_train",
+      "threshold": 16.0,
+      "scale": 170.0
+    },
+    "txn_count_growth": {
+      "mode": "quantile_from_train",
+      "threshold": 2.0,
+      "scale": 8.0
+    }
+  },
+  "candidate_top5": [
+    {
+      "weight_model11": 1.0,
+      "weight_rule_score": 0.0,
+      "valid_auc": 0.9757020650055637,
+      "valid_pr_auc": 0.7940291820855534,
+      "valid_top5_recall": 0.9491525423728814,
+      "valid_top5_hits": 56
+    },
+    {
+      "weight_model11": 0.95,
+      "weight_rule_score": 0.050000000000000044,
+      "valid_auc": 0.9762999268426134,
+      "valid_pr_auc": 0.6375024900933273,
+      "valid_top5_recall": 0.9491525423728814,
+      "valid_top5_hits": 56
+    },
+    {
+      "weight_model11": 0.9,
+      "weight_rule_score": 0.09999999999999998,
+      "valid_auc": 0.9755698898950592,
+      "valid_pr_auc": 0.33886160977115637,
+      "valid_top5_recall": 0.9491525423728814,
+      "valid_top5_hits": 56
+    },
+    {
+      "weight_model11": 0.85,
+      "weight_rule_score": 0.15000000000000002,
+      "valid_auc": 0.9743803139005182,
+      "valid_pr_auc": 0.22422078114307403,
+      "valid_top5_recall": 0.9491525423728814,
+      "valid_top5_hits": 56
+    },
+    {
+      "weight_model11": 0.8,
+      "weight_rule_score": 0.19999999999999996,
+      "valid_auc": 0.9713126218009013,
+      "valid_pr_auc": 0.14754116422982788,
+      "valid_top5_recall": 0.9491525423728814,
+      "valid_top5_hits": 56
+    }
+  ],
+  "valid_all_accounts": {
+    "auc": 0.9757020650055637,
+    "pr_auc_average_precision": 0.7940291820855534,
+    "top1pct_k": 111,
+    "top1pct_hits": 50,
+    "top1pct_precision": 0.45045045045045046,
+    "top1pct_recall": 0.847457627118644,
+    "top5pct_k": 555,
+    "top5pct_hits": 56,
+    "top5pct_precision": 0.1009009009009009,
+    "top5pct_recall": 0.9491525423728814
+  },
+  "test_all_accounts": {
+    "auc": 0.9857842594812588,
+    "pr_auc_average_precision": 0.8048535458921688,
+    "top1pct_k": 111,
+    "top1pct_hits": 51,
+    "top1pct_precision": 0.4594594594594595,
+    "top1pct_recall": 0.864406779661017,
+    "top5pct_k": 555,
+    "top5pct_hits": 56,
+    "top5pct_precision": 0.1009009009009009,
+    "top5pct_recall": 0.9491525423728814
+  }
+}

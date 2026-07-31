@@ -68,6 +68,12 @@
       "sha256": "594f5bf0772fa800f64c38d6a6caa7c64f5f2be76ba344aa29ef42e7715df7f4"
     },
     {
+      "role": "rule_aware_calibration",
+      "path": "models/model14_rule_aware_guardrailed_strategy_A.json",
+      "size_bytes": 523,
+      "sha256": "f1b1f4114beaa3b0359e1da94701587449a3ec741c079925c4f4df4a38c93973"
+    },
+    {
       "role": "previous_final_dynamic_fusion",
       "path": "models/model8_final_dynamic_fusion_v7_strategy_A.json",
       "size_bytes": 737,

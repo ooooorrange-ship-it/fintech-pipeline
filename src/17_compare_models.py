@@ -55,6 +55,7 @@ def main() -> None:
     final_selection = read_json("final_model_selection_metrics_v8.json")
     cv_bagging = read_json("cv_bagging_metrics_v1_no_customer_type.json")
     guardrail = read_json("model_overfit_guardrail_audit_v1.json")
+    rule_aware = read_json("rule_aware_calibration_metrics_v1.json")
 
     rows: list[dict] = []
     main_profile = "drop_customer_type"
@@ -73,6 +74,7 @@ def main() -> None:
     add_rows(rows, "最终验证集选择模型v8", "validation_selected_best_ensemble", main_profile, final_selection)
     add_rows(rows, "五折正则化Bagging", "five_fold_bagging", main_profile, cv_bagging)
     add_rows(rows, "过拟合护栏最终模型", "overfit_guardrailed_final", main_profile, guardrail["guardrailed_selection"])
+    add_rows(rows, "规则感知校准模型", "rule_aware_calibration", main_profile, rule_aware)
     add_rows(rows, "LogisticRegression弱画像", "traditional_baseline", weak_profile, traditional_weak["logistic_regression"])
     add_rows(rows, "RandomForest弱画像", "traditional_baseline", weak_profile, traditional_weak["random_forest"])
     add_rows(rows, "动态资金图谱RandomForest弱画像", "dynamic_graph_random_forest", weak_profile, traditional_weak["dynamic_graph_random_forest"])

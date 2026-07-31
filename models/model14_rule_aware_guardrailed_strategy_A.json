@@ -1,0 +1,12 @@
+{
+  "artifact_type": "rule_aware_guardrailed_selection",
+  "selected_weights": {
+    "Model11": 1.0,
+    "rule_score": 0.0
+  },
+  "base_prediction": "outputs/predictions/model11_validation_selected_best_strategy_A.csv",
+  "normalization": "within_split_average_percentile_rank",
+  "threshold_policy": "规则阈值仅由 train 窗口正值分布的75%/95%分位数生成。",
+  "decision": "keep_model11",
+  "decision_note": "规则层未提升验证集 PR-AUC，因此仅作为解释锚点，不改变最终风险分。"
+}

@@ -285,7 +285,7 @@ v6 主模型新增的动态特征包括：
 
 ## 6. 模型结构
 
-当前模型与对照实验分成 14 个层次：
+当前模型与对照实验分成 15 个层次：
 
 | 模型 | 作用 |
 |---|---|
@@ -303,6 +303,7 @@ v6 主模型新增的动态特征包括：
 | Model 11：最终冠军模型 | 验证集选择 Model8、CatBoost、TGN 的融合权重 |
 | Model 12：五折正则化 Bagging | 五折账户级 RandomForest + CatBoost，对主模型做过拟合审计和鲁棒性对照 |
 | Model 13：过拟合护栏最终模型 | 只用验证集检查 Model11 与 Model12；若正则化模型无增益，则保持 Model11 |
+| Model 14：规则感知校准模型 | 将快进快出、闭环、自环、多入一出等业务规则转为解释锚点；若验证集无增益，则不改变 Model11 |
 
 最终主模型选择验证集冠军模型：
 
@@ -434,6 +435,20 @@ python src/24_model_overfit_guardrails.py
 结论：Model12 的泛化口径更保守，但正式 valid/test 指标明显低于 Model11。因此最终不替换主模型，而是把 Model12 作为过拟合审计和鲁棒性对照。答辩中应如实说明：Model11 是正式时间留出口径的最佳模型，但账户级五折验证显示当前数据仍存在静态画像依赖和过拟合风险。
 
 项目进一步新增 Model13 过拟合护栏层：只用验证集比较 `Model11` 与 `Model12` 的融合权重。结果选择 `Model11=1.0、Model12=0.0`，说明正则化 Bagging 没有带来验证集增益，因此最终主模型保持 Model11，不为了“看起来更稳”而硬混入低分模型。
+
+参考真实银行风控“模型 + 规则锚点”的落地方式，项目新增 Model14 规则感知校准层：
+
+```bash
+python src/25_model_rule_aware_calibrator.py
+```
+
+Model14 将 6 类业务规则转成 `rule_score`：快进快出、多入一出/一入多出、自环/闭环、交易突发、交易对手集中、邻居异常代理信号。规则阈值只由 train 窗口分布生成，再只用 valid 检查是否与 Model11 融合。当前结果选择 `Model11=1.0、rule_score=0.0`，说明规则层不改变最终风险分，但会输出逐账户规则证据：
+
+```text
+outputs/explanations/rule_aware_evidence_v1.csv
+```
+
+答辩口径：规则层不是为了刷分，而是为了把模型风险分映射到可核验的业务证据，满足辅助研判和监管可解释性要求。
 
 消融实验还证明模型存在明显的静态画像依赖；答辩时应主动报告，不应宣称已完全解决。
 
@@ -597,6 +612,7 @@ python src/21_select_best_model.py
 python src/22_cross_validation_overfit_audit.py
 python src/23_model_cv_bagging.py
 python src/24_model_overfit_guardrails.py
+python src/25_model_rule_aware_calibrator.py
 python src/17_compare_models.py
 
 # 11. 可疑链路解释
@@ -644,6 +660,7 @@ python src/13_final_project_audit.py
 | `src/22_cross_validation_overfit_audit.py` | 五折账户级交叉验证，检查训练-验证差距和账户级泛化风险 |
 | `src/23_model_cv_bagging.py` | 五折正则化 Bagging 对照模型，用于鲁棒性和过拟合审计 |
 | `src/24_model_overfit_guardrails.py` | 最终模型护栏审计，防止把低泛化增益模型强行纳入主模型 |
+| `src/25_model_rule_aware_calibrator.py` | 规则感知校准和逐账户规则证据输出 |
 | `models/` | 动态模型权重、CatBoost、TGN、最终选择配置和校验清单 |
 | `DEPLOYMENT.md` | Conda 环境、数据放置、完整运行顺序和快速审计 |
 | `outputs/features/` | 特征宽表 |

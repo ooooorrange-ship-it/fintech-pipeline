@@ -420,6 +420,7 @@ def build_metrics_summary() -> tuple[pd.DataFrame, dict]:
     final_selection = load_json_optional(METRIC_DIR / "final_model_selection_metrics_v8.json")
     cv_bagging = load_json_optional(METRIC_DIR / "cv_bagging_metrics_v1_no_customer_type.json")
     guardrail = load_json_optional(METRIC_DIR / "model_overfit_guardrail_audit_v1.json")
+    rule_aware = load_json_optional(METRIC_DIR / "rule_aware_calibration_metrics_v1.json")
     dynamic_no_customer = load_json_optional(
         first_existing(
             [
@@ -646,6 +647,15 @@ def build_metrics_summary() -> tuple[pd.DataFrame, dict]:
             "model13_guardrailed_final_strategy_A",
             "过拟合护栏最终模型",
             "只用验证集检查 Model11 与正则化 Model12；若 Model12 无增益，则保持 Model11",
+        )
+    if rule_aware:
+        add_metric_rows(
+            rows,
+            {"model14_rule_aware_guardrailed_strategy_A": rule_aware},
+            "v1_rule_aware_calibration",
+            "model14_rule_aware_guardrailed_strategy_A",
+            "规则感知校准模型",
+            "将业务规则锚点转为 rule_score；若验证集无增益，则仅作为解释证据不改变 Model11",
         )
 
     summary = pd.DataFrame(rows)
