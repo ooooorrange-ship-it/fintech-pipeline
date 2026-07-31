@@ -418,6 +418,7 @@ def build_metrics_summary() -> tuple[pd.DataFrame, dict]:
     catboost_no_customer = load_json_optional(METRIC_DIR / "catboost_metrics_v1_no_customer_type.json")
     tgn_no_customer = load_json_optional(METRIC_DIR / "tgn_metrics_v1_no_customer_type.json")
     final_selection = load_json_optional(METRIC_DIR / "final_model_selection_metrics_v8.json")
+    cv_bagging = load_json_optional(METRIC_DIR / "cv_bagging_metrics_v1_no_customer_type.json")
     dynamic_no_customer = load_json_optional(
         first_existing(
             [
@@ -626,6 +627,15 @@ def build_metrics_summary() -> tuple[pd.DataFrame, dict]:
             "model11_validation_selected_best_strategy_A",
             "最终验证集选择冠军模型",
             "Model8 + CatBoost + TGN，验证集选择权重",
+        )
+    if cv_bagging:
+        add_metric_rows(
+            rows,
+            {"model12_cv_bagged_dynamic_v1_no_customer_type_strategy_A": cv_bagging},
+            "v1_no_customer_type",
+            "model12_cv_bagged_dynamic_v1_no_customer_type_strategy_A",
+            "五折正则化 Bagging 对照模型",
+            "五折账户级 Bagging：正则化 RandomForest + CatBoost，用于过拟合审计和鲁棒性对照",
         )
 
     summary = pd.DataFrame(rows)

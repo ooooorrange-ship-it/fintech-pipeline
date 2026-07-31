@@ -83,6 +83,19 @@
       "top5pct_recall": 0.9661016949152542
     },
     {
+      "model": "五折正则化Bagging",
+      "model_family": "five_fold_bagging",
+      "profile_policy": "drop_customer_type",
+      "split": "test",
+      "evaluation_scope": "all_accounts",
+      "auc": 0.9449559826143623,
+      "pr_auc": 0.33838214924840654,
+      "top1pct_hits": 25,
+      "top1pct_recall": 0.423728813559322,
+      "top5pct_hits": 43,
+      "top5pct_recall": 0.7288135593220338
+    },
+    {
       "model": "滚动动态资金图谱XGBoost",
       "model_family": "dynamic_graph_xgboost",
       "profile_policy": "drop_customer_type",

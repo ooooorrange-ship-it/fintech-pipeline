@@ -56,6 +56,12 @@
       "sha256": "5528918d848e1b7393083a497e1c418be96cf1b822c6b8bf62eb349b0839c35e"
     },
     {
+      "role": "cv_bagging_experiment",
+      "path": "models/model12_cv_bagged_dynamic_v1_no_customer_type_strategy_A.joblib",
+      "size_bytes": 6427502,
+      "sha256": "7661346ae2be0d8bdaed66f4140b6458d6ffe5add6e1ca6caf6350c986c5dd40"
+    },
+    {
       "role": "previous_final_dynamic_fusion",
       "path": "models/model8_final_dynamic_fusion_v7_strategy_A.json",
       "size_bytes": 737,

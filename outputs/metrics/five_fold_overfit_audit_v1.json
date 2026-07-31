@@ -1,0 +1,150 @@
+{
+  "status": "ok",
+  "cross_validation_policy": {
+    "method": "5-fold StratifiedKFold on Strategy A eligible accounts",
+    "n_splits": 5,
+    "shuffle": true,
+    "random_seed": 2026,
+    "purpose": "account-level generalization and overfit diagnosis",
+    "not_a_replacement_for_temporal_split": true
+  },
+  "data": {
+    "train_account_count_all": 11087,
+    "train_account_count_eligible": 9934,
+    "positive_count": 59,
+    "feature_count": 383
+  },
+  "models": [
+    {
+      "model": "dynamic_random_forest",
+      "fold_count": 5,
+      "positive_count_per_fold": [
+        12,
+        12,
+        12,
+        12,
+        11
+      ],
+      "train_pr_auc_mean": 0.7676752139414817,
+      "train_pr_auc_std": 0.03488700079413052,
+      "validation_pr_auc_mean": 0.10518281087411815,
+      "validation_pr_auc_std": 0.06419556353876663,
+      "train_auc_mean": 0.997944642696831,
+      "train_auc_std": 0.0007515634362046382,
+      "validation_auc_mean": 0.9117537399309551,
+      "validation_auc_std": 0.020936909997885958,
+      "validation_top5pct_recall_mean": 0.48636363636363633,
+      "validation_top5pct_recall_std": 0.18044939310253824,
+      "pr_auc_train_validation_gap_mean": 0.6624924030673636,
+      "auc_train_validation_gap_mean": 0.08619090276587582,
+      "overfit_flag": true,
+      "stability_conclusion": "需要关注训练-验证差距或折间波动"
+    },
+    {
+      "model": "catboost",
+      "fold_count": 5,
+      "positive_count_per_fold": [
+        12,
+        12,
+        12,
+        12,
+        11
+      ],
+      "train_pr_auc_mean": 0.33292000382781284,
+      "train_pr_auc_std": 0.10484905278807037,
+      "validation_pr_auc_mean": 0.10563032539691486,
+      "validation_pr_auc_std": 0.05351308563355602,
+      "train_auc_mean": 0.9592575242391597,
+      "train_auc_std": 0.004922160780158187,
+      "validation_auc_mean": 0.9279677790563866,
+      "validation_auc_std": 0.02624819741961702,
+      "validation_top5pct_recall_mean": 0.5742424242424243,
+      "validation_top5pct_recall_std": 0.10089134433082723,
+      "pr_auc_train_validation_gap_mean": 0.22728967843089803,
+      "auc_train_validation_gap_mean": 0.03128974518277301,
+      "overfit_flag": true,
+      "stability_conclusion": "需要关注训练-验证差距或折间波动"
+    }
+  ],
+  "oof_metrics": {
+    "dynamic_random_forest": {
+      "auc": 0.9094477579918472,
+      "pr_auc": 0.08434785380306628,
+      "top1pct_hits": 9,
+      "top1pct_recall": 0.15254237288135594,
+      "top5pct_hits": 26,
+      "top5pct_recall": 0.4406779661016949
+    },
+    "catboost": {
+      "auc": 0.9152714009869126,
+      "pr_auc": 0.060683483631197764,
+      "top1pct_hits": 9,
+      "top1pct_recall": 0.15254237288135594,
+      "top5pct_hits": 27,
+      "top5pct_recall": 0.4576271186440678
+    }
+  },
+  "temporal_holdout_models": [
+    {
+      "model": "Model8",
+      "valid_all_accounts_auc": 0.9756206082514155,
+      "valid_all_accounts_pr_auc": 0.6361676347468106,
+      "valid_all_accounts_top5pct_recall": 0.9491525423728814,
+      "test_all_accounts_auc": 0.9865596355655557,
+      "test_all_accounts_pr_auc": 0.6937814869587354,
+      "test_all_accounts_top5pct_recall": 0.9661016949152542,
+      "valid_test_pr_auc_gap": -0.05761385221192483
+    },
+    {
+      "model": "Model11",
+      "valid_all_accounts_auc": 0.9757020650055637,
+      "valid_all_accounts_pr_auc": 0.7940291820855534,
+      "valid_all_accounts_top5pct_recall": 0.9491525423728814,
+      "test_all_accounts_auc": 0.9857850279412036,
+      "test_all_accounts_pr_auc": 0.8048550057410236,
+      "test_all_accounts_top5pct_recall": 0.9491525423728814,
+      "valid_test_pr_auc_gap": -0.010825823655470246
+    },
+    {
+      "model": "CatBoost",
+      "train_all_accounts_auc": 0.985075739412159,
+      "train_all_accounts_pr_auc": 0.3631326010564258,
+      "train_all_accounts_top5pct_recall": 0.8983050847457628,
+      "valid_all_accounts_auc": 0.9606994215033535,
+      "valid_all_accounts_pr_auc": 0.33568398251226444,
+      "valid_all_accounts_top5pct_recall": 0.847457627118644,
+      "test_all_accounts_auc": 0.9710505769597264,
+      "test_all_accounts_pr_auc": 0.37177406732331364,
+      "test_all_accounts_top5pct_recall": 0.847457627118644,
+      "valid_test_pr_auc_gap": -0.036090084811049195
+    },
+    {
+      "model": "TGN",
+      "train_all_accounts_auc": 0.8136415472479912,
+      "train_all_accounts_pr_auc": 0.014152389881004963,
+      "train_all_accounts_top5pct_recall": 0.13559322033898305,
+      "valid_all_accounts_auc": 0.8043508665154337,
+      "valid_all_accounts_pr_auc": 0.013913670148772593,
+      "valid_all_accounts_top5pct_recall": 0.15254237288135594,
+      "test_all_accounts_auc": 0.8155273479525155,
+      "test_all_accounts_pr_auc": 0.01482935308864198,
+      "test_all_accounts_top5pct_recall": 0.15254237288135594,
+      "valid_test_pr_auc_gap": -0.0009156829398693864
+    },
+    {
+      "model": "Model12_cv_bagging",
+      "valid_all_accounts_auc": 0.9339316562463499,
+      "valid_all_accounts_pr_auc": 0.3300875595712133,
+      "valid_all_accounts_top5pct_recall": 0.711864406779661,
+      "test_all_accounts_auc": 0.9449559826143623,
+      "test_all_accounts_pr_auc": 0.33838214924840654,
+      "test_all_accounts_top5pct_recall": 0.7288135593220338,
+      "valid_test_pr_auc_gap": -0.008294589677193265
+    }
+  ],
+  "interpretation": [
+    "五折验证折间指标用于判断账户级泛化和稳定性。",
+    "train/valid/test 时间窗口仍是比赛正式评估口径。",
+    "标签表没有确认时间，不能把任何结果表述为严格未来新增标签预测。"
+  ]
+}

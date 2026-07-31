@@ -29,6 +29,7 @@ MODEL_FILES = {
     "graphsage": MODEL_DIR / "model6_graphsage_v1_no_customer_type_strategy_A.pt",
     "catboost_dynamic": MODEL_DIR / "model9_catboost_dynamic_v1_no_customer_type_strategy_A.joblib",
     "tgn_temporal_memory": MODEL_DIR / "model10_tgn_v1_no_customer_type_strategy_A.pt",
+    "cv_bagging_experiment": MODEL_DIR / "model12_cv_bagged_dynamic_v1_no_customer_type_strategy_A.joblib",
     "previous_final_dynamic_fusion": MODEL_DIR / "model8_final_dynamic_fusion_v7_strategy_A.json",
     "final_selected_model": MODEL_DIR / "model11_validation_selected_best_strategy_A.json",
 }
@@ -57,6 +58,8 @@ REQUIRED_SOURCE_FILES = [
     "src/19_model_catboost.py",
     "src/20_model_tgn.py",
     "src/21_select_best_model.py",
+    "src/22_cross_validation_overfit_audit.py",
+    "src/23_model_cv_bagging.py",
 ]
 
 REQUIRED_OUTPUTS = [
@@ -77,6 +80,9 @@ REQUIRED_OUTPUTS = [
     "outputs/metrics/tgn_metrics_v1_no_customer_type.json",
     "outputs/metrics/final_model_selection_metrics_v8.json",
     "outputs/predictions/model11_validation_selected_best_strategy_A.csv",
+    "outputs/metrics/five_fold_overfit_audit_v1.json",
+    "outputs/metrics/cv_bagging_metrics_v1_no_customer_type.json",
+    "outputs/predictions/model12_cv_bagged_dynamic_v1_no_customer_type_strategy_A.csv",
 ]
 
 
@@ -128,12 +134,13 @@ def load_model_artifacts(checks: list[dict]) -> list[dict]:
         except Exception as exc:
             add_check(checks, "图传播模型包可加载", False, f"{type(exc).__name__}: {exc}")
 
-    for role in ["logistic_regression_baseline", "random_forest_baseline", "dynamic_graph_random_forest", "catboost_dynamic"]:
+    for role in ["logistic_regression_baseline", "random_forest_baseline", "dynamic_graph_random_forest", "catboost_dynamic", "cv_bagging_experiment"]:
         path = MODEL_FILES[role]
         if path.exists():
             try:
                 bundle = joblib.load(path)
-                missing = sorted({"model", "feature_columns", "metadata"} - set(bundle))
+                required = {"models", "feature_columns", "metadata"} if role == "cv_bagging_experiment" else {"model", "feature_columns", "metadata"}
+                missing = sorted(required - set(bundle))
                 add_check(checks, f"传统基线 {role} 可加载", not missing, f"缺失键={missing}")
             except Exception as exc:
                 add_check(checks, f"传统基线 {role} 可加载", False, f"{type(exc).__name__}: {exc}")

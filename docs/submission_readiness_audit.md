@@ -4,7 +4,7 @@
 
 | 检查项 | 状态 | 详情 |
 |---|---|---|
-| 完整源代码 | pass | 脚本数=23，缺失=[] |
+| 完整源代码 | pass | 脚本数=25，缺失=[] |
 | Conda 环境文件 | pass | environment.yml |
 | 部署文档 | pass | DEPLOYMENT.md |
 | 项目说明 | pass | readme.md |
@@ -22,6 +22,7 @@
 | 模型文件 graphsage | pass | models/model6_graphsage_v1_no_customer_type_strategy_A.pt |
 | 模型文件 catboost_dynamic | pass | models/model9_catboost_dynamic_v1_no_customer_type_strategy_A.joblib |
 | 模型文件 tgn_temporal_memory | pass | models/model10_tgn_v1_no_customer_type_strategy_A.pt |
+| 模型文件 cv_bagging_experiment | pass | models/model12_cv_bagged_dynamic_v1_no_customer_type_strategy_A.joblib |
 | 模型文件 previous_final_dynamic_fusion | pass | models/model8_final_dynamic_fusion_v7_strategy_A.json |
 | 模型文件 final_selected_model | pass | models/model11_validation_selected_best_strategy_A.json |
 | 动态 XGBoost 权重可加载 | pass | 特征数=383 |
@@ -30,6 +31,7 @@
 | 传统基线 random_forest_baseline 可加载 | pass | 缺失键=[] |
 | 传统基线 dynamic_graph_random_forest 可加载 | pass | 缺失键=[] |
 | 传统基线 catboost_dynamic 可加载 | pass | 缺失键=[] |
+| 传统基线 cv_bagging_experiment 可加载 | pass | 缺失键=[] |
 | GraphSAGE 权重可加载 | pass | 缺失键=[] |
 | 融合权重可加载 | pass | weights={'xgb': 0.0, 'graph_propagation': 0.1, 'rule': 0.0, 'dynamic': 0.9} |
 | 上一版最终动态融合权重可加载 | pass | weights={'dynamic_random_forest': 0.7, 'dynamic_stack': 0.3, 'graphsage': 0.0} |

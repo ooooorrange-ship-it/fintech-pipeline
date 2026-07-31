@@ -285,7 +285,7 @@ v6 主模型新增的动态特征包括：
 
 ## 6. 模型结构
 
-当前模型与对照实验分成 12 个层次：
+当前模型与对照实验分成 13 个层次：
 
 | 模型 | 作用 |
 |---|---|
@@ -301,6 +301,7 @@ v6 主模型新增的动态特征包括：
 | Model 9：CatBoost 动态特征 | 验证 CatBoost 对统计、图和动态图特征的增量 |
 | Model 10：轻量 TGN | 按日聚合交易事件，顺序更新账户节点记忆 |
 | Model 11：最终冠军模型 | 验证集选择 Model8、CatBoost、TGN 的融合权重 |
+| Model 12：五折正则化 Bagging | 五折账户级 RandomForest + CatBoost，对主模型做过拟合审计和鲁棒性对照 |
 
 最终主模型选择验证集冠军模型：
 
@@ -406,6 +407,29 @@ Top5% 精确率         = Top5% 中命中的嫌疑人数 / Top5% 账户数 = 56/
 | test | 0.9858 | 0.8049 | 56/59 |
 
 但这不能严格证明“没有过拟合”。train/valid/test 包含相同的 11087 个账户，只是交易观察窗口不同；同时标签表没有确认时间，三个分片使用的是同一份最终标签。因此，当前结果只能说明不同交易时点下的指标稳定，不能等价为对未见账户或未来新增标签的泛化证明。
+
+为此项目新增了五折账户级交叉验证审计：
+
+```bash
+python src/22_cross_validation_overfit_audit.py
+python src/23_model_cv_bagging.py
+```
+
+五折审计结论如下：
+
+| 模型 | 五折训练 PR-AUC | 五折验证 PR-AUC | PR-AUC 差距 | 五折 Top5% 平均召回 |
+|---|---:|---:|---:|---:|
+| 动态 RandomForest | 0.7677 | 0.1052 | 0.6625 | 48.64% |
+| CatBoost | 0.3329 | 0.1056 | 0.2273 | 57.42% |
+
+额外训练的 Model12 五折正则化 Bagging 结果：
+
+| 数据集 | AUC | PR-AUC | Top5% 命中 |
+|---|---:|---:|---:|
+| valid | 0.9339 | 0.3301 | 42/59 |
+| test | 0.9450 | 0.3384 | 43/59 |
+
+结论：Model12 的泛化口径更保守，但正式 valid/test 指标明显低于 Model11。因此最终不替换主模型，而是把 Model12 作为过拟合审计和鲁棒性对照。答辩中应如实说明：Model11 是正式时间留出口径的最佳模型，但账户级五折验证显示当前数据仍存在静态画像依赖和过拟合风险。
 
 消融实验还证明模型存在明显的静态画像依赖；答辩时应主动报告，不应宣称已完全解决。
 
@@ -566,6 +590,8 @@ python src/18_model_final_fusion.py
 python src/19_model_catboost.py
 python src/20_model_tgn.py
 python src/21_select_best_model.py
+python src/22_cross_validation_overfit_audit.py
+python src/23_model_cv_bagging.py
 python src/17_compare_models.py
 
 # 11. 可疑链路解释
@@ -610,6 +636,8 @@ python src/13_final_project_audit.py
 | `src/19_model_catboost.py` | CatBoost 动态资金图谱特征模型 |
 | `src/20_model_tgn.py` | 轻量 TGN 风格时间事件流和节点记忆模型 |
 | `src/21_select_best_model.py` | 只用验证集选择 Model8、CatBoost、TGN 的最终冠军 |
+| `src/22_cross_validation_overfit_audit.py` | 五折账户级交叉验证，检查训练-验证差距和账户级泛化风险 |
+| `src/23_model_cv_bagging.py` | 五折正则化 Bagging 对照模型，用于鲁棒性和过拟合审计 |
 | `models/` | 动态模型权重、CatBoost、TGN、最终选择配置和校验清单 |
 | `DEPLOYMENT.md` | Conda 环境、数据放置、完整运行顺序和快速审计 |
 | `outputs/features/` | 特征宽表 |
@@ -631,7 +659,8 @@ model11_validation_selected_best_strategy_A
 2. Model11 全量账户 Test AUC 为 0.9858，PR-AUC 为 0.8049，Top5% 命中 56/59 个嫌疑人。
 3. 弱画像消融显示模型确实存在静态画像依赖。
 4. 最强传统 RandomForest 基线 PR-AUC 为 0.5136；Model11 相对提升约 56.71%，达到严格的 20% 提升要求。
-5. 由于标签表没有标签时间，当前实验应表述为“按交易时间窗口构建风险识别模型”，不要严格说成“预测未来新增风险标签”。
+5. 五折账户级交叉验证显示模型存在账户级过拟合风险，因此报告中应把 Model12 作为鲁棒性对照，不应宣称主模型已完全解决泛化问题。
+6. 由于标签表没有标签时间，当前实验应表述为“按交易时间窗口构建风险识别模型”，不要严格说成“预测未来新增风险标签”。
 
 ## 14. 比赛任务目标交付物
 

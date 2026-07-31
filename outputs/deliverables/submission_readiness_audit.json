@@ -6,7 +6,7 @@
     {
       "name": "完整源代码",
       "status": "pass",
-      "detail": "脚本数=23，缺失=[]"
+      "detail": "脚本数=25，缺失=[]"
     },
     {
       "name": "Conda 环境文件",
@@ -94,6 +94,11 @@
       "detail": "models/model10_tgn_v1_no_customer_type_strategy_A.pt"
     },
     {
+      "name": "模型文件 cv_bagging_experiment",
+      "status": "pass",
+      "detail": "models/model12_cv_bagged_dynamic_v1_no_customer_type_strategy_A.joblib"
+    },
+    {
       "name": "模型文件 previous_final_dynamic_fusion",
       "status": "pass",
       "detail": "models/model8_final_dynamic_fusion_v7_strategy_A.json"
@@ -130,6 +135,11 @@
     },
     {
       "name": "传统基线 catboost_dynamic 可加载",
+      "status": "pass",
+      "detail": "缺失键=[]"
+    },
+    {
+      "name": "传统基线 cv_bagging_experiment 可加载",
       "status": "pass",
       "detail": "缺失键=[]"
     },
@@ -213,6 +223,12 @@
       "path": "models/model10_tgn_v1_no_customer_type_strategy_A.pt",
       "size_bytes": 112173,
       "sha256": "5528918d848e1b7393083a497e1c418be96cf1b822c6b8bf62eb349b0839c35e"
+    },
+    {
+      "role": "cv_bagging_experiment",
+      "path": "models/model12_cv_bagged_dynamic_v1_no_customer_type_strategy_A.joblib",
+      "size_bytes": 6427502,
+      "sha256": "7661346ae2be0d8bdaed66f4140b6458d6ffe5add6e1ca6caf6350c986c5dd40"
     },
     {
       "role": "previous_final_dynamic_fusion",
