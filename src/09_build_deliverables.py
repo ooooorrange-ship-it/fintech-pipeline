@@ -1124,24 +1124,60 @@ def build_task3_and_task4(
     evidence_dict.to_csv(DELIVERABLE_DIR / "task4_evidence_field_dictionary.csv", index=False)
     pd.DataFrame(audit_rows).to_csv(DELIVERABLE_DIR / "task4_consistency_audit.csv", index=False)
 
-    manual_review_rows = []
-    for row in case_rows:
-        manual_review_rows.append(
-            {
-                "case_id": row["case_id"],
-                "account_id": row["account_id"],
-                "case_type": row["case_type"],
-                "has_real_transaction_evidence": bool(row["has_direct_association"] or row["has_suspicious_path"]),
-                "review_edge_traceable": "",
-                "review_conclusion_consistent": "",
-                "review_business_readable": "",
-                "manual_pass": "",
-                "reviewer": "",
-                "review_note": "",
-            }
-        )
-    pd.DataFrame(manual_review_rows).to_csv(DELIVERABLE_DIR / "task3_manual_review_form.csv", index=False)
+    manual_review_cols = [
+        "case_id",
+        "account_id",
+        "case_type",
+        "has_real_transaction_evidence",
+        "review_edge_traceable",
+        "review_conclusion_consistent",
+        "review_business_readable",
+        "manual_pass",
+        "reviewer",
+        "review_note",
+    ]
+    manual_review_path = DELIVERABLE_DIR / "task3_manual_review_form.csv"
+    manual_review_xlsx_path = DELIVERABLE_DIR / "task3_manual_review_form.xlsx"
+    existing_manual = pd.DataFrame()
+    if manual_review_xlsx_path.exists():
+        existing_manual = pd.read_excel(manual_review_xlsx_path)
+    elif manual_review_path.exists():
+        existing_manual = pd.read_csv(manual_review_path, keep_default_na=False)
+    has_filled_review = (
+        not existing_manual.empty
+        and "manual_pass" in existing_manual.columns
+        and existing_manual["manual_pass"].astype(str).str.strip().ne("").any()
+    )
+    if has_filled_review:
+        existing_manual = existing_manual.reindex(columns=manual_review_cols)
+        existing_manual.to_csv(manual_review_path, index=False)
+    else:
+        manual_review_rows = []
+        for row in case_rows:
+            manual_review_rows.append(
+                {
+                    "case_id": row["case_id"],
+                    "account_id": row["account_id"],
+                    "case_type": row["case_type"],
+                    "has_real_transaction_evidence": bool(row["has_direct_association"] or row["has_suspicious_path"]),
+                    "review_edge_traceable": "",
+                    "review_conclusion_consistent": "",
+                    "review_business_readable": "",
+                    "manual_pass": "",
+                    "reviewer": "",
+                    "review_note": "",
+                }
+            )
+        pd.DataFrame(manual_review_rows).to_csv(manual_review_path, index=False)
 
+    review = pd.read_csv(manual_review_path, keep_default_na=False) if manual_review_path.exists() else pd.DataFrame()
+    reviewed = review[review.get("manual_pass", pd.Series(dtype=str)).astype(str).str.strip().ne("")] if not review.empty else pd.DataFrame()
+    manual_passed = (
+        reviewed["manual_pass"].astype(str).str.strip().str.lower().isin({"1", "true", "yes", "y", "是", "通过"}).sum()
+        if not reviewed.empty
+        else 0
+    )
+    manual_pass_rate = float(manual_passed / len(reviewed)) if len(reviewed) else 0.0
     assoc_hit_rate = 0.0 if associations.empty else float(associations["label_code"].isin([1, 2]).mean())
     confirmed_with_history = int(cases_base[ID_COL].isin(active_ids).sum())
     audit = {
@@ -1157,7 +1193,15 @@ def build_task3_and_task4(
         "confirmed_suspect_link_coverage_rate": float(confirmed_with_history / len(cases_base)) if len(cases_base) else 0.0,
         "typical_case_count": int(len(cases)),
         "case_evidence_completeness_rate": float((cases["evidence_type_count"] >= 2).mean()) if len(cases) else 0.0,
-        "manual_review_note": "人工抽检通过率需要业务同学填写 task3_manual_review_form.csv；当前脚本只生成 5 个有真实交易边的可抽检案例。",
+        "manual_reviewed_count": int(len(reviewed)),
+        "manual_pass_count": int(manual_passed),
+        "manual_pass_rate": manual_pass_rate,
+        "manual_review_requirement_met": bool(len(reviewed) >= 5 and manual_pass_rate >= 0.7),
+        "manual_review_note": (
+            f"人工抽检已完成：{manual_passed}/{len(reviewed)} 通过，通过率 {manual_pass_rate:.2%}。"
+            if len(reviewed)
+            else "人工抽检通过率需要业务同学填写 task3_manual_review_form.csv；当前脚本只生成 5 个有真实交易边的可抽检案例。"
+        ),
     }
     json_dump(audit, DELIVERABLE_DIR / "task3_task4_explanation_audit.json")
     return audit
@@ -1183,7 +1227,12 @@ def build_completion_checklist(task2_audit: dict, task3_audit: dict, leakage_rep
         ("任务3", "资金汇聚/分散结构", "已完成", "task3_fund_flow_structures.csv"),
         ("任务3", "缺边嫌疑账户恢复队列", "已完成", "task3_link_recovery_queue.csv；补数后自动重建链路"),
         ("任务3", "不少于5个典型案例", "已完成", "docs/task3_typical_cases.md"),
-        ("任务3", "人工抽检通过率", "待业务复核", "已生成结构化证据，需队友按样例人工确认通过率"),
+        (
+            "任务3",
+            "人工抽检通过率",
+            "已完成" if task3_audit.get("manual_review_requirement_met") else "待业务复核",
+            f"已抽检 {task3_audit.get('manual_reviewed_count', 0)} 个，通过率 {task3_audit.get('manual_pass_rate', 0.0):.2%}",
+        ),
         ("任务4", "研判报告模板", "已完成", "docs/task4_judgement_report_template.md"),
         ("任务4", "研判报告样例", "已完成", "docs/task4_judgement_report_samples.md"),
         ("任务4", "证据字段说明", "已完成", "task4_evidence_field_dictionary.csv"),

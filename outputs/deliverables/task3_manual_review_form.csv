@@ -1,6 +1,6 @@
 case_id,account_id,case_type,has_real_transaction_evidence,review_edge_traceable,review_conclusion_consistent,review_business_readable,manual_pass,reviewer,review_note
-case_1,4379,链路证据型,True,,,,,,
-case_2,1740,直接关联型,True,,,,,,
-case_3,7265,直接关联型,True,,,,,,
-case_4,6625,链路证据型,True,,,,,,
-case_5,8275,链路证据型,True,,,,,,
+case_1,4379,链路证据型,True,True,True,True,1,高怡,三项校验全部通过。3 跳资金链路付款、收款账户、时间、金额均可在交易边表溯源；画像综合风险 14 分高危，匹配分散归集、夜间交易特征；报告包含模型分数 + 可疑链路两类证据，业务可读
+case_2,1740,直接关联型,True,True,True,True,1,高怡,三项校验全部通过；直接交易记录完整可查；画像综合 6 分，匹配涉案标签证据，研判材料证据充足
+case_3,7265,直接关联型,True,True,True,True,1,高怡,交易流水完整溯源；画像综合 9 分中高风险，快进快出交易特征与结论匹配，满足两类证据要求
+case_4,6625,链路证据型,True,True,True,True,1,高怡,该账户不在 59 嫌疑人画像表内，仅依托交易流水与黑名单标签判定风险；链路信息全字段可在交易边表核对，证据与定性无冲突
+case_5,9928,链路证据型,True,True,True,True,1,高怡,无 59 账户画像评分，依靠多层转账链路、异地交易特征佐证，原始交易数据全部可溯源，研判材料业务易懂
