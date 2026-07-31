@@ -586,6 +586,27 @@ def css() -> str:
       content:""; position:absolute; left:0; right:0; top:0; height:4px;
       background:linear-gradient(90deg, var(--cyan), #6c86a6, var(--risk));
     }
+    .graph-banner {
+      display:flex; justify-content:space-between; gap:14px; align-items:flex-start;
+      margin-bottom:12px; padding:12px 14px 10px; border:1px solid #d8e2eb; border-radius:8px;
+      background:
+        linear-gradient(180deg, rgba(246,250,253,.98), rgba(241,246,250,.98)),
+        linear-gradient(90deg, rgba(26,166,166,.12), transparent 32%, rgba(201,53,43,.10));
+      box-shadow:0 8px 20px rgba(16,24,40,.05);
+    }
+    .graph-banner h3 { margin:0; font-size:18px; line-height:1.25; }
+    .graph-banner p { margin:4px 0 0; font-size:13px; }
+    .graph-banner .muted { display:block; margin-top:4px; font-size:12px; }
+    .graph-banner-main { min-width:0; }
+    .graph-chip-row {
+      display:grid; grid-template-columns:repeat(2, minmax(0, 1fr)); gap:8px; min-width:260px; flex:0 0 260px;
+    }
+    .graph-chip {
+      padding:8px 10px; border:1px solid #e0e8ef; border-radius:8px; background:#fff;
+      box-shadow:inset 0 1px 0 rgba(255,255,255,.8);
+    }
+    .graph-chip span { display:block; color:var(--muted); font-size:11px; }
+    .graph-chip strong { display:block; margin-top:4px; font-size:15px; font-variant-numeric:tabular-nums; }
     .right { padding:16px; overflow:auto; max-height:calc(100vh - 228px); }
     .btn {
       width:100%; border:1px solid var(--line); background:#fff; color:var(--ink); padding:10px 12px;
@@ -847,8 +868,19 @@ def js_v2() -> str:
     const DATA = __DATA__;
     function bestAccountId() {
       return DATA.accounts.reduce((best, account) => {
-        if (!best) return account;
-        return Number(account.counterparty_count || 0) > Number(best.counterparty_count || 0) ? account : best;
+        const evidence = DATA.windows.reduce((acc, window) => {
+          const snapshot = DATA.snapshots[`${account.id}|${window.name}`] || {summary:{}, edges:[]};
+          const summary = snapshot.summary || {};
+          acc.edges += Number(snapshot.edges?.length || 0);
+          acc.txn += Number(summary.txn_count || 0);
+          acc.risk += Number(summary.risk_signal_score || 0);
+          return acc;
+        }, {edges:0, txn:0, risk:0});
+        if (!best) return {id: account.id, ...evidence};
+        const better = evidence.edges > best.edges
+          || (evidence.edges === best.edges && evidence.txn > best.txn)
+          || (evidence.edges === best.edges && evidence.txn === best.txn && evidence.risk > best.risk);
+        return better ? {id: account.id, ...evidence} : best;
       }, null)?.id || null;
     }
     function bestWindowName(accountId) {
@@ -921,6 +953,7 @@ def js_v2() -> str:
     function setGraphActive() {
       document.querySelectorAll("#accounts [data-account]").forEach(btn => btn.classList.toggle("active", Number(btn.dataset.account) === Number(currentAccount)));
       document.querySelectorAll("#windows [data-window]").forEach(btn => btn.classList.toggle("active", btn.dataset.window === currentWindow));
+      document.querySelector("#accounts [data-account].active")?.scrollIntoView({block:"center"});
     }
     function layout(nodes) {
       const w = 980, h = 590, cx = w / 2, cy = h / 2, out = {};
@@ -965,6 +998,21 @@ def js_v2() -> str:
       setGraphActive();
       const key = `${currentAccount}|${currentWindow}`, snapshot = DATA.snapshots[key] || {nodes:[],edges:[],summary:{}};
       const account = DATA.accounts.find(a => Number(a.id) === Number(currentAccount)) || {};
+      const s = snapshot.summary || {};
+      const hasEdge = Number(s.txn_count || 0) > 0;
+      const banner = document.getElementById("graphBanner");
+      banner.innerHTML = `
+        <div class="graph-banner-main">
+          <h3>账户 ${currentAccount || "-"} · ${account.label_text || "未知"}</h3>
+          <p>当前窗口：${esc(currentWindow || "-")}　·　观察 ${DATA.meta.history_days} 天滚动历史　·　${hasEdge ? "存在真实交易边，支持链路追踪" : "当前窗口无交易边，仅展示节点证据"}</p>
+          <span class="muted">历史边界：${esc(DATA.meta.history_start)} 至 ${esc(DATA.meta.history_end)}</span>
+        </div>
+        <div class="graph-chip-row">
+          <div class="graph-chip"><span>模型风险分</span><strong>${num(s.model_score || account.score || 0)}</strong></div>
+          <div class="graph-chip"><span>窗口交易数</span><strong>${s.txn_count || 0}</strong></div>
+          <div class="graph-chip"><span>交易对手</span><strong>${s.counterparty_count || 0}</strong></div>
+          <div class="graph-chip"><span>风险信号</span><strong>${num(s.risk_signal_score, 3)}</strong></div>
+        </div>`;
       document.getElementById("subtitle").textContent = `动态图谱 · 账户 ${currentAccount || "-"} · ${account.label_text || "未知"} · ${currentWindow || "-"}`;
       renderGraph(snapshot); renderEvidence(snapshot); renderTimeline();
     }
@@ -1047,7 +1095,7 @@ def render_html_v2(data: dict) -> str:
   <section class="overview" id="overviewMetrics"></section>
   <main id="graphView" class="view active"><div class="graph-layout">
     <aside class="side-panel"><div class="panel-title">高风险账户</div><div id="accounts"></div></aside>
-    <section class="graph-panel"><div class="section-head"><div><div class="panel-title">滚动子图</div><p>按时间窗口查看账户交易边、金额分箱和时序资金流信号。</p></div><div id="windows" class="window-row"></div></div><div class="legend"><span><i class="dot" style="background:#c9342d"></i>嫌疑/根账户</span><span><i class="dot" style="background:#e8912d"></i>受害人</span><span><i class="dot" style="background:#2b6cb0"></i>普通账户</span><span>边越粗表示窗口内金额越高</span></div><svg id="graph" viewBox="0 0 980 590" role="img" aria-label="滚动动态资金图谱"></svg><h3>窗口轨迹</h3><table><thead><tr><th>窗口</th><th>交易数</th><th>对手数</th><th>快进快出</th><th>短时闭环</th><th>风险信号</th></tr></thead><tbody id="timeline"></tbody></table></section>
+    <section class="graph-panel"><div id="graphBanner" class="graph-banner"></div><div class="section-head"><div><div class="panel-title">滚动子图</div><p>按时间窗口查看账户交易边、金额分箱和时序资金流信号。</p></div><div id="windows" class="window-row"></div></div><div class="legend"><span><i class="dot" style="background:#c9342d"></i>嫌疑/根账户</span><span><i class="dot" style="background:#e8912d"></i>受害人</span><span><i class="dot" style="background:#2b6cb0"></i>普通账户</span><span>边越粗表示窗口内金额越高</span></div><svg id="graph" viewBox="0 0 980 590" role="img" aria-label="滚动动态资金图谱"></svg><h3>窗口轨迹</h3><table><thead><tr><th>窗口</th><th>交易数</th><th>对手数</th><th>快进快出</th><th>短时闭环</th><th>风险信号</th></tr></thead><tbody id="timeline"></tbody></table></section>
     <section class="right"><div class="panel-title">研判证据</div><div id="evidence"></div><h3>Top 交易边</h3><table><thead><tr><th>边</th><th>笔数</th><th>金额</th><th>分箱</th></tr></thead><tbody id="edgeTable"></tbody></table></section>
   </div></main>
   <main id="auditView" class="view wide"><div class="section-head"><div><h2>59 个确认嫌疑账户分层审计</h2><p>先审计数据覆盖，再判断解释等级；D 级表示当前交易边表未覆盖该账户，不生成虚构链路。</p></div></div><div class="toolbar"><button class="filter-btn active" data-grade="all">全部</button><button class="filter-btn" data-grade="A">A 链路证据</button><button class="filter-btn" data-grade="B">B 直接关联</button><button class="filter-btn" data-grade="C">C 特征证据</button><button class="filter-btn" data-grade="D">D 缺边审计</button><input id="auditSearch" placeholder="搜索账户、标签或证据"><span id="auditCount" class="muted"></span></div><div class="table-wrap"><table><thead><tr><th>风险排名</th><th>账户/标签</th><th>模型分</th><th>等级</th><th>解释原因</th><th>历史交易</th><th>历史金额</th><th>直接对手</th><th>证据摘要</th><th>下一步</th></tr></thead><tbody id="auditTableBody"></tbody></table></div><div id="auditDetail" class="detail-panel"><p class="empty">点击上方任一账户查看审计详情。</p></div></main>
