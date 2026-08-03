@@ -18,6 +18,7 @@ METRIC_DIR = OUTPUT_DIR / "metrics"
 PREDICTION_DIR = OUTPUT_DIR / "predictions"
 EXPLANATION_DIR = OUTPUT_DIR / "explanations"
 MODEL_DIR = PROJECT_ROOT / "models"
+DELIVERABLE_DIR = PROJECT_ROOT / "deliverables"
 
 RANDOM_SEED = 2026
 

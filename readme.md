@@ -690,7 +690,7 @@ model11_validation_selected_best_strategy_A
 已按赛题 4 个任务目标生成集中交付目录：
 
 ```text
-outputs/deliverables/
+deliverables/
 ```
 
 最重要的检查入口：
@@ -785,7 +785,7 @@ python src/09_dynamic_graph_viz.py --split test --top-n 30 --top-k-counterpartie
 
 ## 16. 59 个嫌疑人只有 3 个有真实链路怎么办
 
-先做原始数据核验。可复现脚本 `src/26_data_edge_coverage_audit.py` 直接读取原始三张表，输出 `outputs/deliverables/data_edge_coverage_audit.json` 和 `docs/data_edge_coverage_audit.md`。核验结论：交易边表去重端点账户为 7795/11087，时间覆盖 2025-07 至 2025-12；59 个确认嫌疑账户中只有 3 个（1740、4379、7265）是端点，其余 56 个不是任何一条交易边的付款方或收款方。因此缺边是原始数据本身的事实，与清洗、ID 类型或时间窗口过滤无关。
+先做原始数据核验。可复现脚本 `src/26_data_edge_coverage_audit.py` 直接读取原始三张表，输出 `deliverables/data_edge_coverage_audit.json` 和 `docs/data_edge_coverage_audit.md`。核验结论：交易边表去重端点账户为 7795/11087，时间覆盖 2025-07 至 2025-12；59 个确认嫌疑账户中只有 3 个（1740、4379、7265）是端点，其余 56 个不是任何一条交易边的付款方或收款方。因此缺边是原始数据本身的事实，与清洗、ID 类型或时间窗口过滤无关。
 
 这个问题不能靠“换一个路径搜索算法”硬解决。脚本审计结果显示：
 

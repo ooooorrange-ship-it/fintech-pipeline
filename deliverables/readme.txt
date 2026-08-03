@@ -1,6 +1,6 @@
-# outputs/deliverables 目录说明
+# deliverables 目录说明
 
-本目录是四项攻关任务的最终交付物与审计结果。
+本目录是比赛最终交付目录，与 outputs/ 分离：outputs/ 存放可复现建模的中间产物，本目录只放四项攻关任务的结构化交付物与审计结果。提交作品时上传本目录即可。
 
 任务1（动态资金图谱样本构建）：
 - task1_dynamic_graph_window_definition.json：窗口定义

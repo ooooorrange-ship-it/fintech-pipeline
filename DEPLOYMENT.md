@@ -9,7 +9,7 @@
 | 模型 | `models/` | 动态树模型、CatBoost、TGN、融合权重及 SHA-256 清单 |
 | 中间数据 | `outputs/clean/`、`outputs/features/` | 可直接用于复现建模的清洗数据和特征 |
 | 评估结果 | `outputs/metrics/`、`outputs/predictions/` | 指标、特征重要性和账户风险分 |
-| 比赛交付物 | `outputs/deliverables/` | 四项任务对应的结构化证据 |
+| 比赛交付物 | `deliverables/` | 四项任务对应的结构化证据 |
 | 动态页面 | `outputs/dynamic_graph/index.html` | 滚动动态资金图谱与研判展示 |
 
 ## 2. 环境安装
@@ -133,10 +133,10 @@ python src/13_final_project_audit.py
 
 ## 7. 结果查看
 
-- 模型指标：`outputs/deliverables/task2_requirement_audit.json`
-- 链路解释：`outputs/deliverables/task3_top20_associations.csv` 和 `task3_suspicious_paths.csv`
-- 人工抽检：`outputs/deliverables/task3_manual_review_form.csv`
-- 研判一致性：`outputs/deliverables/task4_consistency_audit.csv`
+- 模型指标：`deliverables/task2_requirement_audit.json`
+- 链路解释：`deliverables/task3_top20_associations.csv` 和 `task3_suspicious_paths.csv`
+- 人工抽检：`deliverables/task3_manual_review_form.csv`
+- 研判一致性：`deliverables/task4_consistency_audit.csv`
 - 交互页面：直接打开 `outputs/dynamic_graph/index.html`
 
 ## 8. 必须如实说明的限制

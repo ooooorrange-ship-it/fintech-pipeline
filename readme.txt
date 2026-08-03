@@ -17,7 +17,8 @@
 - src/：全部源代码（清洗、特征、建模、融合、解释、审计）
 - docs/：技术说明、审计报告、案例文档
 - models/：训练好的模型权重与清单
-- outputs/：清洗数据、特征、指标、预测、解释与比赛交付物
+- outputs/：清洗数据、特征、指标、预测与解释
+- deliverables/：四项任务最终交付物与审计结果
 - 5个高风险嫌疑账户交易特征记录表/：业务侧人工画像与评价材料
 - environment.yml：Conda 环境依赖
 - DEPLOYMENT.md：部署与复现步骤
@@ -33,4 +34,4 @@ python src/14_submission_audit.py
 python src/13_final_project_audit.py
 ```
 
-完整复现顺序见 DEPLOYMENT.md。四个任务的交付物位于 outputs/deliverables/。
+完整复现顺序见 DEPLOYMENT.md。四个任务的交付物位于 deliverables/。

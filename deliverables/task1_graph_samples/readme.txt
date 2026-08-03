@@ -1,4 +1,4 @@
-# outputs/deliverables/task1_graph_samples 目录说明
+# deliverables/task1_graph_samples 目录说明
 
 本目录存放按时间切分后的图样本样例。
 

@@ -1,5 +1,5 @@
 {
-  "deliverable_dir": "/Users/orange/Documents/study/金融科技大赛/outputs/deliverables",
+  "deliverable_dir": "/Users/orange/Documents/study/金融科技大赛/deliverables",
   "field_dictionary_rows": 404,
   "graph_stat_rows": 3,
   "metrics_summary_rows": 95,
@@ -103,9 +103,11 @@
     "data_edge_coverage_audit.json",
     "deliverable_manifest.json",
     "final_project_audit.json",
+    "readme.txt",
     "submission_readiness_audit.json",
     "task1_dynamic_graph_window_definition.json",
     "task1_field_dictionary.csv",
+    "task1_graph_samples/readme.txt",
     "task1_graph_samples/test_edges_sample.csv",
     "task1_graph_samples/test_labels_sample.csv",
     "task1_graph_samples/test_nodes_sample.csv",

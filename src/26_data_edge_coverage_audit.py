@@ -12,6 +12,7 @@ import pandas as pd
 
 sys.path.append(str(Path(__file__).resolve().parents[1]))
 from config import (  # noqa: E402
+    DELIVERABLE_DIR,
     DOCS_DIR,
     DST_COL,
     ID_COL,
@@ -21,9 +22,6 @@ from config import (  # noqa: E402
     RAW_TRANSACTIONS_PATH,
     SRC_COL,
 )
-
-
-DELIVERABLE_DIR = OUTPUT_DIR / "deliverables"
 
 
 def quantile_map(series: pd.Series) -> dict[str, float]:

@@ -11,10 +11,9 @@ from pathlib import Path
 import pandas as pd
 
 sys.path.append(str(Path(__file__).resolve().parents[1]))
-from config import CLEAN_DIR, DOCS_DIR, EXPLANATION_DIR, ID_COL, LABEL_DIR, MODEL_DIR, OUTPUT_DIR, PREDICTION_DIR, SPLITS, SRC_COL, DST_COL, TIME_COL  # noqa: E402
+from config import CLEAN_DIR, DELIVERABLE_DIR, DOCS_DIR, EXPLANATION_DIR, ID_COL, LABEL_DIR, MODEL_DIR, OUTPUT_DIR, PREDICTION_DIR, SPLITS, SRC_COL, DST_COL, TIME_COL  # noqa: E402
 
 
-DELIVERABLE_DIR = OUTPUT_DIR / "deliverables"
 LAYERED_DIR = EXPLANATION_DIR / "layered"
 
 

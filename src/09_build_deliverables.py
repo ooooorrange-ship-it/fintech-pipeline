@@ -10,6 +10,7 @@ sys.path.append(str(Path(__file__).resolve().parents[1]))
 from config import (  # noqa: E402
     AMOUNT_COL,
     CLEAN_DIR,
+    DELIVERABLE_DIR,
     DOCS_DIR,
     DST_COL,
     EXPLANATION_DIR,
@@ -25,7 +26,6 @@ from config import (  # noqa: E402
 )
 
 
-DELIVERABLE_DIR = OUTPUT_DIR / "deliverables"
 SAMPLE_DIR = DELIVERABLE_DIR / "task1_graph_samples"
 
 

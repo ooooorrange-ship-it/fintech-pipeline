@@ -129,9 +129,9 @@ CatBoost 和 TGN 都是新增对照分支。当前正样本只有 59 个，TGN �
 
 | 文件 | 作用 |
 |---|---|
-| `outputs/deliverables/task3_top20_associations.csv` | Top20 关联账户 |
-| `outputs/deliverables/task3_suspicious_paths.csv` | 多跳可疑路径 |
-| `outputs/deliverables/task3_fund_flow_structures.csv` | 资金结构 |
+| `deliverables/task3_top20_associations.csv` | Top20 关联账户 |
+| `deliverables/task3_suspicious_paths.csv` | 多跳可疑路径 |
+| `deliverables/task3_fund_flow_structures.csv` | 资金结构 |
 | `docs/task3_typical_cases.md` | 典型案例 |
 | `docs/task3_link_visualization_samples.md` | 链路可视化样例 |
 

@@ -14,10 +14,9 @@ import joblib
 import pandas as pd
 
 sys.path.append(str(Path(__file__).resolve().parents[1]))
-from config import CLEAN_DIR, DOCS_DIR, DST_COL, ID_COL, MODEL_DIR, OUTPUT_DIR, PROJECT_ROOT, SRC_COL  # noqa: E402
+from config import CLEAN_DIR, DELIVERABLE_DIR, DOCS_DIR, DST_COL, ID_COL, MODEL_DIR, OUTPUT_DIR, PROJECT_ROOT, SRC_COL  # noqa: E402
 
 
-DELIVERABLE_DIR = OUTPUT_DIR / "deliverables"
 MAIN_SUFFIX = "v6_rolling_memory_dynamic_no_customer_type"
 MODEL_FILES = {
     "dynamic_xgboost": MODEL_DIR / f"model5_xgb_dynamic_graph_{MAIN_SUFFIX}_strategy_A.json",
@@ -71,13 +70,13 @@ REQUIRED_SOURCE_FILES = [
 REQUIRED_OUTPUTS = [
     "outputs/predictions/model4_stack_v6_rolling_memory_dynamic_no_customer_type_strategy_A.csv",
     "outputs/metrics/stack_experiment_metrics_v6_rolling_memory_dynamic_no_customer_type.json",
-    "outputs/deliverables/task1_time_split_leakage_audit.json",
-    "outputs/deliverables/task2_requirement_audit.json",
-    "outputs/deliverables/task3_top20_associations.csv",
-    "outputs/deliverables/task3_suspicious_paths.csv",
-    "outputs/deliverables/task3_manual_review_form.csv",
-    "outputs/deliverables/task4_consistency_audit.csv",
-    "outputs/deliverables/data_edge_coverage_audit.json",
+    "deliverables/task1_time_split_leakage_audit.json",
+    "deliverables/task2_requirement_audit.json",
+    "deliverables/task3_top20_associations.csv",
+    "deliverables/task3_suspicious_paths.csv",
+    "deliverables/task3_manual_review_form.csv",
+    "deliverables/task4_consistency_audit.csv",
+    "deliverables/data_edge_coverage_audit.json",
     "docs/data_edge_coverage_audit.md",
     "outputs/dynamic_graph/index.html",
     "outputs/metrics/adjusted_model_comparison.csv",
@@ -238,8 +237,8 @@ def main() -> None:
         "models",
         "outputs",
         "outputs/clean",
-        "outputs/deliverables",
-        "outputs/deliverables/task1_graph_samples",
+        "deliverables",
+        "deliverables/task1_graph_samples",
         "outputs/dynamic_graph",
         "outputs/explanations",
         "outputs/explanations/layered",
