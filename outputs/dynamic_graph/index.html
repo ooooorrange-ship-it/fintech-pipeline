@@ -4,6 +4,10 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>动态资金图谱与辅助研判工作台</title>
+  <script src="https://cdn.tailwindcss.com" defer></script>
+  <script>
+    tailwind.config = { corePlugins: { preflight: false } };
+  </script>
   <style>
     :root {
       color-scheme: light;
@@ -181,10 +185,236 @@
     .muted { color:var(--muted); }
     @media (max-width: 1180px) { .overview { grid-template-columns:repeat(4, 1fr); } .graph-layout { grid-template-columns:250px 1fr; } .graph-layout .right { grid-column:1 / -1; max-height:none; } }
     @media (max-width: 760px) { header, .wide { padding-left:14px; padding-right:14px; } .topline { display:block; } .header-meta { justify-content:flex-start; margin-top:12px; min-width:0; } .overview { padding:12px 14px; grid-template-columns:repeat(2, 1fr); } .graph-layout { display:block; padding:12px 14px 24px; } .side-panel, .graph-panel, .right { margin-bottom:12px; max-height:none; } #graph { height:430px; } .detail-grid { grid-template-columns:repeat(2, 1fr); } .report-grid { grid-template-columns:1fr; } }
+
+    /* ===== Design system v2 ===== */
+    :root {
+      --ink:#0f172a; --muted:#64748b; --line:#e2e8f0; --risk:#dc2626; --victim:#d97706;
+      --normal:#2563eb; --bg:#eef2f7; --panel:#ffffff; --soft:#f1f5f9; --green:#047857;
+      --cyan:#0d9488; --steel:#1d4ed8; --deep:#0b1220;
+      --shadow-sm:0 1px 2px rgba(15,23,42,.05), 0 1px 3px rgba(15,23,42,.06);
+      --shadow:0 1px 2px rgba(15,23,42,.05), 0 12px 28px rgba(15,23,42,.08);
+      --shadow-lg:0 2px 6px rgba(15,23,42,.07), 0 22px 44px rgba(15,23,42,.12);
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", Arial, sans-serif;
+      color:var(--ink);
+      background:
+        linear-gradient(180deg, rgba(238,242,247,.92), rgba(244,246,250,.98)),
+        radial-gradient(1200px 520px at 85% -10%, rgba(13,148,136,.07), transparent 60%),
+        repeating-linear-gradient(90deg, rgba(29,78,216,.035) 0, rgba(29,78,216,.035) 1px, transparent 1px, transparent 40px),
+        repeating-linear-gradient(0deg, rgba(29,78,216,.03) 0, rgba(29,78,216,.03) 1px, transparent 1px, transparent 40px);
+      letter-spacing:0;
+      -webkit-font-smoothing:antialiased;
+      text-rendering:optimizeLegibility;
+    }
+    header {
+      position:sticky; top:0; z-index:50; padding:15px clamp(16px, 3vw, 34px) 12px;
+      color:#f8fafc;
+      background:
+        linear-gradient(135deg, rgba(11,18,32,.99), rgba(15,37,60,.99) 58%, rgba(9,61,53,.99)),
+        repeating-linear-gradient(90deg, rgba(255,255,255,.045) 0, rgba(255,255,255,.045) 1px, transparent 1px, transparent 46px);
+      border-bottom:1px solid rgba(148,163,184,.22);
+      box-shadow:0 10px 30px rgba(15,23,42,.16);
+      backdrop-filter:saturate(130%) blur(10px);
+    }
+    header::after {
+      content:""; position:absolute; left:0; right:0; bottom:-1px; height:2px;
+      background:linear-gradient(90deg, rgba(13,148,136,.85), rgba(56,189,248,.28), rgba(220,38,38,.8));
+    }
+    h1 { font-size:clamp(21px, 2.4vw, 27px); line-height:1.25; font-weight:800; letter-spacing:0; }
+    h2 { font-size:clamp(17px, 1.7vw, 20px); line-height:1.3; font-weight:750; letter-spacing:0; }
+    h3 { letter-spacing:0; }
+    p { margin:6px 0; color:var(--muted); line-height:1.6; }
+    .topline { display:flex; justify-content:space-between; gap:20px; align-items:flex-start; }
+    header p { color:#cbd5e1; }
+    .eyebrow { margin-bottom:7px; color:#5eead4; font-size:11px; font-weight:800; letter-spacing:.14em; text-transform:uppercase; }
+    .header-meta { display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end; min-width:250px; }
+    .meta-pill {
+      border:1px solid rgba(148,163,184,.28); background:rgba(148,163,184,.12); color:#e2e8f0;
+      border-radius:999px; padding:5px 11px; font-size:11px; font-weight:700; letter-spacing:.01em;
+      transition:background-color .2s ease, border-color .2s ease, transform .2s ease;
+    }
+    .meta-pill:hover { border-color:rgba(94,234,212,.55); background:rgba(94,234,212,.14); transform:translateY(-1px); }
+    #subtitle { margin-top:9px; font-size:13px; font-weight:650; color:#e2e8f0; }
+    .nav { display:flex; gap:8px; flex-wrap:wrap; margin-top:14px; }
+    .nav-btn {
+      border:1px solid rgba(148,163,184,.28); background:rgba(148,163,184,.1); color:#e2e8f0; padding:8px 13px;
+      border-radius:8px; cursor:pointer; font-size:12px; font-weight:700; line-height:1.2;
+      transition:border-color .2s ease, background-color .2s ease, color .2s ease, transform .2s ease, box-shadow .2s ease;
+    }
+    .nav-btn:hover { border-color:rgba(94,234,212,.6); background:rgba(94,234,212,.14); color:#f8fafc; transform:translateY(-1px); }
+    .nav-btn:active { transform:translateY(0); }
+    .nav-btn.active { color:#062b27; border-color:#5eead4; background:#5eead4; box-shadow:0 0 0 3px rgba(94,234,212,.18), 0 8px 18px rgba(5,150,105,.22); }
+    .overview {
+      display:grid; grid-template-columns:repeat(7, minmax(128px, 1fr)); gap:12px;
+      padding:16px clamp(16px, 3vw, 34px); background:rgba(255,255,255,.82);
+      border-bottom:1px solid var(--line);
+      backdrop-filter:saturate(120%) blur(10px);
+    }
+    .overview-metric {
+      position:relative; overflow:hidden; padding:13px 14px; background:#fff;
+      border:1px solid #e5eaf0; border-left:3px solid var(--metric-color, #8293a8);
+      border-radius:8px; min-height:74px; box-shadow:var(--shadow-sm);
+      transition:transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+    }
+    .overview-metric:hover { transform:translateY(-2px); box-shadow:var(--shadow); border-color:#d4dbe6; }
+    .overview-metric::after {
+      content:""; position:absolute; left:0; right:0; top:0; height:3px;
+      background:linear-gradient(90deg, var(--metric-color, #8293a8), transparent);
+      opacity:.92;
+    }
+    .overview-metric strong { display:block; font-size:22px; line-height:1.15; margin-top:9px; font-weight:800; font-variant-numeric:tabular-nums; color:#111827; }
+    .overview-metric span { display:block; color:var(--muted); font-size:12px; font-weight:650; line-height:1.35; }
+    .view { display:none; }
+    .view.active { display:block; }
+    .graph-layout { display:grid; grid-template-columns:284px minmax(520px, 1fr) 364px; gap:16px; padding:20px clamp(16px, 3vw, 34px) 34px; min-height:calc(100vh - 220px); }
+    aside, section { min-width:0; }
+    .side-panel, .graph-panel, .right {
+      background:var(--panel); border:1px solid var(--line); border-radius:8px; box-shadow:var(--shadow);
+      transition:box-shadow .25s ease, transform .25s ease;
+    }
+    .side-panel:hover, .graph-panel:hover, .right:hover { box-shadow:var(--shadow-lg); }
+    .side-panel { padding:16px; max-height:calc(100vh - 236px); overflow:auto; }
+    .graph-panel { position:relative; padding:18px; overflow:hidden; }
+    .graph-panel::before {
+      content:""; position:absolute; left:0; right:0; top:0; height:4px;
+      background:linear-gradient(90deg, var(--cyan), #60a5fa, var(--risk));
+    }
+    .graph-banner {
+      display:flex; justify-content:space-between; gap:16px; align-items:flex-start;
+      margin-bottom:14px; padding:13px 15px 12px; border:1px solid #dce5ee; border-radius:8px;
+      background:
+        linear-gradient(180deg, rgba(248,250,253,.98), rgba(241,246,250,.98)),
+        linear-gradient(90deg, rgba(13,148,136,.1), transparent 36%, rgba(220,38,38,.08));
+      box-shadow:var(--shadow-sm);
+    }
+    .graph-banner h3 { margin:0; font-size:18px; line-height:1.3; font-weight:750; color:#111827; }
+    .graph-banner p { margin:4px 0 0; font-size:12px; color:#475569; }
+    .graph-banner .muted { display:block; margin-top:5px; font-size:11px; color:#94a3b8; }
+    .graph-banner-main { min-width:0; }
+    .graph-chip-row {
+      display:grid; grid-template-columns:repeat(2, minmax(0, 1fr)); gap:8px; min-width:264px; flex:0 0 264px;
+    }
+    .graph-chip {
+      padding:9px 11px; border:1px solid #e2e8f0; border-radius:8px; background:#fff;
+      box-shadow:inset 0 1px 0 rgba(255,255,255,.9), var(--shadow-sm);
+      transition:transform .2s ease, box-shadow .2s ease;
+    }
+    .graph-chip:hover { transform:translateY(-1px); box-shadow:var(--shadow); }
+    .graph-chip span { display:block; color:var(--muted); font-size:10px; font-weight:650; }
+    .graph-chip strong { display:block; margin-top:5px; font-size:16px; font-weight:800; font-variant-numeric:tabular-nums; color:#111827; }
+    .right { padding:18px; overflow:auto; max-height:calc(100vh - 236px); }
+    .btn {
+      width:100%; border:1px solid var(--line); background:#fff; color:var(--ink); padding:11px 12px;
+      margin:7px 0; text-align:left; border-radius:8px; cursor:pointer; font-size:13px; line-height:1.4;
+      transition:border-color .2s ease, background-color .2s ease, transform .2s ease, box-shadow .2s ease;
+    }
+    .btn:hover { border-color:#b6c2d2; background:#f8fafc; transform:translateY(-1px); box-shadow:var(--shadow-sm); }
+    .btn.active { border-color:var(--steel); background:#eff6ff; box-shadow:inset 3px 0 0 var(--steel), 0 8px 20px rgba(29,78,216,.1); }
+    .btn b { display:block; margin-bottom:2px; color:#0f172a; }
+    .btn small { color:var(--muted); }
+    .account-btn { position:relative; overflow:hidden; }
+    .account-top { display:flex; justify-content:space-between; gap:8px; align-items:center; }
+    .account-top em { font-style:normal; color:var(--steel); font-weight:800; font-variant-numeric:tabular-nums; }
+    .account-meta { display:block; color:var(--muted); font-size:11px; margin-top:3px; }
+    .score-track { display:block; height:4px; margin-top:10px; background:#e6edf4; border-radius:999px; overflow:hidden; }
+    .score-track i { display:block; height:100%; background:linear-gradient(90deg, var(--cyan), var(--risk)); border-radius:999px; }
+    .window-row { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:14px; }
+    .window-row .btn { width:auto; min-width:86px; text-align:center; margin:0; }
+    .panel-title { font-weight:800; margin:0 0 12px; color:#0f172a; font-size:14px; }
+    .section-head { display:flex; justify-content:space-between; gap:14px; align-items:flex-end; margin-bottom:14px; }
+    .section-head p { margin:5px 0 0; font-size:12px; color:#64748b; }
+    .wide { padding:24px clamp(16px, 3vw, 34px) 44px; }
+    .toolbar { display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin:14px 0 16px; }
+    .toolbar input {
+      border:1px solid var(--line); background:#fff; padding:9px 12px; border-radius:8px; color:var(--ink);
+      min-width:240px; font-size:13px; box-shadow:var(--shadow-sm);
+      transition:border-color .2s ease, box-shadow .2s ease;
+    }
+    .toolbar input:focus { outline:none; border-color:#93c5fd; box-shadow:0 0 0 3px rgba(59,130,246,.14); }
+    .filter-btn {
+      border:1px solid var(--line); background:#fff; padding:8px 12px; border-radius:8px; cursor:pointer;
+      font-weight:700; font-size:12px; color:#334155;
+      transition:border-color .2s ease, background-color .2s ease, transform .2s ease, box-shadow .2s ease;
+    }
+    .filter-btn:hover { border-color:#b6c2d2; background:#f8fafc; transform:translateY(-1px); box-shadow:var(--shadow-sm); }
+    .filter-btn.active { color:#fff; background:#1d4ed8; border-color:#1d4ed8; box-shadow:0 6px 16px rgba(29,78,216,.2); }
+    #evidence { display:grid; grid-template-columns:repeat(2, minmax(0, 1fr)); gap:9px; margin-bottom:16px; }
+    .metric {
+      min-width:0; padding:11px; border:1px solid #e5eaf0; border-radius:8px; background:#fbfcfe; font-size:12px;
+      box-shadow:var(--shadow-sm); transition:transform .2s ease, box-shadow .2s ease, background-color .2s ease;
+    }
+    .metric:hover { transform:translateY(-1px); box-shadow:var(--shadow); background:#fff; }
+    .metric span:first-child { display:block; color:var(--muted); font-size:11px; font-weight:650; }
+    .metric b { display:block; margin-top:5px; font-size:15px; font-weight:800; font-variant-numeric:tabular-nums; word-break:break-word; color:#111827; }
+    #graph {
+      width:100%; height:590px;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.96), rgba(246,249,252,.99)),
+        repeating-linear-gradient(90deg, rgba(29,78,216,.06) 0, rgba(29,78,216,.06) 1px, transparent 1px, transparent 36px),
+        repeating-linear-gradient(0deg, rgba(29,78,216,.045) 0, rgba(29,78,216,.045) 1px, transparent 1px, transparent 36px);
+      border:1px solid #dde5ee; border-radius:8px;
+      box-shadow:inset 0 0 0 1px rgba(255,255,255,.8), var(--shadow-sm);
+    }
+    .legend { display:flex; gap:16px; flex-wrap:wrap; font-size:12px; color:var(--muted); margin:10px 0 16px; }
+    .dot { display:inline-block; width:10px; height:10px; border-radius:50%; margin-right:6px; box-shadow:0 1px 2px rgba(15,23,42,.2); }
+    .table-wrap { overflow:auto; border:1px solid var(--line); background:#fff; border-radius:8px; box-shadow:var(--shadow-sm); }
+    table { border-collapse:collapse; width:100%; background:#fff; font-size:12.5px; }
+    th, td { padding:10px 12px; border-bottom:1px solid #edf1f6; text-align:left; vertical-align:top; }
+    th { position:sticky; top:0; z-index:1; color:#475569; background:#f8fafc; font-weight:750; white-space:nowrap; font-size:12px; }
+    tbody tr:nth-child(even) { background:#fcfdff; }
+    tr:last-child td { border-bottom:0; }
+    tbody tr[data-account], tbody tr[data-queue-account], tbody tr[data-recovery-account] { cursor:pointer; transition:background-color .16s ease; }
+    tbody tr[data-account]:hover, tbody tr[data-queue-account]:hover, tbody tr[data-recovery-account]:hover { background:#f1f6fc; }
+    .evidence-cell { min-width:300px; max-width:520px; white-space:normal; line-height:1.55; }
+    .reason-cell { min-width:230px; white-space:normal; line-height:1.5; }
+    .badge { display:inline-block; padding:3px 8px; border-radius:6px; font-size:11px; font-weight:800; letter-spacing:.01em; }
+    .badge-a { background:#ecfdf5; color:#047857; border:1px solid #a7f3d0; }
+    .badge-b { background:#eff6ff; color:#1d4ed8; border:1px solid #bfdbfe; }
+    .badge-c { background:#fffbeb; color:#b45309; border:1px solid #fde68a; }
+    .badge-d { background:#fef2f2; color:#b91c1c; border:1px solid #fecaca; }
+    .detail-panel { margin-top:18px; padding:18px; border:1px solid var(--line); background:#fff; border-radius:8px; box-shadow:var(--shadow); }
+    .detail-grid { display:grid; grid-template-columns:repeat(4, minmax(130px, 1fr)); gap:10px; margin:12px 0 18px; }
+    .detail-item { background:#f8fafc; border:1px solid #e5eaf0; border-radius:8px; padding:11px; box-shadow:var(--shadow-sm); }
+    .detail-item span { display:block; color:var(--muted); font-size:11px; font-weight:650; }
+    .detail-item b { display:block; margin-top:5px; font-weight:800; font-variant-numeric:tabular-nums; color:#111827; }
+    .subsection { margin-top:22px; }
+    .subsection h3 { margin:0 0 10px; font-size:15px; font-weight:750; color:#111827; }
+    .report-grid { display:grid; grid-template-columns:repeat(2, minmax(320px, 1fr)); gap:16px; }
+    .report-card {
+      border:1px solid var(--line); background:#fff; border-radius:8px; padding:18px; box-shadow:var(--shadow);
+      transition:transform .22s ease, box-shadow .22s ease, border-color .22s ease;
+    }
+    .report-card:hover { transform:translateY(-2px); box-shadow:var(--shadow-lg); border-color:#d2dae6; }
+    .report-card h3 { margin:0 0 12px; font-size:15px; font-weight:750; color:#111827; }
+    .report-card p { line-height:1.55; font-size:12.5px; }
+    .raw-report { max-height:540px; white-space:pre-wrap; word-break:break-word; font:12px/1.65 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; background:#f8fafc; border:1px solid var(--line); border-radius:8px; padding:14px; overflow:auto; box-shadow:var(--shadow-sm); }
+    .svg-label { font-size:12px; fill:#1e293b; font-weight:650; pointer-events:none; }
+    .edge-label { font-size:10px; fill:#64748b; font-weight:600; pointer-events:none; }
+    .empty { color:var(--muted); padding:20px; text-align:center; }
+    .muted { color:var(--muted); }
+    @media (max-width: 1180px) {
+      .overview { grid-template-columns:repeat(4, 1fr); }
+      .graph-layout { grid-template-columns:250px 1fr; }
+      .graph-layout .right { grid-column:1 / -1; max-height:none; }
+    }
+    @media (max-width: 760px) {
+      header, .wide { padding-left:14px; padding-right:14px; }
+      .topline { display:block; }
+      .header-meta { justify-content:flex-start; margin-top:12px; min-width:0; }
+      .overview { padding:12px 14px; grid-template-columns:repeat(2, 1fr); gap:10px; }
+      .graph-layout { display:block; padding:14px 14px 26px; }
+      .side-panel, .graph-panel, .right { margin-bottom:14px; max-height:none; }
+      #graph { height:430px; }
+      .detail-grid { grid-template-columns:repeat(2, 1fr); }
+      .report-grid { grid-template-columns:1fr; }
+      .graph-banner { flex-direction:column; }
+      .graph-chip-row { min-width:0; width:100%; flex:auto; }
+    }
     </style>
 </head>
-<body>
-  <header>
+<body class="min-h-screen bg-[#eef2f7] text-slate-900 antialiased">
+  <header class="sticky top-0 z-50">
     <div class="topline">
       <div>
         <div class="eyebrow">江苏银行资金图谱风控 · 动态交易关系</div>
@@ -192,22 +422,22 @@
         <p id="subtitle">动态图谱 · 账户风险子图</p>
       </div>
       <div class="header-meta">
-        <span class="meta-pill">split：test</span>
-        <span class="meta-pill">monthly 窗口</span>
-        <span class="meta-pill">Top30 巡检</span>
-        <span class="meta-pill">历史 120 天</span>
+        <span class="meta-pill transition-colors duration-200">split：test</span>
+        <span class="meta-pill transition-colors duration-200">monthly 窗口</span>
+        <span class="meta-pill transition-colors duration-200">Top30 巡检</span>
+        <span class="meta-pill transition-colors duration-200">历史 120 天</span>
       </div>
     </div>
     <p>观察窗口：2025-09-02 23:59:59 至 2025-12-31 23:59:59；仅使用历史交易边，金额分箱边界来自 train。</p>
-    <nav class="nav" aria-label="页面视图"><button class="nav-btn active" data-view="graph">动态图谱</button><button class="nav-btn" data-view="audit">59账户审计</button><button class="nav-btn" data-view="recovery">缺边恢复</button><button class="nav-btn" data-view="queue">Top30风险巡检</button><button class="nav-btn" data-view="report">辅助研判报告</button></nav>
+    <nav class="nav" aria-label="页面视图"><button class="nav-btn transition-all duration-200 hover:-translate-y-px active:translate-y-0 active" data-view="graph">动态图谱</button><button class="nav-btn transition-all duration-200 hover:-translate-y-px active:translate-y-0" data-view="audit">59账户审计</button><button class="nav-btn transition-all duration-200 hover:-translate-y-px active:translate-y-0" data-view="recovery">缺边恢复</button><button class="nav-btn transition-all duration-200 hover:-translate-y-px active:translate-y-0" data-view="queue">Top30风险巡检</button><button class="nav-btn transition-all duration-200 hover:-translate-y-px active:translate-y-0" data-view="report">辅助研判报告</button></nav>
   </header>
   <section class="overview" id="overviewMetrics"></section>
-  <main id="graphView" class="view active"><div class="graph-layout">
-    <aside class="side-panel"><div class="panel-title">高风险账户</div><div id="accounts"></div></aside>
-    <section class="graph-panel"><div id="graphBanner" class="graph-banner"></div><div class="section-head"><div><div class="panel-title">滚动子图</div><p>按时间窗口查看账户交易边、金额分箱和时序资金流信号。</p></div><div id="windows" class="window-row"></div></div><div class="legend"><span><i class="dot" style="background:#c9342d"></i>嫌疑/根账户</span><span><i class="dot" style="background:#e8912d"></i>受害人</span><span><i class="dot" style="background:#2b6cb0"></i>普通账户</span><span>边越粗表示窗口内金额越高</span></div><svg id="graph" viewBox="0 0 980 590" role="img" aria-label="滚动动态资金图谱"></svg><h3>窗口轨迹</h3><table><thead><tr><th>窗口</th><th>交易数</th><th>对手数</th><th>快进快出</th><th>短时闭环</th><th>风险信号</th></tr></thead><tbody id="timeline"></tbody></table></section>
-    <section class="right"><div class="panel-title">研判证据</div><div id="evidence"></div><h3>Top 交易边</h3><table><thead><tr><th>边</th><th>笔数</th><th>金额</th><th>分箱</th></tr></thead><tbody id="edgeTable"></tbody></table></section>
+  <main id="graphView" class="view active"><div class="graph-layout gap-4">
+    <aside class="side-panel rounded-lg shadow-md hover:shadow-xl"><div class="panel-title">高风险账户</div><div id="accounts"></div></aside>
+    <section class="graph-panel rounded-lg shadow-md hover:shadow-xl"><div id="graphBanner" class="graph-banner"></div><div class="section-head"><div><div class="panel-title">滚动子图</div><p>按时间窗口查看账户交易边、金额分箱和时序资金流信号。</p></div><div id="windows" class="window-row"></div></div><div class="legend"><span><i class="dot" style="background:#c9342d"></i>嫌疑/根账户</span><span><i class="dot" style="background:#e8912d"></i>受害人</span><span><i class="dot" style="background:#2b6cb0"></i>普通账户</span><span>边越粗表示窗口内金额越高</span></div><svg id="graph" viewBox="0 0 980 590" role="img" aria-label="滚动动态资金图谱"></svg><h3>窗口轨迹</h3><table><thead><tr><th>窗口</th><th>交易数</th><th>对手数</th><th>快进快出</th><th>短时闭环</th><th>风险信号</th></tr></thead><tbody id="timeline"></tbody></table></section>
+    <section class="right rounded-lg shadow-md hover:shadow-xl"><div class="panel-title">研判证据</div><div id="evidence"></div><h3>Top 交易边</h3><table><thead><tr><th>边</th><th>笔数</th><th>金额</th><th>分箱</th></tr></thead><tbody id="edgeTable"></tbody></table></section>
   </div></main>
-  <main id="auditView" class="view wide"><div class="section-head"><div><h2>59 个确认嫌疑账户分层审计</h2><p>先审计数据覆盖，再判断解释等级；D 级表示当前交易边表未覆盖该账户，不生成虚构链路。</p></div></div><div class="toolbar"><button class="filter-btn active" data-grade="all">全部</button><button class="filter-btn" data-grade="A">A 链路证据</button><button class="filter-btn" data-grade="B">B 直接关联</button><button class="filter-btn" data-grade="C">C 特征证据</button><button class="filter-btn" data-grade="D">D 缺边审计</button><input id="auditSearch" placeholder="搜索账户、标签或证据"><span id="auditCount" class="muted"></span></div><div class="table-wrap"><table><thead><tr><th>风险排名</th><th>账户/标签</th><th>模型分</th><th>等级</th><th>解释原因</th><th>历史交易</th><th>历史金额</th><th>直接对手</th><th>证据摘要</th><th>下一步</th></tr></thead><tbody id="auditTableBody"></tbody></table></div><div id="auditDetail" class="detail-panel"><p class="empty">点击上方任一账户查看审计详情。</p></div></main>
+  <main id="auditView" class="view wide"><div class="section-head"><div><h2>59 个确认嫌疑账户分层审计</h2><p>先审计数据覆盖，再判断解释等级；D 级表示当前交易边表未覆盖该账户，不生成虚构链路。</p></div></div><div class="toolbar"><button class="filter-btn transition-all duration-200 hover:-translate-y-px active:translate-y-0 active" data-grade="all">全部</button><button class="filter-btn transition-all duration-200 hover:-translate-y-px active:translate-y-0" data-grade="A">A 链路证据</button><button class="filter-btn transition-all duration-200 hover:-translate-y-px active:translate-y-0" data-grade="B">B 直接关联</button><button class="filter-btn transition-all duration-200 hover:-translate-y-px active:translate-y-0" data-grade="C">C 特征证据</button><button class="filter-btn transition-all duration-200 hover:-translate-y-px active:translate-y-0" data-grade="D">D 缺边审计</button><input id="auditSearch" placeholder="搜索账户、标签或证据"><span id="auditCount" class="muted"></span></div><div class="table-wrap rounded-lg shadow-sm"><table><thead><tr><th>风险排名</th><th>账户/标签</th><th>模型分</th><th>等级</th><th>解释原因</th><th>历史交易</th><th>历史金额</th><th>直接对手</th><th>证据摘要</th><th>下一步</th></tr></thead><tbody id="auditTableBody"></tbody></table></div><div id="auditDetail" class="detail-panel"><p class="empty">点击上方任一账户查看审计详情。</p></div></main>
   <main id="recoveryView" class="view wide"><div class="section-head"><div><h2>缺边嫌疑账户恢复队列</h2><p>仅展示真实模型/节点证据和补数任务；补充流水后再重建资金链路。</p></div><span id="recoveryCount" class="muted"></span></div><div class="table-wrap"><table><thead><tr><th>优先级</th><th>账户/标签</th><th>模型分</th><th>风险排名</th><th>当前历史交易</th><th>节点画像</th><th>补数查询</th></tr></thead><tbody id="recoveryTableBody"></tbody></table></div><div id="recoveryDetail" class="detail-panel"><p class="empty">点击任一账户查看链路恢复任务。</p></div></main>
   <main id="queueView" class="view wide"><div class="section-head"><div><h2>Top30 高风险主动巡检队列</h2><p>筛选有历史交易边的高风险账户，输出可核验的关联、路径和资金结构证据。</p></div></div><div class="table-wrap"><table><thead><tr><th>风险排名</th><th>账户/标签</th><th>模型分</th><th>等级</th><th>解释原因</th><th>历史交易</th><th>历史金额</th><th>直接对手</th><th>动态/交易特征证据</th></tr></thead><tbody id="queueTableBody"></tbody></table></div><div id="queueDetail" class="detail-panel"></div></main>
   <main id="reportView" class="view wide"><div class="section-head"><div><h2>辅助研判报告</h2><p>报告同时引用模型风险分、交易统计、关键交易边/路径、图结构或动态特征中的至少两类证据。</p></div></div><div id="reportGrid" class="report-grid"></div><div class="subsection"><h3>报告原文</h3><pre id="rawReport" class="raw-report"></pre></div></main>

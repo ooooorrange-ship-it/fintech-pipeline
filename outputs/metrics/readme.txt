@@ -1,0 +1,31 @@
+# outputs/metrics 目录说明
+
+本目录存放全部模型指标、特征重要性、训练历史和过拟合审计。
+
+汇总与最终选择：
+- adjusted_model_comparison.csv / adjusted_model_comparison.json：全模型指标对比
+- final_model_selection_candidates_v8.csv：验证集选择候选
+- final_model_selection_metrics_v8.json：Model11 最终选择指标
+- final_dynamic_fusion_metrics_v7.json：Model8 融合指标
+
+过拟合与对照审计：
+- five_fold_cv_fold_metrics_v1.csv：五折各折指标
+- five_fold_overfit_audit_v1.json：五折过拟合审计
+- cv_bagging_metrics_v1_no_customer_type.json：Bagging 对照指标
+- model_overfit_guardrail_audit_v1.json：护栏模型审计
+- rule_aware_calibration_metrics_v1.json：规则感知校准指标
+
+各模型指标：
+- catboost_metrics_v1_no_customer_type.json：CatBoost 指标
+- tgn_metrics_v1_no_customer_type.json：轻量 TGN 指标
+- graphsage_metrics_v1_no_customer_type.json、graphsage_metrics_v1_txn_graph_dynamic_only.json：GraphSAGE 两分支
+- stack_experiment_metrics_v3_no_customer_type.json、stack_experiment_metrics_v3_txn_graph_only.json、stack_experiment_metrics_v6_rolling_memory_dynamic_no_customer_type.json：堆叠融合三分支
+- gnn_experiment_metrics_v3_no_customer_type.json、gnn_experiment_metrics_v3_txn_graph_only.json：轻量图传播两分支
+- xgb_experiment_metrics_v2_no_customer_type.json、xgb_experiment_metrics_v2_txn_graph_only.json：静态 XGBoost 两分支
+- dynamic_graph_experiment_metrics_v6_rolling_memory_dynamic_no_customer_type.json、dynamic_graph_experiment_metrics_v6_rolling_memory_dynamic_only.json、dynamic_graph_experiment_metrics_v6_rolling_memory_dynamic_txn_graph_only.json：动态 XGBoost 三分支
+- traditional_baseline_metrics_v1_no_customer_type.json、traditional_baseline_metrics_v1_txn_graph_dynamic_only.json：传统基线两分支
+
+训练历史与特征重要性：
+- model10_tgn_v1_no_customer_type_strategy_A_training_history.csv：TGN 训练历史
+- model6_graphsage_v1_no_customer_type_strategy_A_training_history.csv、model6_graphsage_v1_txn_graph_dynamic_only_strategy_A_training_history.csv：GraphSAGE 训练历史
+- model1_xgb_stat_v2_*_feature_importance.csv、model2_xgb_stat_graph_v2_*_feature_importance.csv、model3_hetero_prop_v3_*_feature_importance.csv、model5_xgb_dynamic_graph_v6_*_feature_importance.csv：各模型特征重要性

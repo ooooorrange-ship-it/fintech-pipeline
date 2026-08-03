@@ -105,6 +105,14 @@ def audit_explanations(checks: list[dict], accounts: pd.DataFrame) -> None:
 
 
 def audit_deliverables(checks: list[dict]) -> None:
+    edge_audit_path = DELIVERABLE_DIR / "data_edge_coverage_audit.json"
+    edge_audit = read_json(edge_audit_path) if edge_audit_path.exists() else {}
+    add_check(
+        checks,
+        "数据边覆盖审计",
+        bool(edge_audit.get("conclusion", {}).get("missing_edge_is_raw_data_fact")),
+        "56/59 缺边已核验为原始数据事实，未伪造资金链路",
+    )
     task2 = read_json(DELIVERABLE_DIR / "task2_requirement_audit.json")
     task3 = read_json(DELIVERABLE_DIR / "task3_task4_explanation_audit.json")
     add_check(checks, "任务2使用全量账户评估", task2.get("evaluation_scope") == "all_accounts", f"evaluation_scope={task2.get('evaluation_scope')}")
@@ -123,12 +131,14 @@ def audit_deliverables(checks: list[dict]) -> None:
     passed = reviewed["manual_pass"].astype(str).str.strip().str.lower().isin({"1", "true", "yes", "y", "是", "通过"}).sum() if not reviewed.empty else 0
     manual_pass_rate = float(passed / len(reviewed)) if len(reviewed) else 0.0
     association_hit_rate = float(task3.get("confirmed_risk_association_hit_rate", 0.0))
-    task3_metric_met = association_hit_rate >= 0.5 or (len(reviewed) >= 5 and manual_pass_rate >= 0.7)
+    hit_applicable = bool(task3.get("confirmed_risk_association_hit_rate_applicable", True))
+    hit_text = f"{association_hit_rate:.2%}" if hit_applicable else "不适用（56/59 缺边）"
+    task3_metric_met = (hit_applicable and association_hit_rate >= 0.5) or (len(reviewed) >= 5 and manual_pass_rate >= 0.7)
     add_check(
         checks,
         "任务3关联命中或人工抽检指标",
         task3_metric_met,
-        f"关联命中率={association_hit_rate:.2%}，已抽检={len(reviewed)}/5，人工通过率={manual_pass_rate:.2%}",
+        f"关联命中率={hit_text}，已抽检={len(reviewed)}/5，人工通过率={manual_pass_rate:.2%}",
         severity="warning",
     )
     add_check(checks, "任务4典型案例不少于5个", int(task3.get("typical_case_count", 0)) >= 5, f"案例数={task3.get('typical_case_count')}")

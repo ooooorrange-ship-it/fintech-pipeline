@@ -1,0 +1,157 @@
+{
+  "audit_version": "v1",
+  "source_files": {
+    "accounts": "/Users/orange/Documents/study/金融科技大赛/09-智能风控与量化建模赛道-江苏银行-基于资金图谱的涉诈账户发现与可疑链路解释/账户节点表.xlsx",
+    "transactions": "/Users/orange/Documents/study/金融科技大赛/09-智能风控与量化建模赛道-江苏银行-基于资金图谱的涉诈账户发现与可疑链路解释/交易边表.xlsx",
+    "labels": "/Users/orange/Documents/study/金融科技大赛/09-智能风控与量化建模赛道-江苏银行-基于资金图谱的涉诈账户发现与可疑链路解释/风险标签表.xlsx"
+  },
+  "raw_rows": {
+    "accounts": 11087,
+    "transactions": 904395,
+    "labels": 11087
+  },
+  "transaction_time_range": {
+    "min": "20250701 02:15:01",
+    "max": "20251231 20:28:55"
+  },
+  "transaction_month_counts": {
+    "202507": 149544,
+    "202508": 141377,
+    "202509": 161906,
+    "202510": 130341,
+    "202511": 149097,
+    "202512": 172130
+  },
+  "transaction_endpoint_account_count": 7795,
+  "account_label_distribution": {
+    "0": 9875,
+    "1": 59,
+    "2": 1153
+  },
+  "endpoint_coverage_by_label": {
+    "其它": {
+      "total": 9875,
+      "with_edge": 7761,
+      "without_edge": 2114
+    },
+    "嫌疑人": {
+      "total": 59,
+      "with_edge": 3,
+      "without_edge": 56
+    },
+    "受害人": {
+      "total": 1153,
+      "with_edge": 31,
+      "without_edge": 1122
+    }
+  },
+  "confirmed_suspect": {
+    "total": 59,
+    "with_edge_count": 3,
+    "with_edge_ids": [
+      1740,
+      4379,
+      7265
+    ],
+    "without_edge_count": 56,
+    "without_edge_ids": [
+      18,
+      113,
+      217,
+      223,
+      279,
+      716,
+      1090,
+      1256,
+      1591,
+      1733,
+      1865,
+      2398,
+      2413,
+      2422,
+      3050,
+      3089,
+      3322,
+      3472,
+      3832,
+      4176,
+      4288,
+      4583,
+      4625,
+      4629,
+      4664,
+      4859,
+      4951,
+      4954,
+      4955,
+      5260,
+      5358,
+      5545,
+      5714,
+      6094,
+      6155,
+      6830,
+      7206,
+      7297,
+      7329,
+      7404,
+      7586,
+      7700,
+      7951,
+      8753,
+      8771,
+      8820,
+      9070,
+      9373,
+      9610,
+      9721,
+      10087,
+      10443,
+      10604,
+      10774,
+      10814,
+      11051
+    ],
+    "with_edge_transaction_summary": {
+      "transaction_count": 16,
+      "month_counts": {
+        "202507": 2,
+        "202511": 10,
+        "202512": 4
+      },
+      "as_src_count": 8,
+      "as_dst_count": 8
+    },
+    "without_edge_profile_summary": {
+      "customer_type_counts": {
+        "对私": 47,
+        "对公": 9
+      },
+      "account_age_months_quantiles": {
+        "0.25": 14.193548385,
+        "0.5": 45.854838709999996,
+        "0.75": 82.5645161275,
+        "0.9": 134.20967742
+      },
+      "region_count": 46,
+      "region_top_counts": {
+        "664": 3,
+        "416": 3,
+        "731": 2,
+        "723": 2,
+        "755": 2,
+        "311": 2,
+        "860": 2,
+        "690": 2,
+        "37": 1,
+        "394": 1
+      }
+    }
+  },
+  "conclusion": {
+    "missing_edge_is_raw_data_fact": true,
+    "cannot_generate_real_links": true,
+    "reason": "交易边表去重端点为 7795 个账户，时间覆盖 2025-07 至 2025-12；59 个确认嫌疑账户中只有 3 个（1740、4379、7265）出现在端点集合，56 个确认嫌疑账户不是任何一条交易边的付款方或收款方。该缺边是原始抽样数据本身的事实，与清洗规则、ID 类型或时间窗口过滤无关。",
+    "risk_source_note": "56 个缺边账户在 Model11 测试平均风险分为 0.9847，但交易统计、图结构、动态资金图谱特征均为 0；其高分主要来自账户画像与图基座特征，属于画像层研判，不是资金行为链路证据。账户级五折留出验证 Top5% 召回约 44%，说明这部分识别应作为补数复核线索，不能宣称已生成真实资金链路。"
+  }
+}

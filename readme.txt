@@ -1,60 +1,36 @@
-project_root/
-├── config.py                 # 全局配置（路径、特征列表）
-├── src/
-│   ├── 01_data_cleaning.py   # 清洗与脏数据标记（打标但不删除）
-│   ├── 02_label_builder.py   # 生成三套标签策略（A, B, C）
-│   ├── 03_features_stat.py   # 交易统计与异常时序特征提取
-│   ├── 04_features_graph.py  # 图拓扑特征与 Node2Vec 提取
-│   ├── 05_model_xgb.py       # 包含 Model 0, 1, 2 及特征消融逻辑
-│   └── 06_model_gnn.py       # 包含 Model 3 (GraphSAGE/GAT)
-└── outputs/                  # 存放各实验分支的 metrics 和特征宽表
-│   ├── clean/
-│   ├── features/
-│   ├── labels/
-│   ├── metrics/
-│   └── predictions/
+# 参赛作品说明
 
-典型案例说明
+第五届中国研究生金融科技创新大赛“揭榜挂帅”主赛道
+赛题：基于资金图谱的涉诈账户发现与可疑链路解释（江苏银行）
+技术路线：滚动动态资金图谱特征 + 验证集选择融合（Model11）+ 分层证据研判
 
-说明：以下 3 个案例来自
-`src/07_explain_links.py --split test --top-n 5 --top-k-counterparties 20 --tx-scope history --confirmed-only`
-的输出。测试集里共有 59 个确认嫌疑人，但只有 3 个在历史交易里能追溯到可解释链路，所以这里只写这 3 个。
+## 一、四项评审材料
 
-1. 嫌疑人 4379
-   - 模型分数：0.955459
-   - 历史交易证据：`explain_txn_count=4`，`explain_amount_sum=12000.0`，交易对手 2 个
-   - 关键关联账户：10662、10949
-   - 关键链路：`4379 -> 10662 -> 4379`、`4379 -> 10949 -> 4379`
-   - 链路特征：两条回流链路都只间隔 21 秒，且金额均为 3000.0，对应 1:1 短时回流
-   - 结论：典型的短时闭环转账，团伙资金回流特征最强，解释性最好
+1. 精益画布：由团队按大赛模板填写（本仓库不包含模板正文）。
+2. 可运行项目成果：本仓库的 config.py、src/、models/、outputs/、environment.yml、DEPLOYMENT.md。
+3. 技术文档：技术文档-lxq-fixed.docx（已随本仓库提交）。
+4. 原创性声明：由团队按大赛模板签字后单独提交。
 
-2. 嫌疑人 1740
-   - 模型分数：0.6712172
-   - 历史交易证据：`explain_txn_count=6`，`explain_amount_sum=18828.88`，交易对手 2 个
-   - 关键关联账户：3863、7838
-   - 关键链路：两边合计各 3 笔，金额合计 9414.44
-   - 图证据：`graph_total_degree=2`，`graph_two_hop_neighbor_count=3`
-   - 结论：以少量固定对手为核心的重复资金往来，偏稳定收款/回流节点，适合人工复核
+## 二、目录结构
 
-3. 嫌疑人 7265
-   - 模型分数：0.32141677
-   - 历史交易证据：`explain_txn_count=6`，`explain_amount_sum=2633.4`，交易对手 2 个
-   - 关键关联账户：1137、7238
-   - 关键链路：两边合计各 3 笔，金额合计 1316.7
-   - 图证据：`graph_total_degree=2`，`graph_two_hop_neighbor_count=0`
-   - 结论：固定两边对手、少量往来、金额偏小，更像分流或测试型交易，证据强度弱于 4379
+- config.py：全局路径与特征配置
+- src/：全部源代码（清洗、特征、建模、融合、解释、审计）
+- docs/：技术说明、审计报告、案例文档
+- models/：训练好的模型权重与清单
+- outputs/：清洗数据、特征、指标、预测、解释与比赛交付物
+- 5个高风险嫌疑账户交易特征记录表/：业务侧人工画像与评价材料
+- environment.yml：Conda 环境依赖
+- DEPLOYMENT.md：部署与复现步骤
+- readme.md：详细技术说明
+- download_data.py：赛题数据下载脚本，密码通过环境变量 SCOW_DOWNLOAD_PASSWORD 提供
 
-结论：
-- 4379 是最强案例，适合放答辩首页或重点展示页
-- 1740 和 7265 更适合做对照案例，说明模型不是只看分数，也看交易链路
+## 三、快速运行
 
-解释覆盖率说明
+```bash
+conda env create -f environment.yml
+conda activate fintech09
+python src/14_submission_audit.py
+python src/13_final_project_audit.py
+```
 
-1. 当前测试集共有 59 个确认嫌疑人。
-2. 在当前提供的数据里，只有 3 个嫌疑人能追溯到可解释的历史交易链路。
-3. 其余 56 个嫌疑人没有可追溯交易边，因此只能做账户级或图统计级解释，不能硬编路径。
-4. 所以这里的正确表述是：
-   - 识别层：59/59 都有风险分数
-   - 账户证据层：59/59 都有特征证据
-   - 路径证据层：3/59 有明确链路证据
-5. 这不是“模型只会解释 3 个”，而是“数据可见边只覆盖了 3 个嫌疑人”，路径解释的上限受数据边界限制。
+完整复现顺序见 DEPLOYMENT.md。四个任务的交付物位于 outputs/deliverables/。

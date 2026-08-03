@@ -38,6 +38,7 @@ MODEL_FILES = {
 
 REQUIRED_SOURCE_FILES = [
     "config.py",
+    "download_data.py",
     "src/01_data_cleaning.py",
     "src/02_label_builder.py",
     "src/03_features_stat.py",
@@ -64,6 +65,7 @@ REQUIRED_SOURCE_FILES = [
     "src/23_model_cv_bagging.py",
     "src/24_model_overfit_guardrails.py",
     "src/25_model_rule_aware_calibrator.py",
+    "src/26_data_edge_coverage_audit.py",
 ]
 
 REQUIRED_OUTPUTS = [
@@ -75,6 +77,8 @@ REQUIRED_OUTPUTS = [
     "outputs/deliverables/task3_suspicious_paths.csv",
     "outputs/deliverables/task3_manual_review_form.csv",
     "outputs/deliverables/task4_consistency_audit.csv",
+    "outputs/deliverables/data_edge_coverage_audit.json",
+    "docs/data_edge_coverage_audit.md",
     "outputs/dynamic_graph/index.html",
     "outputs/metrics/adjusted_model_comparison.csv",
     "outputs/metrics/graphsage_metrics_v1_no_customer_type.json",
@@ -227,10 +231,39 @@ def main() -> None:
 
     missing_source = [path for path in REQUIRED_SOURCE_FILES if not (PROJECT_ROOT / path).exists()]
     add_check(checks, "完整源代码", not missing_source, f"脚本数={len(REQUIRED_SOURCE_FILES)}，缺失={missing_source}")
+    readme_dirs = [
+        "",
+        "5个高风险嫌疑账户交易特征记录表",
+        "docs",
+        "models",
+        "outputs",
+        "outputs/clean",
+        "outputs/deliverables",
+        "outputs/deliverables/task1_graph_samples",
+        "outputs/dynamic_graph",
+        "outputs/explanations",
+        "outputs/explanations/layered",
+        "outputs/features",
+        "outputs/labels",
+        "outputs/metrics",
+        "outputs/predictions",
+        "src",
+    ]
+    missing_readmes = [d for d in readme_dirs if not (PROJECT_ROOT / d / "readme.txt").exists()]
+    add_check(checks, "文件夹readme.txt覆盖", not missing_readmes, f"目录数={len(readme_dirs)}，缺失={missing_readmes}")
 
     add_check(checks, "Conda 环境文件", (PROJECT_ROOT / "environment.yml").exists(), "environment.yml")
     add_check(checks, "部署文档", (PROJECT_ROOT / "DEPLOYMENT.md").exists(), "DEPLOYMENT.md")
     add_check(checks, "项目说明", (PROJECT_ROOT / "readme.md").exists(), "readme.md")
+
+    edge_audit_path = DELIVERABLE_DIR / "data_edge_coverage_audit.json"
+    edge_audit = json.loads(edge_audit_path.read_text(encoding="utf-8")) if edge_audit_path.exists() else {}
+    add_check(
+        checks,
+        "数据边覆盖审计",
+        bool(edge_audit.get("conclusion", {}).get("missing_edge_is_raw_data_fact")),
+        "56/59 缺边为原始数据事实，未伪造资金链路",
+    )
 
     clean_files = [CLEAN_DIR / name for name in ["clean_accounts.csv", "clean_transactions.csv", "clean_labels.csv"]]
     missing_clean = [str(path.relative_to(PROJECT_ROOT)) for path in clean_files if not path.exists()]
@@ -292,6 +325,7 @@ def main() -> None:
         "known_data_limitations": [
             "风险标签表无标签确认时间。",
             f"59个确认嫌疑账户中{suspect_without_edge}个未出现在交易边表。",
+            "56个缺边账户的高分主要来自静态画像与图基座特征；账户级五折留出验证Top5%召回约44%，应作为补数复核线索而非已证实链路。",
         ],
     }
     (DELIVERABLE_DIR / "submission_readiness_audit.json").write_text(

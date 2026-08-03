@@ -1,0 +1,21 @@
+# models 目录说明
+
+本目录存放全部训练产物与模型清单。model_manifest.json 包含每个文件的 SHA-256 与运行库版本。
+
+- baseline_logistic_regression_v1_no_customer_type_strategy_A.joblib：逻辑回归基线
+- baseline_random_forest_v1_no_customer_type_strategy_A.joblib：RandomForest 基线
+- model3_hetero_prop_v3_no_customer_type_strategy_A.joblib：轻量图传播模型
+- model4_stack_v6_rolling_memory_dynamic_no_customer_type_strategy_A.json：v6 动态堆叠融合配置
+- model5_xgb_dynamic_graph_v6_rolling_memory_dynamic_no_customer_type_strategy_A.json：动态资金图谱 XGBoost 权重
+- model6_graphsage_v1_no_customer_type_strategy_A.pt：GraphSAGE 权重
+- model6_graphsage_v1_no_customer_type_strategy_A_metadata.json：GraphSAGE 结构参数
+- model7_dynamic_graph_random_forest_v1_no_customer_type_strategy_A.joblib：动态图 RandomForest
+- model8_final_dynamic_fusion_v7_strategy_A.json：Model8 动态融合配置
+- model9_catboost_dynamic_v1_no_customer_type_strategy_A.joblib：CatBoost 动态特征模型
+- model10_tgn_v1_no_customer_type_strategy_A.pt：轻量 TGN 权重
+- model10_tgn_v1_no_customer_type_strategy_A_metadata.json：TGN 结构参数
+- model11_validation_selected_best_strategy_A.json：最终主模型 Model11 配置
+- model12_cv_bagged_dynamic_v1_no_customer_type_strategy_A.joblib：五折 Bagging 对照模型
+- model13_guardrailed_final_strategy_A.json：过拟合护栏配置
+- model14_rule_aware_guardrailed_strategy_A.json：规则感知校准配置
+- model_manifest.json：模型清单与校验哈希

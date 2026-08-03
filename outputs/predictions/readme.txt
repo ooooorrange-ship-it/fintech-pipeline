@@ -1,0 +1,19 @@
+# outputs/predictions 目录说明
+
+本目录存放各模型在全量账户 valid/test 上的风险分预测 CSV，包含账户 ID、split、score 和排名所需字段。
+
+- model0_rule_v2_no_customer_type_strategy_A.csv、model0_rule_v2_txn_graph_only_strategy_A.csv：规则基线
+- model2_xgb_stat_graph_v2_no_customer_type_strategy_A.csv、model2_xgb_stat_graph_v2_txn_graph_only_strategy_A.csv：静态 XGBoost 两分支
+- model3_hetero_prop_v3_no_customer_type_strategy_A.csv、model3_hetero_prop_v3_txn_graph_only_strategy_A.csv：轻量图传播两分支
+- model4_stack_v6_rolling_memory_dynamic_no_customer_type_strategy_A.csv：v6 动态堆叠
+- model5_xgb_dynamic_graph_v6_rolling_memory_dynamic_no_customer_type_strategy_A.csv、model5_xgb_dynamic_graph_v6_rolling_memory_dynamic_only_strategy_A.csv、model5_xgb_dynamic_graph_v6_rolling_memory_dynamic_txn_graph_only_strategy_A.csv：动态 XGBoost 三分支
+- model6_graphsage_v1_no_customer_type_strategy_A.csv：GraphSAGE
+- model7_dynamic_graph_random_forest_v1_no_customer_type_strategy_A.csv：动态图 RandomForest
+- model8_final_dynamic_fusion_v7_strategy_A.csv：Model8 动态融合
+- model9_catboost_dynamic_v1_no_customer_type_strategy_A.csv：CatBoost
+- model10_tgn_v1_no_customer_type_strategy_A.csv：轻量 TGN
+- model11_validation_selected_best_strategy_A.csv：最终主模型 Model11 预测
+- model12_cv_bagged_dynamic_v1_no_customer_type_strategy_A.csv：五折 Bagging
+- model13_guardrailed_final_strategy_A.csv：过拟合护栏
+- model14_rule_aware_guardrailed_strategy_A.csv：规则感知校准
+- five_fold_oof_predictions_v1.csv：账户级五折留出预测

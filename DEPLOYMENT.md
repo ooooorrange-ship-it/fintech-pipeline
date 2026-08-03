@@ -38,6 +38,8 @@ conda activate fintech09
 
 若只复现特征、模型和指标，可直接使用已交付的 `outputs/clean/` 三张清洗表，从下一节第 2 步开始。
 
+如需从赛题服务器重新下载原始数据，可运行 `python download_data.py`，并提前通过环境变量 `SCOW_DOWNLOAD_PASSWORD` 提供下载凭据；公开仓库不保存明文密码。
+
 ## 4. 完整复现顺序
 
 ```bash

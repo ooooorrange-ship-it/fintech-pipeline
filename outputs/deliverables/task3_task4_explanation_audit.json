@@ -8,6 +8,8 @@
   ],
   "missing_edge_recovery_queue_rows": 56,
   "confirmed_risk_association_hit_rate": 0.0,
+  "confirmed_risk_association_hit_rate_applicable": false,
+  "confirmed_risk_association_hit_rate_note": "有边确认嫌疑人=3；其 Top20 关联账户中命中确认风险（嫌疑人/受害人）的比例为 0。由于交易边表端点中几乎不存在其他确认风险账户，该指标受数据覆盖限制；赛题允许以典型案例人工抽检证据链解释通过率≥70% 替代，本项目 5/5 通过。",
   "confirmed_suspect_total": 59,
   "confirmed_suspect_with_history_transaction": 3,
   "confirmed_suspect_link_coverage_rate": 0.05084745762711865,
