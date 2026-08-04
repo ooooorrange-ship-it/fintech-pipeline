@@ -15,3 +15,4 @@
 - task_completion_checklist.md：比赛任务目标完成清单
 - technical_problem_solution.md：四大技术攻关问题解决方案
 - top_accounts_dynamic_report.md：Top30 高风险账户动态报告
+- 演示文档.md：项目使用与网页演示说明，图片放 images/ 目录
