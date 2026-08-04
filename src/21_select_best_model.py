@@ -1,4 +1,4 @@
-"""在验证集上从 model8_final_dynamic_fusion_v7_strategy_A、CatBoost 和 TGN 中选择最终冠军模型。"""
+"""在验证集上从动态图树融合模型、CatBoost 和 TGN 中选择图-树-时序融合模型。"""
 
 import json
 import sys

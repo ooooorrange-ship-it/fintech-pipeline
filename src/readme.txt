@@ -20,10 +20,10 @@
 - 15_model_traditional_baselines.py：逻辑回归与 RandomForest 基线
 - 16_model_graphsage.py：真实 GraphSAGE 消融
 - 17_compare_models.py：模型对比汇总
-- 18_model_final_fusion.py：model8_final_dynamic_fusion_v7_strategy_A 动态融合
+- 18_model_final_fusion.py：动态图树融合模型（Dynamic Graph Tree Ensemble）
 - 19_model_catboost.py：CatBoost 动态特征模型（Model9）
 - 20_model_tgn.py：轻量 TGN 时间事件流模型（Model10）
-- 21_select_best_model.py：仅用验证集选择最终主模型权重
+- 21_select_best_model.py：仅用验证集选择图-树-时序融合模型权重
 - 22_cross_validation_overfit_audit.py：账户级五折过拟合审计
 - 23_model_cv_bagging.py：五折 Bagging 对照模型（Model12）
 - 24_model_overfit_guardrails.py：过拟合护栏（Model13）

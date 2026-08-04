@@ -26,7 +26,7 @@
   - `task2_model_metrics_summary.csv`
   - `task2_requirement_audit.json`
   - `outputs/metrics/*feature_importance.csv`
-- 主模型：`model11_validation_selected_best_strategy_A`
+- 主模型：图-树-时序融合模型（Graph-Tree-Temporal Champion Fusion，模型文件 `model11_validation_selected_best_strategy_A`）
 - Test AUC：0.9858
 - Test PR-AUC：0.8049
 - Test Top5% 召回：94.92%

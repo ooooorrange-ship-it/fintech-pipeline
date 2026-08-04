@@ -1,7 +1,7 @@
 {
   "artifact_type": "guardrailed_final_selection",
   "selected_weights": {
-    "model11_validation_selected_best_strategy_A": 1.0,
+    "图-树-时序融合模型": 1.0,
     "Model12": 0.0
   },
   "component_predictions": {
@@ -15,6 +15,6 @@
     "valid Top5% recall",
     "valid AUC"
   ],
-  "decision": "keep_final_model",
-  "decision_note": "正则化 Model12 未提升验证集 PR-AUC，因此不强行加入最终主模型。"
+  "decision": "keep_model11",
+  "decision_note": "正则化 Model12 未提升验证集 PR-AUC，因此不强行加入图-树-时序融合模型。"
 }

@@ -3,7 +3,7 @@
 灵感来自真实银行风控里的“模型 + 规则锚点”架构：
 1. 用 train 窗口计算规则阈值，避免 valid/test 分布泄露。
 2. 将快进快出、多入一出、闭环/自环、交易突发、对手方集中等规则信号汇总为 rule_score。
-3. 只用 valid 选择最终主模型（model11_validation_selected_best_strategy_A）与 rule_score 的融合权重；若规则层无增益，则保持最终主模型。
+3. 只用 valid 选择图-树-时序融合模型与 rule_score 的融合权重；若规则层无增益，则保持图-树-时序融合模型。
 4. 输出每个账户命中的规则证据，供研判报告引用。
 """
 
@@ -281,7 +281,7 @@ def main() -> None:
         evidence.append(evidence_part)
 
     selected_weights = {
-        "model11_validation_selected_best_strategy_A": selected["weight_model11"],
+        "图-树-时序融合模型": selected["weight_model11"],
         "rule_score": selected["weight_rule_score"],
     }
     report = {

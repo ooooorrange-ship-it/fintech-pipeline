@@ -1,7 +1,7 @@
 {
   "artifact_type": "rule_aware_guardrailed_selection",
   "selected_weights": {
-    "model11_validation_selected_best_strategy_A": 1.0,
+    "图-树-时序融合模型": 1.0,
     "rule_score": 0.0
   },
   "base_prediction": "outputs/predictions/model11_validation_selected_best_strategy_A.csv",

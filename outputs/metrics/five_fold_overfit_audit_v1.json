@@ -86,7 +86,7 @@
   },
   "temporal_holdout_models": [
     {
-      "model": "model8_final_dynamic_fusion_v7_strategy_A",
+      "model": "动态图树融合模型",
       "valid_all_accounts_auc": 0.9756206082514155,
       "valid_all_accounts_pr_auc": 0.6361676347468106,
       "valid_all_accounts_top5pct_recall": 0.9491525423728814,
@@ -96,7 +96,7 @@
       "valid_test_pr_auc_gap": -0.05761385221192483
     },
     {
-      "model": "model11_validation_selected_best_strategy_A",
+      "model": "图-树-时序融合模型",
       "valid_all_accounts_auc": 0.9757020650055637,
       "valid_all_accounts_pr_auc": 0.7940291820855534,
       "valid_all_accounts_top5pct_recall": 0.9491525423728814,

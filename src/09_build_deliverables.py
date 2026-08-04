@@ -600,8 +600,8 @@ def build_metrics_summary() -> tuple[pd.DataFrame, dict]:
             {"model8_final_dynamic_fusion_v7_strategy_A": final_fusion},
             "v7_validation_selected_dynamic_fusion",
             "model8_final_dynamic_fusion_v7_strategy_A",
-            "最终动态资金图谱融合模型",
-            "动态RandomForest + 旧动态融合 + GraphSAGE，验证集选择权重",
+            "动态图树融合模型",
+            "动态图 RandomForest + 动态融合 + GraphSAGE，验证集选择权重",
         )
     if catboost_no_customer:
         add_metric_rows(
@@ -627,8 +627,8 @@ def build_metrics_summary() -> tuple[pd.DataFrame, dict]:
             {"model11_validation_selected_best_strategy_A": final_selection},
             "v8_validation_selected_best",
             "model11_validation_selected_best_strategy_A",
-            "最终验证集选择冠军模型",
-            "model8_final_dynamic_fusion_v7_strategy_A + CatBoost + TGN，验证集选择权重",
+            "图-树-时序融合模型",
+            "动态图树融合模型 + CatBoost + TGN，验证集选择权重",
         )
     if cv_bagging:
         add_metric_rows(
@@ -646,7 +646,7 @@ def build_metrics_summary() -> tuple[pd.DataFrame, dict]:
             "v1_overfit_guardrail",
             "model13_guardrailed_final_strategy_A",
             "过拟合护栏最终模型",
-            "只用验证集检查最终主模型与正则化 Model12；若 Model12 无增益，则保持最终主模型",
+            "只用验证集检查图-树-时序融合模型与正则化 Model12；若 Model12 无增益，则保持图-树-时序融合模型",
         )
     if rule_aware:
         add_metric_rows(
@@ -655,7 +655,7 @@ def build_metrics_summary() -> tuple[pd.DataFrame, dict]:
             "v1_rule_aware_calibration",
             "model14_rule_aware_guardrailed_strategy_A",
             "规则感知校准模型",
-            "将业务规则锚点转为 rule_score；若验证集无增益，则仅作为解释证据不改变最终主模型",
+            "将业务规则锚点转为 rule_score；若验证集无增益，则仅作为解释证据不改变图-树-时序融合模型",
         )
 
     summary = pd.DataFrame(rows)
@@ -1392,7 +1392,7 @@ def build_technical_problem_solution_audit(task2_audit: dict, task3_audit: dict,
             md.append(f"- 未来交易泄露率：{item['future_transaction_leakage_rate']:.4f}")
             md.append(f"- 未来标签泄露审计：{item['future_label_leakage_status']}")
         if key == "problem_2_risk_account_detection":
-            md.append(f"- 主模型：`{item['main_model']}`")
+            md.append(f"- 主模型：图-树-时序融合模型（Graph-Tree-Temporal Champion Fusion，模型文件 `{item['main_model']}`）")
             md.append(f"- Test AUC：{item['test_auc']:.4f}")
             md.append(f"- Test PR-AUC：{item['test_pr_auc']:.4f}")
             md.append(f"- Test Top5% 召回：{item['test_top5pct_recall']:.2%}")

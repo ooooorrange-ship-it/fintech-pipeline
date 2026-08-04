@@ -2,7 +2,7 @@
 
 每一折只使用 80% 的 Strategy A 账户训练 RandomForest 和 CatBoost，
 再对 5 折模型的 rank score 做平均。该模型用于降低账户级过拟合，
-并与 model8_final_dynamic_fusion_v7_strategy_A / model11_validation_selected_best_strategy_A 的时间窗口结果对照。
+并与动态图树融合模型 / 图-树-时序融合模型的时间窗口结果对照。
 """
 
 import argparse
