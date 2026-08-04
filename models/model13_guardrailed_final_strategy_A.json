@@ -1,11 +1,11 @@
 {
   "artifact_type": "guardrailed_final_selection",
   "selected_weights": {
-    "Model11": 1.0,
+    "model11_validation_selected_best_strategy_A": 1.0,
     "Model12": 0.0
   },
   "component_predictions": {
-    "Model11": "outputs/predictions/model11_validation_selected_best_strategy_A.csv",
+    "model11_validation_selected_best_strategy_A": "outputs/predictions/model11_validation_selected_best_strategy_A.csv",
     "Model12": "outputs/predictions/model12_cv_bagged_dynamic_v1_no_customer_type_strategy_A.csv"
   },
   "normalization": "within_split_average_percentile_rank",
@@ -15,6 +15,6 @@
     "valid Top5% recall",
     "valid AUC"
   ],
-  "decision": "keep_model11",
+  "decision": "keep_final_model",
   "decision_note": "正则化 Model12 未提升验证集 PR-AUC，因此不强行加入最终主模型。"
 }

@@ -628,7 +628,7 @@ def build_metrics_summary() -> tuple[pd.DataFrame, dict]:
             "v8_validation_selected_best",
             "model11_validation_selected_best_strategy_A",
             "最终验证集选择冠军模型",
-            "Model8 + CatBoost + TGN，验证集选择权重",
+            "model8_final_dynamic_fusion_v7_strategy_A + CatBoost + TGN，验证集选择权重",
         )
     if cv_bagging:
         add_metric_rows(
@@ -646,7 +646,7 @@ def build_metrics_summary() -> tuple[pd.DataFrame, dict]:
             "v1_overfit_guardrail",
             "model13_guardrailed_final_strategy_A",
             "过拟合护栏最终模型",
-            "只用验证集检查 Model11 与正则化 Model12；若 Model12 无增益，则保持 Model11",
+            "只用验证集检查最终主模型与正则化 Model12；若 Model12 无增益，则保持最终主模型",
         )
     if rule_aware:
         add_metric_rows(
@@ -655,7 +655,7 @@ def build_metrics_summary() -> tuple[pd.DataFrame, dict]:
             "v1_rule_aware_calibration",
             "model14_rule_aware_guardrailed_strategy_A",
             "规则感知校准模型",
-            "将业务规则锚点转为 rule_score；若验证集无增益，则仅作为解释证据不改变 Model11",
+            "将业务规则锚点转为 rule_score；若验证集无增益，则仅作为解释证据不改变最终主模型",
         )
 
     summary = pd.DataFrame(rows)

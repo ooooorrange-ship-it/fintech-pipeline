@@ -2,11 +2,11 @@
   "status": "ok",
   "artifact_type": "overfit_guardrailed_final_model",
   "random_seed": 2026,
-  "final_recommendation": "Model11 remains final model; Model13 is a guardrail alias with audited selection.",
+  "final_recommendation": "model11_validation_selected_best_strategy_A remains final model; Model13 is a guardrail alias with audited selection.",
   "label_time_limitation": "风险标签表没有标签确认时间，不能严格声称预测未来新增风险标签。",
   "temporal_holdout_overfit_audit": [
     {
-      "model": "Model8",
+      "model": "model8_final_dynamic_fusion_v7_strategy_A",
       "valid_auc": 0.9756206082514155,
       "test_auc": 0.9865596355655557,
       "valid_pr_auc": 0.6361676347468106,
@@ -18,7 +18,7 @@
       "temporal_overfit_flag": false
     },
     {
-      "model": "Model11",
+      "model": "model11_validation_selected_best_strategy_A",
       "valid_auc": 0.9757020650055637,
       "test_auc": 0.9857850279412036,
       "valid_pr_auc": 0.7940291820855534,
@@ -97,7 +97,7 @@
   "account_level_cv_note": "五折账户级审计暴露底层模型存在账户级泛化风险；该结果用于风险披露，不替代比赛时间切分。",
   "guardrailed_selection": {
     "selected_weights": {
-      "Model11": 1.0,
+      "model11_validation_selected_best_strategy_A": 1.0,
       "Model12": 0.0
     },
     "selection_data": "valid_all_accounts",
@@ -173,7 +173,7 @@
         "valid_top5_hits": 54
       }
     ],
-    "decision": "keep_model11",
+    "decision": "keep_final_model",
     "decision_note": "正则化 Model12 未提升验证集 PR-AUC，因此不强行加入最终主模型。"
   }
 }

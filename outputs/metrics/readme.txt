@@ -5,8 +5,8 @@
 汇总与最终选择：
 - adjusted_model_comparison.csv / adjusted_model_comparison.json：全模型指标对比
 - final_model_selection_candidates_v8.csv：验证集选择候选
-- final_model_selection_metrics_v8.json：Model11 最终选择指标
-- final_dynamic_fusion_metrics_v7.json：Model8 融合指标
+- final_model_selection_metrics_v8.json：最终主模型（model11_validation_selected_best_strategy_A）选择指标
+- final_dynamic_fusion_metrics_v7.json：model8_final_dynamic_fusion_v7_strategy_A 融合指标
 
 过拟合与对照审计：
 - five_fold_cv_fold_metrics_v1.csv：五折各折指标

@@ -2,7 +2,7 @@
 
 第五届中国研究生金融科技创新大赛“揭榜挂帅”主赛道
 赛题：基于资金图谱的涉诈账户发现与可疑链路解释（江苏银行）
-技术路线：滚动动态资金图谱特征 + 验证集选择融合（Model11）+ 分层证据研判
+技术路线：滚动动态资金图谱特征 + 验证集选择融合（model11_validation_selected_best_strategy_A）+ 分层证据研判
 
 ## 一、项目简介
 
@@ -20,11 +20,11 @@
 | 任务 | 交付内容 | 关键指标 |
 |---|---|---|
 | 任务1 | 动态资金图谱样本、字段字典、时间切分审计 | 未来交易泄露率为 0 |
-| 任务2 | Model11 融合模型与基线对比 | Test AUC 0.9858、PR-AUC 0.8049、Top5% 覆盖 56/59 |
+| 任务2 | 最终主模型（model11_validation_selected_best_strategy_A）融合模型与基线对比 | Test AUC 0.9858、PR-AUC 0.8049、Top5% 覆盖 56/59 |
 | 任务3 | Top20 关联、多跳路径、资金结构、典型案例 | 人工抽检 5/5 通过 |
 | 任务4 | 研判报告模板、样例、证据字典、一致性审计 | 报告至少引用两类可追溯证据 |
 
-Model11 由验证集选择得到：0.75 x Model8 + 0.20 x CatBoost + 0.05 x 轻量 TGN。相对最强传统 RandomForest 基线，PR-AUC 提升约 56.71%。
+最终主模型由验证集选择得到：0.75 x model8_final_dynamic_fusion_v7_strategy_A + 0.20 x model9_catboost_dynamic_v1_no_customer_type_strategy_A + 0.05 x model10_tgn_v1_no_customer_type_strategy_A。相对最强传统 RandomForest 基线，PR-AUC 提升约 56.71%。
 
 ## 三、四项评审材料
 

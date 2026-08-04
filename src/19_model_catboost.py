@@ -1,7 +1,7 @@
 """CatBoost 动态资金图谱特征模型。
 
 说明：
-1. 输入仍然是统计、静态图和滚动动态图特征，保持与 Model8 可比。
+1. 输入仍然是统计、静态图和滚动动态图特征，保持与 model8_final_dynamic_fusion_v7_strategy_A 可比。
 2. 默认删除 customer_type，region_code 作为类别特征保留。
 3. 训练只使用 Strategy A 的嫌疑人/其它账户，受害人不进入损失。
 4. 验证集只用于早停和后续模型选择，测试集只做一次正式报告。

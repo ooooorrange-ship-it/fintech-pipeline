@@ -138,8 +138,8 @@ def summarize_fold_metrics(fold_rows: list[dict], model_name: str) -> dict:
 
 def temporal_holdout_summary() -> list[dict]:
     files = {
-        "Model8": METRIC_DIR / "final_dynamic_fusion_metrics_v7.json",
-        "Model11": METRIC_DIR / "final_model_selection_metrics_v8.json",
+        "model8_final_dynamic_fusion_v7_strategy_A": METRIC_DIR / "final_dynamic_fusion_metrics_v7.json",
+        "model11_validation_selected_best_strategy_A": METRIC_DIR / "final_model_selection_metrics_v8.json",
         "CatBoost": METRIC_DIR / "catboost_metrics_v1_no_customer_type.json",
         "TGN": METRIC_DIR / "tgn_metrics_v1_no_customer_type.json",
         "Model12_cv_bagging": METRIC_DIR / "cv_bagging_metrics_v1_no_customer_type.json",

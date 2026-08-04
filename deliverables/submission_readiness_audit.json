@@ -186,12 +186,12 @@
     {
       "name": "过拟合护栏最终权重可加载",
       "status": "pass",
-      "detail": "weights={'Model11': 1.0, 'Model12': 0.0}"
+      "detail": "weights={'model11_validation_selected_best_strategy_A': 1.0, 'Model12': 0.0}"
     },
     {
       "name": "规则感知校准权重可加载",
       "status": "pass",
-      "detail": "weights={'Model11': 1.0, 'rule_score': 0.0}"
+      "detail": "weights={'model11_validation_selected_best_strategy_A': 1.0, 'rule_score': 0.0}"
     },
     {
       "name": "模型校验清单",
@@ -263,14 +263,14 @@
     {
       "role": "overfit_guardrailed_final",
       "path": "models/model13_guardrailed_final_strategy_A.json",
-      "size_bytes": 674,
-      "sha256": "594f5bf0772fa800f64c38d6a6caa7c64f5f2be76ba344aa29ef42e7715df7f4"
+      "size_bytes": 750,
+      "sha256": "0788520ae38e3a92726c612ad3782250aff10be6e503b224b9e9c59c36a5fb29"
     },
     {
       "role": "rule_aware_calibration",
       "path": "models/model14_rule_aware_guardrailed_strategy_A.json",
-      "size_bytes": 523,
-      "sha256": "f1b1f4114beaa3b0359e1da94701587449a3ec741c079925c4f4df4a38c93973"
+      "size_bytes": 563,
+      "sha256": "91f23037d01459f3573b4c8deaddb9d404c10e13b2d8e5d52fe3fcf13e02c264"
     },
     {
       "role": "previous_final_dynamic_fusion",

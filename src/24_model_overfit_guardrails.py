@@ -1,11 +1,11 @@
 """最终模型过拟合护栏审计。
 
 这个脚本不使用测试集选择模型，只做三件事：
-1. 对 Model8、Model11、Model12 做 valid/test 时间留出稳定性审计。
+1. 对 model8_final_dynamic_fusion_v7_strategy_A、model11_validation_selected_best_strategy_A、Model12 做 valid/test 时间留出稳定性审计。
 2. 读取五折账户级审计，记录底层模型的账户级过拟合风险。
-3. 只用 valid 在 Model11 与正则化 Model12 之间做护栏式融合检查。
+3. 只用 valid 在最终主模型与正则化 Model12 之间做护栏式融合检查。
 
-若 Model12 不能提升 valid PR-AUC，则最终护栏模型保持 Model11 不变。
+若 Model12 不能提升 valid PR-AUC，则最终护栏模型保持最终主模型不变。
 """
 
 import json
@@ -21,12 +21,12 @@ from config import ID_COL, METRIC_DIR, MODEL_DIR, PREDICTION_DIR, PROJECT_ROOT, 
 
 
 MODEL_METRIC_FILES = {
-    "Model8": METRIC_DIR / "final_dynamic_fusion_metrics_v7.json",
-    "Model11": METRIC_DIR / "final_model_selection_metrics_v8.json",
+    "model8_final_dynamic_fusion_v7_strategy_A": METRIC_DIR / "final_dynamic_fusion_metrics_v7.json",
+    "model11_validation_selected_best_strategy_A": METRIC_DIR / "final_model_selection_metrics_v8.json",
     "Model12": METRIC_DIR / "cv_bagging_metrics_v1_no_customer_type.json",
 }
 PREDICTION_FILES = {
-    "Model11": PREDICTION_DIR / "model11_validation_selected_best_strategy_A.csv",
+    "model11_validation_selected_best_strategy_A": PREDICTION_DIR / "model11_validation_selected_best_strategy_A.csv",
     "Model12": PREDICTION_DIR / "model12_cv_bagged_dynamic_v1_no_customer_type_strategy_A.csv",
 }
 STEM = "model13_guardrailed_final_strategy_A"
@@ -104,9 +104,9 @@ def select_guardrailed_model() -> tuple[dict, pd.DataFrame]:
     valid = load_component_split("valid")
     test = load_component_split("test")
     candidates = []
-    valid_m11 = normalize(valid["Model11_score"].to_numpy())
+    valid_m11 = normalize(valid["model11_validation_selected_best_strategy_A_score"].to_numpy())
     valid_m12 = normalize(valid["Model12_score"].to_numpy())
-    test_m11 = normalize(test["Model11_score"].to_numpy())
+    test_m11 = normalize(test["model11_validation_selected_best_strategy_A_score"].to_numpy())
     test_m12 = normalize(test["Model12_score"].to_numpy())
     y_valid = valid["target"].to_numpy(dtype=int)
     y_test = test["target"].to_numpy(dtype=int)
@@ -133,7 +133,7 @@ def select_guardrailed_model() -> tuple[dict, pd.DataFrame]:
     test_score = selected["weight_model11"] * test_m11 + selected["weight_model12"] * test_m12
     selected_report = {
         "selected_weights": {
-            "Model11": selected["weight_model11"],
+            "model11_validation_selected_best_strategy_A": selected["weight_model11"],
             "Model12": selected["weight_model12"],
         },
         "selection_data": "valid_all_accounts",
@@ -175,7 +175,7 @@ def main() -> None:
         "status": "ok",
         "artifact_type": "overfit_guardrailed_final_model",
         "random_seed": RANDOM_SEED,
-        "final_recommendation": "Model11 remains final model; Model13 is a guardrail alias with audited selection.",
+        "final_recommendation": "model11_validation_selected_best_strategy_A remains final model; Model13 is a guardrail alias with audited selection.",
         "label_time_limitation": "风险标签表没有标签确认时间，不能严格声称预测未来新增风险标签。",
         "temporal_holdout_overfit_audit": temporal_rows,
         "account_level_cv_audit": cv_audit.get("models", []),

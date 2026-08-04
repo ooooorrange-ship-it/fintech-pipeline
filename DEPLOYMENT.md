@@ -65,7 +65,7 @@ python src/11_model_dynamic_graph_xgb.py --drop-customer-type --experiment-suffi
 python src/15_model_traditional_baselines.py
 python src/16_model_graphsage.py
 
-# 7. Model8 旧版动态融合权重和预测
+# 7. model8_final_dynamic_fusion_v7_strategy_A 旧版动态融合权重和预测
 python src/08_model_stack.py \
   --experiment-suffix v6_rolling_memory_dynamic_no_customer_type \
   --xgb-pred outputs/predictions/model2_xgb_stat_graph_v2_no_customer_type_strategy_A.csv \
@@ -98,7 +98,7 @@ python src/14_submission_audit.py
 python src/13_final_project_audit.py
 ```
 
-注意：当前 Model11 由验证集选择 `Model8=0.75、CatBoost=0.20、TGN=0.05`。Model8 内部为动态图 RandomForest 0.7、v6 动态融合 0.3、GraphSAGE 0。TGN 和 GraphSAGE 都保留为可复现的动态图模型对照分支。Model12 是五折正则化 Bagging 对照模型，用于检查过拟合和账户级泛化风险，不替代当前最佳 Model11。Model13 是过拟合护栏配置，验证集结果选择 `Model11=1.0、Model12=0.0`，因此主模型保持 Model11。Model14 是规则感知校准层，验证集结果选择 `Model11=1.0、rule_score=0.0`，因此规则层只作为解释锚点，不改变最终风险分。
+注意：当前最终主模型（model11_validation_selected_best_strategy_A）由验证集选择 `model8_final_dynamic_fusion_v7_strategy_A=0.75、model9_catboost_dynamic_v1_no_customer_type_strategy_A=0.20、model10_tgn_v1_no_customer_type_strategy_A=0.05`。model8_final_dynamic_fusion_v7_strategy_A 内部为动态图 RandomForest 0.7、v6 动态融合 0.3、GraphSAGE 0。TGN 和 GraphSAGE 都保留为可复现的动态图模型对照分支。Model12 是五折正则化 Bagging 对照模型，用于检查过拟合和账户级泛化风险，不替代当前最终主模型。Model13 是过拟合护栏配置，验证集结果选择 `最终主模型=1.0、Model12=0.0`，因此主模型保持最终主模型。Model14 是规则感知校准层，验证集结果选择 `最终主模型=1.0、rule_score=0.0`，因此规则层只作为解释锚点，不改变最终风险分。
 
 ## 5. 快速验证
 
@@ -125,7 +125,7 @@ python src/13_final_project_audit.py
 | `models/model8_final_dynamic_fusion_v7_strategy_A.json` | 最终验证集选权融合配置 |
 | `models/model9_catboost_dynamic_v1_no_customer_type_strategy_A.joblib` | CatBoost 动态特征模型 |
 | `models/model10_tgn_v1_no_customer_type_strategy_A.pt` | 轻量 TGN 时间事件流模型 |
-| `models/model11_validation_selected_best_strategy_A.json` | 最终 Model8/CatBoost/TGN 验证集选择配置 |
+| `models/model11_validation_selected_best_strategy_A.json` | 最终主模型（含 model8_final_dynamic_fusion_v7_strategy_A/CatBoost/TGN 权重）验证集选择配置 |
 | `models/model12_cv_bagged_dynamic_v1_no_customer_type_strategy_A.joblib` | 五折正则化 Bagging 对照模型 |
 | `models/model13_guardrailed_final_strategy_A.json` | 过拟合护栏最终配置 |
 | `models/model14_rule_aware_guardrailed_strategy_A.json` | 规则感知校准配置 |

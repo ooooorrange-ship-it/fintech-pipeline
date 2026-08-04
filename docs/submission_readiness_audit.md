@@ -40,8 +40,8 @@
 | 融合权重可加载 | pass | weights={'xgb': 0.0, 'graph_propagation': 0.1, 'rule': 0.0, 'dynamic': 0.9} |
 | 上一版最终动态融合权重可加载 | pass | weights={'dynamic_random_forest': 0.7, 'dynamic_stack': 0.3, 'graphsage': 0.0} |
 | 最终验证集选择权重可加载 | pass | weights={'model8_current_best': 0.75, 'model9_catboost': 0.2, 'model10_tgn': 0.05} |
-| 过拟合护栏最终权重可加载 | pass | weights={'Model11': 1.0, 'Model12': 0.0} |
-| 规则感知校准权重可加载 | pass | weights={'Model11': 1.0, 'rule_score': 0.0} |
+| 过拟合护栏最终权重可加载 | pass | weights={'model11_validation_selected_best_strategy_A': 1.0, 'Model12': 0.0} |
+| 规则感知校准权重可加载 | pass | weights={'model11_validation_selected_best_strategy_A': 1.0, 'rule_score': 0.0} |
 | 模型校验清单 | pass | models/model_manifest.json |
 
 ## 数据边界

@@ -86,7 +86,7 @@
   },
   "temporal_holdout_models": [
     {
-      "model": "Model8",
+      "model": "model8_final_dynamic_fusion_v7_strategy_A",
       "valid_all_accounts_auc": 0.9756206082514155,
       "valid_all_accounts_pr_auc": 0.6361676347468106,
       "valid_all_accounts_top5pct_recall": 0.9491525423728814,
@@ -96,7 +96,7 @@
       "valid_test_pr_auc_gap": -0.05761385221192483
     },
     {
-      "model": "Model11",
+      "model": "model11_validation_selected_best_strategy_A",
       "valid_all_accounts_auc": 0.9757020650055637,
       "valid_all_accounts_pr_auc": 0.7940291820855534,
       "valid_all_accounts_top5pct_recall": 0.9491525423728814,
