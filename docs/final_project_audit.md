@@ -1,6 +1,6 @@
 # 最终项目一致性审计
 
-总体状态：failed
+总体状态：pass
 
 | 检查项 | 状态 | 详情 |
 |---|---|---|
@@ -37,6 +37,6 @@
 | 最终模型权重与清单 | pass | 缺失=[] |
 | Conda环境文件 | pass | environment.yml |
 | 部署文档 | pass | DEPLOYMENT.md |
-| 提交就绪审计 | error | status=failed，error_count=3 |
+| 提交就绪审计 | pass | status=pass，error_count=0 |
 
 说明：warning 不代表代码不可运行，表示赛题口径或人工环节仍需在答辩中如实说明。
