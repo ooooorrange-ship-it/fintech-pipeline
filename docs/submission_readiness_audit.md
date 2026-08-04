@@ -14,7 +14,7 @@
 | 确认嫌疑账户交易边覆盖审计 | pass | 嫌疑账户=59，有边=3，无边=56 |
 | 原始/清洗交易行数一致 | pass | raw=904395，clean=904395 |
 | 关键比赛输出 | pass | 缺失=[] |
-| 运行依赖可导入 | pass | 缺失=[] |
+| 运行依赖可导入 | pass | python=/opt/homebrew/Caskroom/miniforge/base/envs/fintech09/bin/python，缺失=[] |
 | 模型文件 dynamic_xgboost | pass | models/model5_xgb_dynamic_graph_v6_rolling_memory_dynamic_no_customer_type_strategy_A.json |
 | 模型文件 heterophily_propagation | pass | models/model3_hetero_prop_v3_no_customer_type_strategy_A.joblib |
 | 模型文件 stack_config | pass | models/model4_stack_v6_rolling_memory_dynamic_no_customer_type_strategy_A.json |

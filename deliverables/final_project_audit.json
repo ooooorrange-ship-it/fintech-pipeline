@@ -1,6 +1,6 @@
 {
-  "status": "pass",
-  "error_count": 0,
+  "status": "failed",
+  "error_count": 1,
   "warning_count": 0,
   "checks": [
     {
@@ -170,8 +170,8 @@
     },
     {
       "name": "提交就绪审计",
-      "status": "pass",
-      "detail": "status=pass，error_count=0"
+      "status": "error",
+      "detail": "status=failed，error_count=3"
     }
   ],
   "known_limitations": [

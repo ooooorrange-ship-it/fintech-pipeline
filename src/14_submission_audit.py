@@ -299,7 +299,7 @@ def main() -> None:
         except importlib.metadata.PackageNotFoundError:
             package_versions[package] = "missing"
     missing_packages = [name for name, version in package_versions.items() if version == "missing"]
-    add_check(checks, "运行依赖可导入", not missing_packages, f"缺失={missing_packages}")
+    add_check(checks, "运行依赖可导入", not missing_packages, f"python={sys.executable}，缺失={missing_packages}")
 
     artifacts = load_model_artifacts(checks)
     model_manifest = {
