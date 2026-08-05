@@ -81,10 +81,9 @@ def draw_node(ax, pos: tuple, aid: int, is_root: bool = False) -> None:
                             linewidth=1.8, linestyle="--", zorder=5))
     ax.text(x, y, str(aid), ha="center", va="center", fontsize=15 if is_root else 12.5,
             fontweight="bold", color="white", zorder=7)
-    badge = {"嫌疑人": "确认嫌疑人", "受害人": "受害人", "其它": "普通账户"}.get(label, label)
     score = SCORES.get(aid)
-    lines = f"{badge}\n风险分 {score:.4f}" if score is not None else badge
-    ax.text(x, y - r - 0.30, lines, ha="center", va="top", fontsize=9.2, linespacing=1.2,
+    caption = f"风险分 {score:.4f}" if score is not None else ""
+    ax.text(x, y - r - 0.30, caption, ha="center", va="top", fontsize=9.2,
             color="#24344d", zorder=7, bbox=dict(boxstyle="round,pad=0.24", fc="white",
                                                  ec="#cbd5e1", lw=0.8, alpha=0.97))
 
