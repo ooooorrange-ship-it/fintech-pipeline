@@ -818,7 +818,7 @@ def render_html(data: dict) -> str:
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>滚动动态资金图谱展示</title>
-  <style>{css()}</style>
+  <style>{css()}{EVIDENCE_CSS}</style>
 </head>
 <body>
   <header>
@@ -838,7 +838,7 @@ def render_html(data: dict) -> str:
         <span><i class="dot" style="background:#c9342d"></i>嫌疑/根账户</span>
         <span><i class="dot" style="background:#e8912d"></i>受害人</span>
         <span><i class="dot" style="background:#2b6cb0"></i>普通账户</span>
-        <span>边越粗表示窗口内金额越高</span>
+<span><i class="dot" style="background:#e8912d"></i>橙色=转入</span><span><i class="dot" style="background:#2f6fbf"></i>蓝色=转出</span><span>边越粗表示窗口内金额越高</span>
       </div>
       <svg id="graph" viewBox="0 0 980 590" role="img" aria-label="滚动动态资金图谱"></svg>
       <h3>窗口轨迹</h3>
@@ -975,7 +975,7 @@ def js_v2() -> str:
         const dx = t.x-s.x, dy = t.y-s.y, len = Math.sqrt(dx*dx + dy*dy) || 1;
         const sx = s.x + dx / len * 20, sy = s.y + dy / len * 20, tx = t.x - dx / len * 24, ty = t.y - dy / len * 24;
         const width = 1.2 + 4.5 * Math.log1p(Number(e.amount_sum || 0)) / Math.log1p(maxAmount), midx=(sx+tx)/2, midy=(sy+ty)/2;
-        const stroke = Number(e.amount_sum || 0) >= maxAmount * .7 ? "#c9352b" : "#6f86a3";
+        const stroke = Number(e.dst) === Number(currentAccount) ? "#e8912d" : "#2f6fbf";
         return `<g filter="url(#edgeShadow)"><line x1="${sx}" y1="${sy}" x2="${tx}" y2="${ty}" stroke="${stroke}" stroke-width="${width.toFixed(2)}" marker-end="url(#arrow)" opacity="0.78"/><text x="${midx}" y="${midy-5}" class="edge-label" text-anchor="middle">${esc(e.amount_bin)} · ${e.txn_count}笔</text></g>`;
       }).join("");
       const nodeSvg = nodes.map(n => {
@@ -1063,6 +1063,29 @@ def js_v2() -> str:
     """
 
 
+EVIDENCE_CSS = """
+    .evidence-grid { display:grid; grid-template-columns:repeat(2, minmax(0, 1fr)); gap:18px; padding:18px 24px 28px; }
+    .evidence-card { background:#fff; border:1px solid #e2e8f0; border-radius:10px; overflow:hidden; box-shadow:0 8px 22px rgba(15,23,42,.06); }
+    .evidence-card img { width:100%; display:block; background:#f8fafc; }
+    .evidence-card .card-body { padding:14px 16px; }
+    .evidence-card h3 { margin:0 0 6px; font-size:15px; color:#12222f; }
+    .evidence-card p { margin:0; font-size:13px; line-height:1.65; color:#52616f; }
+    @media (max-width:900px) { .evidence-grid { grid-template-columns:1fr; padding-left:14px; padding-right:14px; } }
+"""
+
+EVIDENCE_VIEW = """
+  <main id="evidenceView" class="view wide">
+    <div class="section-head"><div><h2>典型链路证据（测试集真实子图）</h2><p>仅展示本项目从测试集真实交易边生成的资金图谱，数据截至 2025-12-31，不含未来交易。节点颜色：红=确认嫌疑人，橙=受害人，蓝=其它；橙色箭头=转入，蓝色箭头=转出，边宽=金额对数。</p></div></div>
+    <div class="evidence-grid">
+      <article class="evidence-card"><img src="../../docs/images/appendix_d_4379_loop.png" alt="账户4379闭环回流"><div class="card-body"><h3>账户 4379 · 确认嫌疑人 · 风险分 0.9034</h3><p>2025-11-19 15:37:53 向 10662、10949 各转出 3000 元，15:38:14 原路回流，间隔 21 秒；结构：闭环回流/快进快出。</p></div></article>
+      <article class="evidence-card"><img src="../../docs/images/appendix_d_1740_star.png" alt="账户1740星状汇聚"><div class="card-body"><h3>账户 1740 · 确认嫌疑人 · 风险分 0.7460</h3><p>3863、7838 两个固定对手三期重复转入，合计 18828.88 元；结构：星状汇聚/分散入账。</p></div></article>
+      <article class="evidence-card"><img src="../../docs/images/appendix_d_7265_star.png" alt="账户7265星状试探"><div class="card-body"><h3>账户 7265 · 确认嫌疑人 · 风险分 0.5801</h3><p>向 1137、7238 重复转出 188-564 元，合计 2633.40 元；结构：星状试探/小额分散转出。</p></div></article>
+      <article class="evidence-card"><img src="../../docs/images/appendix_d_9928_flow.png" alt="Top30账户9928双向回流"><div class="card-body"><h3>Top30 巡检账户 9928 · 其它 · 风险分 0.9797</h3><p>与 3842、5584 反复互转，转入 69 万、转出 180 万，转出规模显著放大；结构：双向闭环回流/资金归集。</p></div></article>
+    </div>
+    <div class="subsection"><h3>数据局限与缺边审计</h3><p>59 个确认嫌疑账户中仅 3 个（4379、1740、7265）存在真实交易边，其余 56 个账户在交易边表中无入边或出边；本项目不伪造路径，只输出模型分数、节点画像、缺边审计与补数查询，完整明细见“59账户审计”与“缺边恢复”视图。</p></div>
+  </main>
+"""
+
 def render_html_v2(data: dict) -> str:
     payload = json.dumps(data, ensure_ascii=False).replace("</", "<\\/")
     script = js_v2().replace("__DATA__", payload)
@@ -1090,7 +1113,7 @@ def render_html_v2(data: dict) -> str:
       </div>
     </div>
     <p>观察窗口：{escape(data["meta"]["history_start"])} 至 {escape(data["meta"]["history_end"])}；仅使用历史交易边，金额分箱边界来自 train。</p>
-    <nav class="nav" aria-label="页面视图"><button class="nav-btn active" data-view="graph">动态图谱</button><button class="nav-btn" data-view="audit">59账户审计</button><button class="nav-btn" data-view="recovery">缺边恢复</button><button class="nav-btn" data-view="queue">Top{escape(str(data["meta"]["top_n"]))}风险巡检</button><button class="nav-btn" data-view="report">辅助研判报告</button></nav>
+    <nav class="nav" aria-label="页面视图"><button class="nav-btn active" data-view="graph">动态图谱</button><button class="nav-btn" data-view="audit">59账户审计</button><button class="nav-btn" data-view="recovery">缺边恢复</button><button class="nav-btn" data-view="queue">Top{escape(str(data["meta"]["top_n"]))}风险巡检</button><button class="nav-btn" data-view="evidence">典型链路</button><button class="nav-btn" data-view="report">辅助研判报告</button></nav>
   </header>
   <section class="overview" id="overviewMetrics"></section>
   <main id="graphView" class="view active"><div class="graph-layout">
@@ -1102,6 +1125,7 @@ def render_html_v2(data: dict) -> str:
   <main id="recoveryView" class="view wide"><div class="section-head"><div><h2>缺边嫌疑账户恢复队列</h2><p>仅展示真实模型/节点证据和补数任务；补充流水后再重建资金链路。</p></div><span id="recoveryCount" class="muted"></span></div><div class="table-wrap"><table><thead><tr><th>优先级</th><th>账户/标签</th><th>模型分</th><th>风险排名</th><th>当前历史交易</th><th>节点画像</th><th>补数查询</th></tr></thead><tbody id="recoveryTableBody"></tbody></table></div><div id="recoveryDetail" class="detail-panel"><p class="empty">点击任一账户查看链路恢复任务。</p></div></main>
   <main id="queueView" class="view wide"><div class="section-head"><div><h2>Top{escape(str(data["meta"]["top_n"]))} 高风险主动巡检队列</h2><p>筛选有历史交易边的高风险账户，输出可核验的关联、路径和资金结构证据。</p></div></div><div class="table-wrap"><table><thead><tr><th>风险排名</th><th>账户/标签</th><th>模型分</th><th>等级</th><th>解释原因</th><th>历史交易</th><th>历史金额</th><th>直接对手</th><th>动态/交易特征证据</th></tr></thead><tbody id="queueTableBody"></tbody></table></div><div id="queueDetail" class="detail-panel"></div></main>
   <main id="reportView" class="view wide"><div class="section-head"><div><h2>辅助研判报告</h2><p>报告同时引用模型风险分、交易统计、关键交易边/路径、图结构或动态特征中的至少两类证据。</p></div></div><div id="reportGrid" class="report-grid"></div><div class="subsection"><h3>报告原文</h3><pre id="rawReport" class="raw-report"></pre></div></main>
+  {EVIDENCE_VIEW}
   <script>{script}</script>
 </body>
 </html>
