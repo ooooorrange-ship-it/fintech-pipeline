@@ -113,8 +113,8 @@ def draw_edges(ax, fig, pos, edges: list[dict], root: int, label_fn, fontsize: f
         rv = 0.66 if v == root else 0.54
         arrow = FancyArrowPatch(p1, p2, connectionstyle=f"arc3,rad={rad}",
                                 arrowstyle="-|>,head_width=3.0,head_length=4.0",
-                                mutation_scale=2, lw=width,
-                                color=color, shrinkA=ru, shrinkB=rv, zorder=5)
+                                mutation_scale=4, lw=width,
+                                color=color, shrinkA=ru, shrinkB=rv, zorder=6)
         ax.add_patch(arrow)
         txt = label_fn(e, incoming)
         placed = None
@@ -228,7 +228,7 @@ def main() -> None:
         "测试集排序第 814 名 · 4 笔交易 · 2025-11-19",
         "结构：闭环回流 / 快进快出（15:37:53 转出 3000×2 → 15:38:14 原路回流，间隔 21 秒）",
         "docs/images/appendix_d_4379_loop.png",
-        lambda e, inc: f"{e['time'].strftime('%H:%M:%S')} {e['amount']:,.0f}元",
+        lambda e, inc: f"{'入' if inc else '出'} {e['time'].strftime('%H:%M:%S')} {e['amount']:,.0f}元",
         fontsize=7.0,
     )
     render(
@@ -238,7 +238,7 @@ def main() -> None:
         "测试集排序第 2827 名 · 6 笔交易 · 2025-07/11/12",
         "结构：星状汇聚 / 分散入账（3863、7838 各 3 笔转入，合计 18,828.88 元）",
         "docs/images/appendix_d_1740_star.png",
-        lambda e, inc: f"{e['time'].strftime('%m-%d')} {e['amount']:,.0f}元",
+        lambda e, inc: f"{'入' if inc else '出'} {e['time'].strftime('%m-%d')} {e['amount']:,.0f}元",
         fontsize=7.0,
     )
     render(
@@ -248,7 +248,7 @@ def main() -> None:
         "测试集排序第 4906 名 · 6 笔交易 · 2025-11/12",
         "结构：星状试探 / 小额分散转出（向 1137、7238 各转出 3 笔，合计 2,633.40 元）",
         "docs/images/appendix_d_7265_star.png",
-        lambda e, inc: f"{e['time'].strftime('%m-%d')} {e['amount']:,.0f}元",
+        lambda e, inc: f"{'入' if inc else '出'} {e['time'].strftime('%m-%d')} {e['amount']:,.0f}元",
         fontsize=7.0,
     )
     render(
@@ -258,7 +258,7 @@ def main() -> None:
         "测试集排序第 73 名 · 8 笔交易 · 2025-07/08",
         "结构：双向闭环回流 / 资金归集（转入 4 笔合计 69 万、转出 4 笔合计 180 万）",
         "docs/images/appendix_d_9928_flow.png",
-        lambda e, inc: f"{e['time'].strftime('%m-%d')} {'入' if inc else '出'} {fmt_amount(e['amount'])}",
+        lambda e, inc: f"{'入' if inc else '出'} {e['time'].strftime('%m-%d')} {fmt_amount(e['amount'])}",
         fontsize=6.6,
     )
 
