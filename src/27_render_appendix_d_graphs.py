@@ -227,6 +227,7 @@ def main() -> None:
         "结构：闭环回流 / 快进快出（15:37:53 转出 3000×2 → 15:38:14 原路回流，间隔 21 秒）",
         "docs/images/appendix_d_4379_loop.png",
         lambda e, inc: f"{e['time'].strftime('%H:%M:%S')} {e['amount']:,.0f}元",
+        fontsize=7.0,
     )
     render(
         1740,
@@ -236,6 +237,7 @@ def main() -> None:
         "结构：星状汇聚 / 分散入账（3863、7838 各 3 笔转入，合计 18,828.88 元）",
         "docs/images/appendix_d_1740_star.png",
         lambda e, inc: f"{e['time'].strftime('%m-%d')} {e['amount']:,.0f}元",
+        fontsize=7.0,
     )
     render(
         7265,
@@ -245,6 +247,7 @@ def main() -> None:
         "结构：星状试探 / 小额分散转出（向 1137、7238 各转出 3 笔，合计 2,633.40 元）",
         "docs/images/appendix_d_7265_star.png",
         lambda e, inc: f"{e['time'].strftime('%m-%d')} {e['amount']:,.0f}元",
+        fontsize=7.0,
     )
     render(
         9928,
@@ -254,7 +257,7 @@ def main() -> None:
         "结构：双向闭环回流 / 资金归集（转入 4 笔合计 69 万、转出 4 笔合计 180 万）",
         "docs/images/appendix_d_9928_flow.png",
         lambda e, inc: f"{e['time'].strftime('%m-%d')} {'入' if inc else '出'} {fmt_amount(e['amount'])}",
-        fontsize=7.8,
+        fontsize=6.6,
     )
 
 
