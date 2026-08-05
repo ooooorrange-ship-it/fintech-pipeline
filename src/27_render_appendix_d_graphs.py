@@ -26,9 +26,9 @@ IN_COLOR = "#e67e22"
 OUT_COLOR = "#2f6fbf"
 RAD_SETS = {
     1: [0.0],
-    2: [0.42, -0.48],
-    3: [0.40, -0.26, -0.58],
-    4: [0.28, -0.34, 0.62, -0.72],
+    2: [0.46, -0.52],
+    3: [0.44, -0.28, -0.62],
+    4: [0.32, -0.38, 0.68, -0.78],
 }
 
 
@@ -108,7 +108,7 @@ def draw_edges(ax, fig, pos, edges: list[dict], root: int, label_fn, fontsize: f
         rad = RAD_SETS[pair_count[pair]][idx] * (1.0 if p2[0] >= p1[0] else -1.0)
         incoming = v == root
         color = IN_COLOR if incoming else OUT_COLOR
-        width = 2.0 + 4.5 * math.log1p(e["amount"]) / max_log
+        width = 1.0 + 2.5 * math.log1p(e["amount"]) / max_log
         ru = 0.66 if u == root else 0.54
         rv = 0.66 if v == root else 0.54
         arrow = FancyArrowPatch(p1, p2, connectionstyle=f"arc3,rad={rad}",
