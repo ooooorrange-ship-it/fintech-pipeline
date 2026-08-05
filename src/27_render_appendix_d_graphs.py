@@ -112,8 +112,8 @@ def draw_edges(ax, fig, pos, edges: list[dict], root: int, label_fn, fontsize: f
         ru = 0.66 if u == root else 0.54
         rv = 0.66 if v == root else 0.54
         arrow = FancyArrowPatch(p1, p2, connectionstyle=f"arc3,rad={rad}",
-                                arrowstyle="-|>,head_width=5.0,head_length=7.0",
-                                mutation_scale=27, lw=width,
+                                arrowstyle="-|>,head_width=3.5,head_length=4.8",
+                                mutation_scale=20, lw=width,
                                 color=color, shrinkA=ru, shrinkB=rv, zorder=5)
         ax.add_patch(arrow)
         txt = label_fn(e, incoming)
