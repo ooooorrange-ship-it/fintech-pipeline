@@ -213,7 +213,7 @@
   <main id="reportView" class="view wide"><div class="section-head"><div><h2>辅助研判报告</h2><p>报告同时引用模型风险分、交易统计、关键交易边/路径、图结构或动态特征中的至少两类证据。</p></div></div><div id="reportGrid" class="report-grid"></div><div class="subsection"><h3>报告原文</h3><pre id="rawReport" class="raw-report"></pre></div></main>
   
   <main id="evidenceView" class="view wide">
-    <div class="section-head"><div><h2>典型链路证据（测试集真实子图）</h2><p>仅展示本项目从测试集真实交易边生成的资金图谱，数据截至 2025-12-31，不含未来交易。节点颜色：红=确认嫌疑人，橙=受害人，蓝=其它；橙色箭头=转入，蓝色箭头=转出；每条线=一笔真实交易，线宽=单笔金额对数，边描述直接写在边线上（无白色底框，白色描边保证可读性）。</p></div></div>
+    <div class="section-head"><div><h2>典型链路证据（测试集真实子图）</h2><p>仅展示本项目从测试集真实交易边生成的资金图谱，数据截至 2025-12-31，不含未来交易。节点颜色：红=确认嫌疑人，橙=受害人，蓝=其它；橙色箭头=转入，蓝色箭头=转出；每条线=一笔真实交易，线宽=单笔金额对数，边描述嵌在边线内（沿弧线排版，弧线在文字处断开，无底框）。</p></div></div>
     <div class="evidence-grid">
       <article class="evidence-card"><img src="../../docs/images/appendix_d_4379_loop.png" alt="账户4379闭环回流"><div class="card-body"><h3>账户 4379 · 确认嫌疑人 · 风险分 0.9034</h3><p>2025-11-19 15:37:53 向 10662、10949 各转出 3000 元，15:38:14 原路回流，间隔 21 秒；结构：闭环回流/快进快出。</p></div></article>
       <article class="evidence-card"><img src="../../docs/images/appendix_d_1740_star.png" alt="账户1740星状汇聚"><div class="card-body"><h3>账户 1740 · 确认嫌疑人 · 风险分 0.7460</h3><p>3863、7838 两个固定对手三期重复转入，合计 18828.88 元；结构：星状汇聚/分散入账。</p></div></article>

@@ -24,7 +24,12 @@ LABEL = LAB.set_index("account_id")["label_text"].to_dict()
 COLOR = {"嫌疑人": "#d64545", "受害人": "#f59e0b", "其它": "#2563eb", "未知": "#7f8c8d"}
 IN_COLOR = "#e67e22"
 OUT_COLOR = "#2f6fbf"
-RAD_SETS = {1: [0.0], 2: [-0.20, -0.46], 3: [-0.12, -0.30, -0.50], 4: [-0.10, -0.24, -0.38, -0.54]}
+RAD_SETS = {
+    1: [0.0],
+    2: [0.42, -0.48],
+    3: [0.40, -0.26, -0.58],
+    4: [0.28, -0.34, 0.62, -0.72],
+}
 
 
 def raw_edges(account_id: int) -> list[dict]:
@@ -54,6 +59,17 @@ def bezier(p1: tuple, p2: tuple, rad: float, t: float) -> tuple[float, float]:
     return bx, by
 
 
+def bezier_tangent(p1: tuple, p2: tuple, rad: float, t: float) -> tuple[float, float]:
+    """返回二次贝塞尔曲线在 t 处的切向量。"""
+    x1, y1 = p1
+    x2, y2 = p2
+    dx, dy = x2 - x1, y2 - y1
+    cx, cy = (x1 + x2) / 2 - rad * dy, (y1 + y2) / 2 + rad * dx
+    tx = 2 * (1 - t) * (cx - x1) + 2 * t * (x2 - cx)
+    ty = 2 * (1 - t) * (cy - y1) + 2 * t * (y2 - cy)
+    return tx, ty
+
+
 def draw_node(ax, pos: tuple, aid: int, is_root: bool = False) -> None:
     x, y = pos
     label = LABEL.get(aid, "未知")
@@ -73,23 +89,24 @@ def draw_node(ax, pos: tuple, aid: int, is_root: bool = False) -> None:
                                                  ec="#cbd5e1", lw=0.8, alpha=0.97))
 
 
-def draw_edges(ax, pos, edges: list[dict], root: int, label_fn, fontsize: float) -> None:
+def draw_edges(ax, fig, pos, edges: list[dict], root: int, label_fn, fontsize: float) -> None:
     pair_index = defaultdict(int)
     pair_count = defaultdict(int)
     for e in edges:
         pair_count[(min(e["src"], e["dst"]), max(e["src"], e["dst"]))] += 1
     max_amount = max(e["amount"] for e in edges) if edges else 1.0
     max_log = math.log1p(max_amount)
-    left_id = min(pos, key=lambda k: pos[k][0])
+    renderer = fig.canvas.get_renderer()
+    inv = ax.transData.inverted()
+    placed_boxes = []
     for e in edges:
         u, v = e["src"], e["dst"]
         p1, p2 = pos[u], pos[v]
         pair = (min(u, v), max(u, v))
         idx = pair_index[pair]
         pair_index[pair] += 1
-        side = -1 if (u == left_id or v == left_id) else 1
-        rad = side * RAD_SETS[pair_count[pair]][idx]
-        t = 0.40 + 0.07 * idx
+        # RAD_SETS 的符号按“弦的上方”约定，绘制时根据边方向翻转，保证同对手的多条边分居弦两侧
+        rad = RAD_SETS[pair_count[pair]][idx] * (1.0 if p2[0] >= p1[0] else -1.0)
         incoming = v == root
         color = IN_COLOR if incoming else OUT_COLOR
         width = 2.0 + 4.5 * math.log1p(e["amount"]) / max_log
@@ -99,10 +116,61 @@ def draw_edges(ax, pos, edges: list[dict], root: int, label_fn, fontsize: float)
                                 arrowstyle="-|>", mutation_scale=24, lw=width,
                                 color=color, shrinkA=ru, shrinkB=rv, zorder=4)
         ax.add_patch(arrow)
-        lx, ly = bezier(p1, p2, rad, t)
-        ax.text(lx, ly, label_fn(e, incoming), ha="center", va="center", fontsize=fontsize,
-                linespacing=1.12, color="#14222f", zorder=8,
-                path_effects=[pe.withStroke(linewidth=3.2, foreground="white")])
+        txt = label_fn(e, incoming)
+        placed = None
+        for t, offset in label_candidates():
+            lx, ly = bezier(p1, p2, rad, t)
+            tx, ty = bezier_tangent(p1, p2, rad, t)
+            norm = math.hypot(tx, ty)
+            lx += offset * (-ty / norm)
+            ly += offset * (tx / norm)
+            angle = math.degrees(math.atan2(ty, tx))
+            tb = ax.text(lx, ly, txt, ha="center", va="center", fontsize=fontsize,
+                         linespacing=1.12, color="#14222f", zorder=8,
+                         rotation=angle, rotation_mode="anchor",
+                         path_effects=[pe.withStroke(linewidth=width + 3.5, foreground="white")])
+            bb = tb.get_window_extent(renderer)
+            if not overlaps_node(bb, inv, pos, root) and not overlaps_text(bb, placed_boxes):
+                placed = tb
+                break
+            tb.remove()
+        if placed is None:
+            raise RuntimeError(f"无法为账户 {root} 的边放置标签: {txt}")
+        placed_boxes.append(placed.get_window_extent(renderer))
+
+
+def label_candidates() -> list[tuple[float, float]]:
+    """沿弧线从中间向两端扩展，必要时沿法线小幅偏移，避免文字重叠。"""
+    out = []
+    for offset in (0.0, 0.32, -0.32, 0.64, -0.64, 0.98, -0.98, 1.35, -1.35):
+        for step in range(12):
+            delta = 0.04 * (step + 1)
+            if step % 2 == 0:
+                out.append((0.50 + delta, offset))
+            else:
+                out.append((0.50 - delta, offset))
+        out.append((0.50, offset))
+    return out
+
+
+def overlaps_node(bb, inv, pos: dict, root: int) -> bool:
+    pts = inv.transform([(bb.x0, bb.y0), (bb.x1, bb.y0), (bb.x1, bb.y1), (bb.x0, bb.y1)])
+    for aid, (cx, cy) in pos.items():
+        radius = 0.66 if aid == root else 0.54
+        margin = 0.16
+        for px, py in pts:
+            if math.hypot(px - cx, py - cy) < radius + margin:
+                return True
+    return False
+
+
+def overlaps_text(bb, placed_boxes) -> bool:
+    pad = 4
+    for other in placed_boxes:
+        if not (bb.x1 + pad <= other.x0 or other.x1 + pad <= bb.x0
+                or bb.y1 + pad <= other.y0 or other.y1 + pad <= bb.y0):
+            return True
+    return False
 
 
 def draw_frame(ax, title: str, subtitle: str, structure: str) -> None:
@@ -133,7 +201,8 @@ def render(root: int, positions: dict, title: str, subtitle: str, structure: str
     ax.set_ylim(-3.95, 4.75)
     ax.set_aspect("equal")
     ax.axis("off")
-    draw_edges(ax, positions, edges, root, label_fn, fontsize)
+    fig.canvas.draw()
+    draw_edges(ax, fig, positions, edges, root, label_fn, fontsize)
     for aid, p in positions.items():
         draw_node(ax, p, aid, is_root=(aid == root))
     draw_frame(ax, title, subtitle, structure)
@@ -157,7 +226,7 @@ def main() -> None:
         "测试集排序第 814 名 · 4 笔交易 · 每条线=一笔 · 2025-11-19",
         "结构：闭环回流 / 快进快出（15:37:53 转出 3000×2 → 15:38:14 原路回流，间隔 21 秒）",
         "docs/images/appendix_d_4379_loop.png",
-        lambda e, inc: f"{e['time'].strftime('%m-%d %H:%M:%S')}\n{e['amount']:,.2f}元",
+        lambda e, inc: f"{e['time'].strftime('%H:%M:%S')} {e['amount']:,.0f}元",
     )
     render(
         1740,
@@ -166,7 +235,7 @@ def main() -> None:
         "测试集排序第 2827 名 · 6 笔交易 · 每条线=一笔 · 2025-07/11/12",
         "结构：星状汇聚 / 分散入账（3863、7838 各 3 笔转入，合计 18,828.88 元）",
         "docs/images/appendix_d_1740_star.png",
-        lambda e, inc: f"{e['time'].strftime('%m-%d')}\n{e['amount']:,.2f}元",
+        lambda e, inc: f"{e['time'].strftime('%m-%d')} {e['amount']:,.0f}元",
     )
     render(
         7265,
@@ -175,7 +244,7 @@ def main() -> None:
         "测试集排序第 4906 名 · 6 笔交易 · 每条线=一笔 · 2025-11/12",
         "结构：星状试探 / 小额分散转出（向 1137、7238 各转出 3 笔，合计 2,633.40 元）",
         "docs/images/appendix_d_7265_star.png",
-        lambda e, inc: f"{e['time'].strftime('%m-%d')}\n{e['amount']:,.2f}元",
+        lambda e, inc: f"{e['time'].strftime('%m-%d')} {e['amount']:,.0f}元",
     )
     render(
         9928,
@@ -184,7 +253,7 @@ def main() -> None:
         "测试集排序第 73 名 · 8 笔交易 · 每条线=一笔 · 2025-07/08",
         "结构：双向闭环回流 / 资金归集（转入 4 笔合计 69 万、转出 4 笔合计 180 万）",
         "docs/images/appendix_d_9928_flow.png",
-        lambda e, inc: f"{e['time'].strftime('%m-%d')} {'转入' if inc else '转出'}\n{fmt_amount(e['amount'])}元",
+        lambda e, inc: f"{e['time'].strftime('%m-%d')} {'入' if inc else '出'} {fmt_amount(e['amount'])}",
         fontsize=7.8,
     )
 
