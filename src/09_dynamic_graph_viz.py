@@ -523,7 +523,7 @@ def css() -> str:
       letter-spacing:0;
     }
     header {
-      position:sticky; top:0; z-index:5; padding:18px 28px 14px;
+      position:relative; padding:18px 28px 14px;
       color:#fff;
       background:
         linear-gradient(135deg, rgba(17,26,36,.98) 0%, rgba(25,49,61,.98) 55%, rgba(28,57,48,.98) 100%),
@@ -1075,7 +1075,7 @@ EVIDENCE_CSS = """
 
 EVIDENCE_VIEW = """
   <main id="evidenceView" class="view wide">
-    <div class="section-head"><div><h2>典型链路证据（测试集真实子图）</h2><p>仅展示本项目从测试集真实交易边生成的资金图谱，数据截至 2025-12-31，不含未来交易。节点颜色：红=确认嫌疑人，橙=受害人，蓝=其它；橙色箭头=转入，蓝色箭头=转出；每条线=一笔真实交易，线宽=单笔金额对数。</p></div></div>
+    <div class="section-head"><div><h2>典型链路证据（测试集真实子图）</h2><p>仅展示本项目从测试集真实交易边生成的资金图谱，数据截至 2025-12-31，不含未来交易。节点颜色：红=确认嫌疑人，橙=受害人，蓝=其它；橙色箭头=转入，蓝色箭头=转出；每条线=一笔真实交易，线宽=单笔金额对数，边描述直接写在边线上（无白色底框，白色描边保证可读性）。</p></div></div>
     <div class="evidence-grid">
       <article class="evidence-card"><img src="../../docs/images/appendix_d_4379_loop.png" alt="账户4379闭环回流"><div class="card-body"><h3>账户 4379 · 确认嫌疑人 · 风险分 0.9034</h3><p>2025-11-19 15:37:53 向 10662、10949 各转出 3000 元，15:38:14 原路回流，间隔 21 秒；结构：闭环回流/快进快出。</p></div></article>
       <article class="evidence-card"><img src="../../docs/images/appendix_d_1740_star.png" alt="账户1740星状汇聚"><div class="card-body"><h3>账户 1740 · 确认嫌疑人 · 风险分 0.7460</h3><p>3863、7838 两个固定对手三期重复转入，合计 18828.88 元；结构：星状汇聚/分散入账。</p></div></article>

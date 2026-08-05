@@ -28,7 +28,7 @@
 
 ## 图例与口径说明
 
-节点颜色：**红色=确认嫌疑人，橙色=受害人，蓝色=其它**；节点下方显示账户 ID、标签与模型风险分；橙色箭头=转入，蓝色箭头=转出；**每条线=一笔真实交易**，线宽=单笔金额（对数），边标签显示单笔时间与金额。所有图谱只使用截至测试期截止（2025-12-31）的历史交易，未使用未来交易。
+节点颜色：**红色=确认嫌疑人，橙色=受害人，蓝色=其它**；节点下方显示账户 ID、标签与模型风险分；橙色箭头=转入，蓝色箭头=转出；**每条线=一笔真实交易**，线宽=单笔金额（对数）。边描述直接写在边线上（沿弧线放置，无白色底框），以白色描边保证可读性，显示单笔时间与金额；重复交易使用不同弧度错开，避免文字遮挡节点。所有图谱只使用截至测试期截止（2025-12-31）的历史交易，未使用未来交易。
 
 ## 数据局限与缺边审计
 
@@ -53,4 +53,4 @@
 - 交易数据：`outputs/clean/clean_transactions.csv`
 - 模型分数：`outputs/predictions/model11_validation_selected_best_strategy_A.csv`
 - 缺边审计：`outputs/explanations/layered/confirmed_suspect_explainability_audit.csv`、`outputs/explanations/layered/suspect_link_recovery_queue.csv`
-- 可复现命令：`python src/26_data_edge_coverage_audit.py`（边覆盖审计）、`python src/09_dynamic_graph_viz.py`（动态图谱页面）
+- 可复现命令：`python src/26_data_edge_coverage_audit.py`（边覆盖审计）、`python src/27_render_appendix_d_graphs.py`（附录 D 四张资金图谱）、`python src/09_dynamic_graph_viz.py`（动态图谱页面）
