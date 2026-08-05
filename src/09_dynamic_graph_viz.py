@@ -1066,7 +1066,7 @@ def js_v2() -> str:
 EVIDENCE_CSS = """
     .evidence-grid { display:grid; grid-template-columns:repeat(2, minmax(0, 1fr)); gap:18px; padding:18px 24px 28px; }
     .evidence-card { background:#fff; border:1px solid #e2e8f0; border-radius:10px; overflow:hidden; box-shadow:0 8px 22px rgba(15,23,42,.06); }
-    .evidence-card img { width:100%; display:block; background:#f8fafc; }
+    .evidence-card img { width:100%; max-width:920px; display:block; margin:0 auto; background:#f8fafc; }
     .evidence-card .card-body { padding:14px 16px; }
     .evidence-card h3 { margin:0 0 6px; font-size:15px; color:#12222f; }
     .evidence-card p { margin:0; font-size:13px; line-height:1.65; color:#52616f; }
