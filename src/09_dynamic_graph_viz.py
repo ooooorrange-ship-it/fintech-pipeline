@@ -1077,10 +1077,10 @@ EVIDENCE_VIEW = """
   <main id="evidenceView" class="view wide">
     <div class="section-head"><div><h2>典型链路证据（测试集真实子图）</h2><p>仅展示本项目从测试集真实交易边生成的资金图谱，数据截至 2025-12-31，不含未来交易。节点颜色：红=确认嫌疑人，橙=受害人，蓝=其它；橙色箭头=转入，蓝色箭头=转出；每笔交易一条有向边，线宽=单笔金额对数，边描述嵌在边线内（沿弧线排版，弧线在文字处断开，无底框）。</p></div></div>
     <div class="evidence-grid">
-      <article class="evidence-card"><img src="../../docs/images/appendix_d_4379_loop.png" alt="账户4379闭环回流"><div class="card-body"><h3>账户 4379 · 确认嫌疑人 · 风险分 0.9034</h3><p>2025-11-19 15:37:53 向 10662、10949 各转出 3000 元，15:38:14 原路回流，间隔 21 秒；结构：闭环回流/快进快出。</p></div></article>
-      <article class="evidence-card"><img src="../../docs/images/appendix_d_1740_star.png" alt="账户1740星状汇聚"><div class="card-body"><h3>账户 1740 · 确认嫌疑人 · 风险分 0.7460</h3><p>3863、7838 两个固定对手三期重复转入，合计 18828.88 元；结构：星状汇聚/分散入账。</p></div></article>
-      <article class="evidence-card"><img src="../../docs/images/appendix_d_7265_star.png" alt="账户7265星状试探"><div class="card-body"><h3>账户 7265 · 确认嫌疑人 · 风险分 0.5801</h3><p>向 1137、7238 重复转出 188-564 元，合计 2633.40 元；结构：星状试探/小额分散转出。</p></div></article>
-      <article class="evidence-card"><img src="../../docs/images/appendix_d_9928_flow.png" alt="Top30账户9928双向回流"><div class="card-body"><h3>Top30 巡检账户 9928 · 其它 · 风险分 0.9797</h3><p>与 3842、5584 反复互转，转入 69 万、转出 180 万，转出规模显著放大；结构：双向闭环回流/资金归集。</p></div></article>
+      <article class="evidence-card"><img src="../../docs/images/appendix_d_4379_loop_v2.png" alt="账户4379闭环回流"><div class="card-body"><h3>账户 4379 · 确认嫌疑人 · 风险分 0.9034</h3><p>2025-11-19 15:37:53 向 10662、10949 各转出 3000 元，15:38:14 原路回流，间隔 21 秒；结构：闭环回流/快进快出。</p></div></article>
+      <article class="evidence-card"><img src="../../docs/images/appendix_d_1740_star_v2.png" alt="账户1740星状汇聚"><div class="card-body"><h3>账户 1740 · 确认嫌疑人 · 风险分 0.7460</h3><p>3863、7838 两个固定对手三期重复转入，合计 18828.88 元；结构：星状汇聚/分散入账。</p></div></article>
+      <article class="evidence-card"><img src="../../docs/images/appendix_d_7265_star_v2.png" alt="账户7265星状试探"><div class="card-body"><h3>账户 7265 · 确认嫌疑人 · 风险分 0.5801</h3><p>向 1137、7238 重复转出 188-564 元，合计 2633.40 元；结构：星状试探/小额分散转出。</p></div></article>
+      <article class="evidence-card"><img src="../../docs/images/appendix_d_9928_flow_v2.png" alt="Top30账户9928双向回流"><div class="card-body"><h3>Top30 巡检账户 9928 · 其它 · 风险分 0.9797</h3><p>与 3842、5584 反复互转，转入 69 万、转出 180 万，转出规模显著放大；结构：双向闭环回流/资金归集。</p></div></article>
     </div>
     <div class="subsection"><h3>数据局限与缺边审计</h3><p>59 个确认嫌疑账户中仅 3 个（4379、1740、7265）存在真实交易边，其余 56 个账户在交易边表中无入边或出边；本项目不伪造路径，只输出模型分数、节点画像、缺边审计与补数查询，完整明细见“59账户审计”与“缺边恢复”视图。</p></div>
   </main>
