@@ -112,8 +112,8 @@ def draw_edges(ax, fig, pos, edges: list[dict], root: int, label_fn, fontsize: f
         ru = 0.66 if u == root else 0.54
         rv = 0.66 if v == root else 0.54
         arrow = FancyArrowPatch(p1, p2, connectionstyle=f"arc3,rad={rad}",
-                                arrowstyle="-|>,head_width=4.5,head_length=6.0",
-                                mutation_scale=26, lw=width,
+                                arrowstyle="-|>,head_width=5.0,head_length=7.0",
+                                mutation_scale=27, lw=width,
                                 color=color, shrinkA=ru, shrinkB=rv, zorder=5)
         ax.add_patch(arrow)
         txt = label_fn(e, incoming)
@@ -189,7 +189,7 @@ def draw_frame(ax, title: str, subtitle: str, structure: str) -> None:
                    linewidths=1.4, zorder=6)
         ax.text(lx + 0.52, -3.05, text, ha="left", va="center", fontsize=9.5, color="#233142")
         lx += 0.52 + len(text) * 0.125 + 0.55
-    ax.text(-4.0, -3.55, "每条线 = 一笔真实交易；箭头方向 = 资金流向；线宽 = 单笔金额（对数）",
+    ax.text(-4.0, -3.55, "每笔交易一条有向边 · 箭头 = 资金流向 · 线宽 = 单笔金额（对数）",
             ha="left", va="center", fontsize=9.2, color="#33475b")
 
 
@@ -197,6 +197,8 @@ def render(root: int, positions: dict, title: str, subtitle: str, structure: str
            out_path: str, label_fn, fontsize: float = 8.2) -> None:
     edges = raw_edges(root)
     fig, ax = plt.subplots(figsize=(13.2, 8.6), dpi=170)
+    fig.patch.set_facecolor("#fbfcfe")
+    ax.set_facecolor("#fbfcfe")
     ax.set_xlim(-4.8, 4.8)
     ax.set_ylim(-3.95, 4.75)
     ax.set_aspect("equal")
@@ -223,7 +225,7 @@ def main() -> None:
         4379,
         {4379: (0, 0), 10662: (-2.6, 2.3), 10949: (2.6, 2.3)},
         "账户 4379 · 确认嫌疑人 · 模型风险分 0.9034",
-        "测试集排序第 814 名 · 4 笔交易 · 每条线=一笔 · 2025-11-19",
+        "测试集排序第 814 名 · 4 笔交易 · 2025-11-19",
         "结构：闭环回流 / 快进快出（15:37:53 转出 3000×2 → 15:38:14 原路回流，间隔 21 秒）",
         "docs/images/appendix_d_4379_loop.png",
         lambda e, inc: f"{e['time'].strftime('%H:%M:%S')} {e['amount']:,.0f}元",
@@ -233,7 +235,7 @@ def main() -> None:
         1740,
         {1740: (0, 0), 3863: (-2.6, 2.3), 7838: (2.6, 2.3)},
         "账户 1740 · 确认嫌疑人 · 模型风险分 0.7460",
-        "测试集排序第 2827 名 · 6 笔交易 · 每条线=一笔 · 2025-07/11/12",
+        "测试集排序第 2827 名 · 6 笔交易 · 2025-07/11/12",
         "结构：星状汇聚 / 分散入账（3863、7838 各 3 笔转入，合计 18,828.88 元）",
         "docs/images/appendix_d_1740_star.png",
         lambda e, inc: f"{e['time'].strftime('%m-%d')} {e['amount']:,.0f}元",
@@ -243,7 +245,7 @@ def main() -> None:
         7265,
         {7265: (0, 0), 1137: (-2.6, 2.3), 7238: (2.6, 2.3)},
         "账户 7265 · 确认嫌疑人 · 模型风险分 0.5801",
-        "测试集排序第 4906 名 · 6 笔交易 · 每条线=一笔 · 2025-11/12",
+        "测试集排序第 4906 名 · 6 笔交易 · 2025-11/12",
         "结构：星状试探 / 小额分散转出（向 1137、7238 各转出 3 笔，合计 2,633.40 元）",
         "docs/images/appendix_d_7265_star.png",
         lambda e, inc: f"{e['time'].strftime('%m-%d')} {e['amount']:,.0f}元",
@@ -253,7 +255,7 @@ def main() -> None:
         9928,
         {9928: (0, 0), 3842: (-2.6, 2.3), 5584: (2.6, 2.3)},
         "Top30 高风险巡检账户 9928 · 标签：其它 · 模型风险分 0.9797",
-        "测试集排序第 73 名 · 8 笔交易 · 每条线=一笔 · 2025-07/08",
+        "测试集排序第 73 名 · 8 笔交易 · 2025-07/08",
         "结构：双向闭环回流 / 资金归集（转入 4 笔合计 69 万、转出 4 笔合计 180 万）",
         "docs/images/appendix_d_9928_flow.png",
         lambda e, inc: f"{e['time'].strftime('%m-%d')} {'入' if inc else '出'} {fmt_amount(e['amount'])}",
